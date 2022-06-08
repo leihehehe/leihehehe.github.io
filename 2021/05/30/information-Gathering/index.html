@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 5.4.2"><meta name="theme" content="hexo-theme-yun"><title>Web安全之信息收集 | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="IntroductionInformation Gathering is to gather different kinds of information against the targeted victim or system - Websites, servers, etc. Identify Operation System">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web安全之信息收集">
+<meta property="og:url" content="https://leihehe.top/2021/05/30/information-Gathering/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="IntroductionInformation Gathering is to gather different kinds of information against the targeted victim or system - Websites, servers, etc. Identify Operation System">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://leihehe.top/image/information-Gathering/1-2530916.png">
+<meta property="og:image" content="https://leihehe.top/image/information-Gathering/image-20210601160243421.png">
+<meta property="og:image" content="https://leihehe.top/image/information-Gathering/image-20210601164900369.png">
+<meta property="article:published_time" content="2021-05-30T13:43:21.000Z">
+<meta property="article:modified_time" content="2022-06-08T23:43:07.130Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="Web Security">
+<meta property="article:tag" content="Information Gathering">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leihehe.top/image/information-Gathering/1-2530916.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="我的主页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">39</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">18</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">23</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Identify-Operation-System"><span class="toc-number">2.</span> <span class="toc-text">Identify Operation System</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E7%BD%91%E7%AB%99%E6%96%87%E4%BB%B6%E5%A4%A7%E5%B0%8F%E5%86%99%E6%9D%A5%E8%AF%86%E5%88%AB"><span class="toc-number">2.1.</span> <span class="toc-text">通过网站文件大小写来识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87ping%E7%9A%84TTL%E5%80%BC%E6%9D%A5%E8%AF%86%E5%88%AB"><span class="toc-number">2.2.</span> <span class="toc-text">通过ping的TTL值来识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E7%BB%84%E5%90%88%E5%AF%B9%E5%BA%94%E6%9D%A5%E8%AF%86%E5%88%AB"><span class="toc-number">2.3.</span> <span class="toc-text">通过组合对应来识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E6%8A%93%E5%8C%85%E6%9D%A5%E8%AF%86%E5%88%AB"><span class="toc-number">2.4.</span> <span class="toc-text">通过抓包来识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F%E6%9D%A5%E8%AF%86%E5%88%AB%EF%BC%88%E5%8C%85%E6%8B%ACnmap%E7%BB%95%E8%BF%87%E9%98%B2%E7%81%AB%E5%A2%99%EF%BC%89"><span class="toc-number">2.5.</span> <span class="toc-text">通过端口扫描来识别（包括nmap绕过防火墙）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E7%BD%91%E7%AB%99%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B%E6%9D%A5%E8%AF%86%E5%88%AB"><span class="toc-number">2.6.</span> <span class="toc-text">通过网站文件类型来识别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Get-Relative-Sites-Information"><span class="toc-number">3.</span> <span class="toc-text">Get Relative Sites Information</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%AD%90%E5%9F%9F%E5%90%8D%E7%BD%91%E7%AB%99"><span class="toc-number">3.1.</span> <span class="toc-text">获取子域名网站</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E4%B8%8D%E5%90%8C%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.2.</span> <span class="toc-text">获取不同端口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Get-Source-Code-of-Taget-Sites"><span class="toc-number">4.</span> <span class="toc-text">Get Source Code of Taget Sites</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D%E7%BD%91%E7%AB%99%E7%9A%84CMS%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-number">4.1.</span> <span class="toc-text">获取当前网站的CMS版本信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%BD%91%E7%AB%99%E6%BA%90%E7%A0%81"><span class="toc-number">4.2.</span> <span class="toc-text">获取网站源码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#git%E6%BA%90%E7%A0%81%E6%B3%84%E6%BC%8F"><span class="toc-number">4.2.1.</span> <span class="toc-text">git源码泄漏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#svn%E6%BA%90%E7%A0%81%E6%B3%84%E6%BC%8F"><span class="toc-number">4.2.2.</span> <span class="toc-text">svn源码泄漏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#WEB-INF%E6%B3%84%E9%9C%B2"><span class="toc-number">4.2.3.</span> <span class="toc-text">WEB-INF泄露</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cvs%E6%B3%84%E9%9C%B2"><span class="toc-number">4.2.4.</span> <span class="toc-text">cvs泄露</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GitHub%E6%BA%90%E7%A0%81%E6%B3%84%E6%BC%8F"><span class="toc-number">4.2.5.</span> <span class="toc-text">GitHub源码泄漏</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WAF-amp-CDN-amp-Real-IP-Address"><span class="toc-number">5.</span> <span class="toc-text">WAF &amp; CDN &amp; Real IP Address</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A4%E6%96%ADWAF%E7%B1%BB%E5%9E%8B"><span class="toc-number">5.1.</span> <span class="toc-text">判断WAF类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CDN%E7%BB%95%E8%BF%87%E5%B9%B6%E6%9F%A5%E8%AF%A2%E7%9C%9F%E5%AE%9E%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9C%B0%E5%9D%80"><span class="toc-number">5.2.</span> <span class="toc-text">CDN绕过并查询真实服务器地址</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Black-amp-White-Search-Engines"><span class="toc-number">6.</span> <span class="toc-text">Black&amp;White Search Engines</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ARL-Asset-Reconnaissance-Lighthouse"><span class="toc-number">7.</span> <span class="toc-text">ARL(Asset Reconnaissance Lighthouse)</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/05/30/information-Gathering/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Web安全之信息收集</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-05-30 23:43:21" itemprop="dateCreated datePublished" datetime="2021-05-30T23:43:21+10:00">2021-05-30</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">1.4k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">5m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/" style="--text-color:#F4645F" itemprop="url" rel="index"><span itemprop="text">Web Security</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">信息收集</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Web-Security/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Web Security</span></a><a class="tag-item" href="/tags/Information-Gathering/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Information Gathering</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Information Gathering is to gather different kinds of information against the targeted victim or system - Websites, servers, etc.</p>
+<h2 id="Identify-Operation-System"><a href="#Identify-Operation-System" class="headerlink" title="Identify Operation System"></a>Identify Operation System</h2><span id="more"></span>
+
+<h3 id="通过网站文件大小写来识别"><a href="#通过网站文件大小写来识别" class="headerlink" title="通过网站文件大小写来识别"></a>通过网站文件大小写来识别</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Linux对大小写敏感，windows不敏感 - 比如index.html -<span class="token operator">></span> index.Html
+若网页不能正常显示，则为Linux系统；若能正常显示，则为windows系统<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="通过ping的TTL值来识别"><a href="#通过ping的TTL值来识别" class="headerlink" title="通过ping的TTL值来识别"></a>通过ping的TTL值来识别</h3><p><br />TTL值可作为参考，其依然有可能被修改 </p>
+<pre><code><pre class="line-numbers language-none"><code class="language-none">WINDOWS 98 TTL:32
+
+LINUX 2.2X&#x2F;2.4X TTL:64
+
+WINDOWS NT&#x2F;2000&#x2F;XP TTL:128
+
+UNIX&#x2F;BSD TTL:255<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
+<p><strong>例如以我本地电脑MAC(Linux)为例，ttl为64，所以可判断为linux</strong></p>
+<p><img src="/image/information-Gathering/1-2530916.png" alt="1" loading="lazy"></p>
+<h3 id="通过组合对应来识别"><a href="#通过组合对应来识别" class="headerlink" title="通过组合对应来识别"></a>通过组合对应来识别</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">ASP和ASP.NET<span class="token punctuation">(</span>aspx<span class="token punctuation">)</span> -<span class="token operator">></span> windows
+aspx mssql windows iis
+php mysql windows/linux apache
+jsp mssql/oracle windows/linux tomcat
+javaee mysql/oracle/ windows/linux weblogic/jboos/tomcat<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="通过抓包来识别"><a href="#通过抓包来识别" class="headerlink" title="通过抓包来识别"></a>通过抓包来识别</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">在<span class="token operator">==</span>header<span class="token operator">==</span>中可看到server信息<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>例如：某游戏网站，可判断其为windows, aspx类</p>
+<p><img src="/image/information-Gathering/image-20210601160243421.png" alt="image-20210601160243421" loading="lazy"></p>
+<h3 id="通过端口扫描来识别（包括nmap绕过防火墙）"><a href="#通过端口扫描来识别（包括nmap绕过防火墙）" class="headerlink" title="通过端口扫描来识别（包括nmap绕过防火墙）"></a>通过端口扫描来识别（包括nmap绕过防火墙）</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">可以通过扫描端口来判断数据库类型 - 可使用masscan或nmap来扫描
+nmap中文手册：http://www.nmap.com.cn/doc/manual.shtm
+nmap www.example.com
+nmap -O -A www.example.com
+nmap -Pn -O -A www.example.com
+扫网段： nmap <span class="token number">47.94</span>.236.0/24
+如果开了防火墙:用nmap会提示Host seems down
+绕过防火墙：nmap -Pn <span class="token number">127.0</span>.0.1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="通过网站文件类型来识别"><a href="#通过网站文件类型来识别" class="headerlink" title="通过网站文件类型来识别"></a>通过网站文件类型来识别</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">如 index.jsp, index.aspx, index.php, index.action, index.asp
+另外，压缩包文件：
+Windows -<span class="token operator">></span> zip, <span class="token function">rar</span>
+linux -<span class="token operator">></span> tar.gz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="Get-Relative-Sites-Information"><a href="#Get-Relative-Sites-Information" class="headerlink" title="Get Relative Sites Information"></a>Get Relative Sites Information</h2><h3 id="获取子域名网站"><a href="#获取子域名网站" class="headerlink" title="获取子域名网站"></a>获取子域名网站</h3><p>可利用子域名查询平台或者工具进行获取</p>
+<p>推荐： oneforall  下载地址：<a target="_blank" rel="noopener" href="https://github.com/shmilylty/OneForAll">https://github.com/shmilylty/OneForAll</a></p>
+<h3 id="获取不同端口"><a href="#获取不同端口" class="headerlink" title="获取不同端口"></a>获取不同端口</h3><p>不同端口可能有不同的网站，增加attack的几率</p>
+<p>推荐：nmap, masscan</p>
+<h2 id="Get-Source-Code-of-Taget-Sites"><a href="#Get-Source-Code-of-Taget-Sites" class="headerlink" title="Get Source Code of Taget Sites"></a>Get Source Code of Taget Sites</h2><h3 id="获取当前网站的CMS版本信息"><a href="#获取当前网站的CMS版本信息" class="headerlink" title="获取当前网站的CMS版本信息"></a>获取当前网站的CMS版本信息</h3><ul>
+<li><p>使用在线平台查询（RECOMMAND）</p>
+<p>国外：<a target="_blank" rel="noopener" href="https://whatcms.org/">https://whatcms.org/</a> -&gt; 适用于国外的CMS</p>
+<p>国内：<a target="_blank" rel="noopener" href="http://whatweb.bugscaner.com/">http://whatweb.bugscaner.com/</a> -&gt; 适用于国内的CMS</p>
+</li>
+<li><p>使用工具查询</p>
+<p>工具：<a target="_blank" rel="noopener" href="https://github.com/Tuhinshubhra/CMSeeK">https://github.com/Tuhinshubhra/CMSeeK</a> -&gt;线下比赛没有网络环境</p>
+</li>
+<li><p>使用 Github 监控</p>
+<p><a target="_blank" rel="noopener" href="http://sc.ftqq.com/3.version">http://sc.ftqq.com/3.version</a> 申请-配置-写入-测试</p>
+</li>
+<li><p>通过关键字/文件名/url配合搜索引擎查询</p>
+</li>
+</ul>
+<h3 id="获取网站源码"><a href="#获取网站源码" class="headerlink" title="获取网站源码"></a>获取网站源码</h3><p><strong>一般来说获取某些小型站点（套用模版或者第三方程序）的网站源码是有可能的。</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.secpulse.com/archives/124398.html">More Information About Source Code leakage</a></p>
+<h4 id="git源码泄漏"><a href="#git源码泄漏" class="headerlink" title="git源码泄漏"></a>git源码泄漏</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">www.example.com/.git/
+存在即可用<span class="token operator">==</span>githack<span class="token operator">==</span>利用漏洞<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h4 id="svn源码泄漏"><a href="#svn源码泄漏" class="headerlink" title="svn源码泄漏"></a>svn源码泄漏</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">www.example.com/.svn/
+存在即可用<span class="token operator">==</span>svn工具<span class="token operator">==</span>利用漏洞<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h4 id="WEB-INF泄露"><a href="#WEB-INF泄露" class="headerlink" title="WEB-INF泄露"></a>WEB-INF泄露</h4><blockquote>
+<p>WEB-INF 主要包含一下文件或目录：</p>
+<p>WEB-INF/web.xml : Web应用程序配置文件, 描述了servlet和其他的应用组件配置及命名规则.</p>
+<p>WEB-INF/database.properties : 数据库配置文件</p>
+<p>WEB-INF/classes/ : 一般用来存放Java类文件(.class)</p>
+<p>WEB-INF/lib/ : 用来存放打包好的库(.jar)</p>
+<p>WEB-INF/src/ : 用来放源代码(.asp和.php等)</p>
+</blockquote>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">若存在WEB-INF/web.xml文件，且有file access权限，可以在web-inf/web.xml中看到暴露的java class路径。
+比如在web.xml中有cn.abc.servlet.DownloadServlet.class,如果有下载漏洞，你可以直接下载web inf/classes/cn/abc/servlet/DownloadServlet.class
+
+如 upload_file <span class="token operator">=</span> <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/xxx.png
+即可访问 upload_file <span class="token operator">=</span> web inf/classes/cn/abc/servlet/DownloadServlet.class
+并得到class文件 -<span class="token operator">></span> 拖入idea查看即可<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="cvs泄露"><a href="#cvs泄露" class="headerlink" title="cvs泄露"></a>cvs泄露</h4><p>网站中存在.cvsignore</p>
+<h4 id="GitHub源码泄漏"><a href="#GitHub源码泄漏" class="headerlink" title="GitHub源码泄漏"></a>GitHub源码泄漏</h4><p>一个利用思路是，可以在网站中寻找一些联系方式的信息，比如qq,wx,phone或者email，然后在github中搜索，可能能找到源码</p>
+<h2 id="WAF-amp-CDN-amp-Real-IP-Address"><a href="#WAF-amp-CDN-amp-Real-IP-Address" class="headerlink" title="WAF &amp; CDN &amp; Real IP Address"></a>WAF &amp; CDN &amp; Real IP Address</h2><h3 id="判断WAF类型"><a href="#判断WAF类型" class="headerlink" title="判断WAF类型"></a>判断WAF类型</h3><p>Web Application Firewall简称WAF，WAF经常会拦截到我们的渗透攻击，所以需要判断WAF类型以便之后绕过它</p>
+<ul>
+<li><p>直接用工具判断：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/EnableSecurity/wafw00f">https://github.com/EnableSecurity/wafw00f</a></p>
+</li>
+<li><p>根据拦截的页面判断</p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/3uUZKryCufQ_HcuMc8ZgQQ">https://mp.weixin.qq.com/s/3uUZKryCufQ_HcuMc8ZgQQ</a></p>
+</li>
+</ul>
+<h3 id="CDN绕过并查询真实服务器地址"><a href="#CDN绕过并查询真实服务器地址" class="headerlink" title="CDN绕过并查询真实服务器地址"></a>CDN绕过并查询真实服务器地址</h3><p>CDN：A Content Delivery Network， 本质上是用来加速，根据地理位置不同分配不同的服务器让用户能体验到最好的访问效果，同时也会对hacking有影响–因为隐藏了真实的ip地址</p>
+<p><strong>判断是否有CDN:</strong></p>
+<p>通过网站在线ping，看全国（全球）各地得到的ip是否相同，若不同则说明有CDN</p>
+<p>推荐查询平台：</p>
+<pre class="line-numbers language-tex" data-language="tex"><code class="language-tex">https:&#x2F;&#x2F;www.17ce.com&#x2F; 
+
+http:&#x2F;&#x2F;ping.chinaz.com
+
+https:&#x2F;&#x2F;www.wepcc.com&#x2F;
+
+https:&#x2F;&#x2F;get-site-ip.com&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>获取真实IP地址</strong></p>
+<p>Ps： 如果不确定哪个是真实IP 可以查询IP地址 如果是cdn节点会显示 或者根据公司在的地址判断机房位置</p>
+<ol>
+<li><p>同服务器下的子域名可能不会做cdn</p>
+</li>
+<li><p>去掉www可能没做cdn</p>
+</li>
+<li><p>邮件服务器，若邮件服务器是搭建在网站服务器上的，那么可以通过注册账号密码 -&gt; 服务器会给你发送注册信息 -&gt; 显示邮件全文 -&gt; 找到ip</p>
+<p>例如在gmail中：<img src="/image/information-Gathering/image-20210601164900369.png" alt="image-20210601164900369" loading="lazy"></p>
+<p>可以得到发送邮件的IP地址</p>
+</li>
+<li><p>证书查询/根据网站备案号</p>
+</li>
+<li><p>历史域名解析：过去可能未使用CDN，可以查到真实IP</p>
+<p><a target="_blank" rel="noopener" href="https://x.threatbook.cn/">https://x.threatbook.cn/</a></p>
+<p><a target="_blank" rel="noopener" href="https://tools.ipip.net/cdn.php">https://tools.ipip.net/cdn.php</a></p>
+</li>
+<li><p>工具查询cdn：fuck CDN</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Tai7sy/fuckcdn">https://github.com/Tai7sy/fuckcdn</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/boy-hack/w8fuckcdn">https://github.com/boy-hack/w8fuckcdn</a></p>
+</li>
+<li><p>APP抓包：若网站有相应APP，可以抓包APP来分析</p>
+</li>
+<li><p>国外访问（针对有些国家地区没有设置cdn）</p>
+</li>
+<li><p>接口查询 超级ping</p>
+</li>
+</ol>
+<h2 id="Black-amp-White-Search-Engines"><a href="#Black-amp-White-Search-Engines" class="headerlink" title="Black&amp;White Search Engines"></a>Black&amp;White Search Engines</h2><p>推荐网站：</p>
+<pre class="line-numbers language-tex" data-language="tex"><code class="language-tex">https:&#x2F;&#x2F;fofa.so&#x2F;
+
+https:&#x2F;&#x2F;www.shodan.io&#x2F;
+
+https:&#x2F;&#x2F;www.zoomeye.org&#x2F;
+
+https:&#x2F;&#x2F;quake.360.cn&#x2F;quake&#x2F;#&#x2F;index<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="ARL-Asset-Reconnaissance-Lighthouse"><a href="#ARL-Asset-Reconnaissance-Lighthouse" class="headerlink" title="ARL(Asset Reconnaissance Lighthouse)"></a>ARL(Asset Reconnaissance Lighthouse)</h2><p>配合fofa可以有效完成信息收集，详见<a target="_blank" rel="noopener" href="https://leihehehe.github.io/2021/06/01/arlSetup/">Web安全之ARL灯塔搭建与使用</a></p>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Leihehe</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://leihehe.top/2021/05/30/information-Gathering/" title="Web安全之信息收集">https://leihehe.top/2021/05/30/information-Gathering/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/06/01/arlSetup/" rel="prev" title="Web安全之ARL灯塔搭建"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">Web安全之ARL灯塔搭建</span></a></div><div class="post-nav-item"></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div></body></html>

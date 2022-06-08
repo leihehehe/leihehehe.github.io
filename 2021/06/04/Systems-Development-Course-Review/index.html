@@ -1,0 +1,911 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 5.4.2"><meta name="theme" content="hexo-theme-yun"><title>Systems Development Course Review | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="This note is for the course from Monash University - FIT2001. S1: Nature of Systems DevelopmentInformation systemsWhat are the information systems?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Systems Development Course Review">
+<meta property="og:url" content="https://leihehe.top/2021/06/04/Systems-Development-Course-Review/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="This note is for the course from Monash University - FIT2001. S1: Nature of Systems DevelopmentInformation systemsWhat are the information systems?">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-04T06:24:39.000Z">
+<meta property="article:modified_time" content="2022-06-08T23:43:07.130Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="Systems Development">
+<meta name="twitter:card" content="summary"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="我的主页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">39</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">18</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">23</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#S1-Nature-of-Systems-Development"><span class="toc-number">1.</span> <span class="toc-text">S1: Nature of Systems Development</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Information-systems"><span class="toc-number">1.1.</span> <span class="toc-text">Information systems</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#What-are-the-information-systems"><span class="toc-number">1.1.1.</span> <span class="toc-text">What are the information systems?</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Introduction"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Sample-question"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">Sample question</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Systems-Development-Life-Cycle-SDLC"><span class="toc-number">1.2.</span> <span class="toc-text">Systems Development Life Cycle(SDLC)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Phases-in-the-SDLC-Key-activities-IADI"><span class="toc-number">1.2.1.</span> <span class="toc-text">Phases in the SDLC - Key activities(IADI)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#phase-1-Initiation"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">phase 1: Initiation</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#key-activities"><span class="toc-number">1.2.1.1.1.</span> <span class="toc-text">key activities</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#phase-2-Analysis"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">phase 2: Analysis</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#key-activities-1"><span class="toc-number">1.2.1.2.1.</span> <span class="toc-text">key activities</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#phase-3-Design"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">phase 3: Design</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#key-activities-2"><span class="toc-number">1.2.1.3.1.</span> <span class="toc-text">key activities</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#phase-4-Implementation"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">phase 4: Implementation</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#key-activities-3"><span class="toc-number">1.2.1.4.1.</span> <span class="toc-text">key activities</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#phase-5-Support"><span class="toc-number">1.2.1.5.</span> <span class="toc-text">phase 5: Support</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Sample-Question"><span class="toc-number">1.2.2.</span> <span class="toc-text">Sample Question</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#System-developers-Critical-skills-for-every-role"><span class="toc-number">1.3.</span> <span class="toc-text">System developers - Critical skills for every role</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Introduction-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Sample-Question-1"><span class="toc-number">1.3.2.</span> <span class="toc-text">Sample Question</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S2-System-Development-Approaches-Agile-Software-Development-Stakeholder-management"><span class="toc-number">2.</span> <span class="toc-text">S2: System Development Approaches, Agile Software Development, Stakeholder management</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Approaches"><span class="toc-number">2.1.</span> <span class="toc-text">Approaches</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Waterfall"><span class="toc-number">2.2.</span> <span class="toc-text">Waterfall</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Aglie"><span class="toc-number">2.3.</span> <span class="toc-text">Aglie</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stakeholder-management"><span class="toc-number">2.4.</span> <span class="toc-text">stakeholder management</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S3-Investigating-System-Requirements-Information-Gathering-Techniques"><span class="toc-number">3.</span> <span class="toc-text">S3: Investigating System Requirements&#x2F; Information Gathering Techniques</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#requirements-gathering"><span class="toc-number">3.1.</span> <span class="toc-text">requirements gathering</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#requirements"><span class="toc-number">3.2.</span> <span class="toc-text">requirements</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#information-gathering-techniques"><span class="toc-number">3.3.</span> <span class="toc-text">information gathering techniques</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Investigating-documenting-system-requirements"><span class="toc-number">3.4.</span> <span class="toc-text">Investigating&#x2F;documenting system requirements</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S5-Use-Case-Diagrams"><span class="toc-number">4.</span> <span class="toc-text">S5: Use Case Diagrams</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Use-Case-Diagram"><span class="toc-number">4.1.</span> <span class="toc-text">Use Case Diagram</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Use-Case-Description"><span class="toc-number">4.2.</span> <span class="toc-text">Use Case Description</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S6-Domain-Class-Modelling"><span class="toc-number">5.</span> <span class="toc-text">S6: Domain Class Modelling</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#be-able-to-draw"><span class="toc-number">5.1.</span> <span class="toc-text">be able to draw</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S7-Prototyping"><span class="toc-number">6.</span> <span class="toc-text">S7: Prototyping</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Prototyping"><span class="toc-number">6.1.</span> <span class="toc-text">Prototyping</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Usability"><span class="toc-number">6.2.</span> <span class="toc-text">Usability</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S8-Interface-Design-Guidelines-and-tips"><span class="toc-number">7.</span> <span class="toc-text">S8: Interface Design Guidelines and tips</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#guidlines"><span class="toc-number">7.1.</span> <span class="toc-text">guidlines</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#personas"><span class="toc-number">7.2.</span> <span class="toc-text">personas</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S9-Use-Case-Realisation"><span class="toc-number">8.</span> <span class="toc-text">S9: Use Case Realisation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Quality-of-design-models"><span class="toc-number">8.1.</span> <span class="toc-text">Quality of design models</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Design-Class-Diagram"><span class="toc-number">8.2.</span> <span class="toc-text">Design Class Diagram</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S10-Security-amp-Testing"><span class="toc-number">9.</span> <span class="toc-text">S10: Security &amp; Testing</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Testing"><span class="toc-number">9.1.</span> <span class="toc-text">Testing</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#S11-Implementation-amp-Maintainance"><span class="toc-number">10.</span> <span class="toc-text">S11. Implementation &amp; Maintainance</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Implementation-phase-activities"><span class="toc-number">10.1.</span> <span class="toc-text">Implementation phase activities</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#data-conversion"><span class="toc-number">10.2.</span> <span class="toc-text">data conversion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trainning"><span class="toc-number">10.3.</span> <span class="toc-text">trainning</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#deployment"><span class="toc-number">10.4.</span> <span class="toc-text">deployment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Maintenance-closure"><span class="toc-number">10.5.</span> <span class="toc-text">Maintenance&#x2F;closure</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Change-Management-system"><span class="toc-number">10.6.</span> <span class="toc-text">Change Management system</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#why-post-implementation-review-important"><span class="toc-number">10.7.</span> <span class="toc-text">why post implementation review important</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/06/04/Systems-Development-Course-Review/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Systems Development Course Review</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-06-04 16:24:39" itemprop="dateCreated datePublished" datetime="2021-06-04T16:24:39+10:00">2021-06-04</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">2.8k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">17m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/others/" style="--text-color:#61dafb" itemprop="url" rel="index"><span itemprop="text">others</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Systems-Development/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Systems Development</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><p><strong>This note is for the course from Monash University - FIT2001.</strong></p>
+<h2 id="S1-Nature-of-Systems-Development"><a href="#S1-Nature-of-Systems-Development" class="headerlink" title="S1: Nature of Systems Development"></a>S1: Nature of Systems Development</h2><h3 id="Information-systems"><a href="#Information-systems" class="headerlink" title="Information systems"></a>Information systems</h3><h4 id="What-are-the-information-systems"><a href="#What-are-the-information-systems" class="headerlink" title="What are the information systems?"></a>What are the information systems?</h4><span id="more"></span>
+
+<h5 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h5><p>Information systems: <strong>a integrated set of components</strong> for <strong>collecting, storing, and processing data and for delivering information</strong>.</p>
+<p>The main components of an information systems are - <strong>people, procedures, hardware, software, databases, data warehouses and telecommunications</strong>.</p>
+<h5 id="Sample-question"><a href="#Sample-question" class="headerlink" title="Sample question"></a>Sample question</h5><p>Briefly discuss why the Student Enrolment system is an information system and, describe its key components.</p>
+<p>A: </p>
+<ul>
+<li><p><strong>Reason</strong>:</p>
+<p><strong>Collecting</strong>: collect students’ enrolment data, </p>
+<p><strong>Storing</strong>:  store the students’ enrolment data</p>
+<p><strong>Processing</strong>: to know whether you are on track on complete that course. </p>
+<p><strong>Delivering</strong>: give a list of classes / lecturer could see who enrolled his/her course.</p>
+</li>
+<li><p><strong>Key components:</strong></p>
+<p><strong>people</strong>: adamic stuff -&gt; put the courses in the system</p>
+<p><strong>procedures</strong>: students input data into the system and the data will be check if valid? If the chosen unit matches students’ major field?</p>
+<p><strong>hardware</strong>: laptop, PC, printers, screens…</p>
+<p><strong>software</strong>: written programs, OS</p>
+<p><strong>databases</strong>: student information will be stored in the databases.</p>
+<p><strong>telecommunications</strong>: network</p>
+</li>
+</ul>
+<h3 id="Systems-Development-Life-Cycle-SDLC"><a href="#Systems-Development-Life-Cycle-SDLC" class="headerlink" title="Systems Development Life Cycle(SDLC)"></a>Systems Development Life Cycle(SDLC)</h3><h4 id="Phases-in-the-SDLC-Key-activities-IADI"><a href="#Phases-in-the-SDLC-Key-activities-IADI" class="headerlink" title="Phases in the SDLC - Key activities(IADI)"></a>Phases in the SDLC - Key activities(IADI)</h4><h5 id="phase-1-Initiation"><a href="#phase-1-Initiation" class="headerlink" title="phase 1: Initiation"></a>phase 1: Initiation</h5><h6 id="key-activities"><a href="#key-activities" class="headerlink" title="key activities"></a>key activities</h6><ul>
+<li><p>Review and priorities project requests</p>
+</li>
+<li><p>Assess project feasibility</p>
+</li>
+<li><p>Develop the project plan</p>
+</li>
+</ul>
+<h5 id="phase-2-Analysis"><a href="#phase-2-Analysis" class="headerlink" title="phase 2: Analysis"></a>phase 2: Analysis</h5><h6 id="key-activities-1"><a href="#key-activities-1" class="headerlink" title="key activities"></a>key activities</h6><ul>
+<li>Determine detailed user requirements.</li>
+<li>Create system models to confirm requirements and for design.</li>
+<li>Perform <em>Build vs Buy</em> analysis.</li>
+</ul>
+<h5 id="phase-3-Design"><a href="#phase-3-Design" class="headerlink" title="phase 3: Design"></a>phase 3: Design</h5><h6 id="key-activities-2"><a href="#key-activities-2" class="headerlink" title="key activities"></a>key activities</h6><ul>
+<li>Define technical architecture.</li>
+<li>Produce technical specs.</li>
+<li>Create database.</li>
+</ul>
+<h5 id="phase-4-Implementation"><a href="#phase-4-Implementation" class="headerlink" title="phase 4: Implementation"></a>phase 4: Implementation</h5><h6 id="key-activities-3"><a href="#key-activities-3" class="headerlink" title="key activities"></a>key activities</h6><ul>
+<li>Build, Test, Validate.</li>
+<li>Conduct Integration, System and Acceptance testing.</li>
+<li>Create User Docs, Train users.</li>
+<li>Install, Deploy new system.</li>
+</ul>
+<h5 id="phase-5-Support"><a href="#phase-5-Support" class="headerlink" title="phase 5: Support"></a>phase 5: Support</h5><ul>
+<li>Conduct post-implementation system review</li>
+<li>Identify errors and enhancements</li>
+<li>Monitor system performance</li>
+</ul>
+<h4 id="Sample-Question"><a href="#Sample-Question" class="headerlink" title="Sample Question"></a>Sample Question</h4><p>You are chatting with a friend about your job as an IT Developer, and they ask for a brief description on how IT systems are developed. Briefly describe the <strong>key phases of IT systems development, and the importance of each phase in the development process</strong>. (Seminar 1)</p>
+<p>A: </p>
+<ul>
+<li><strong>Initiation</strong>: <ul>
+<li>assess whether project is feasible.</li>
+<li>whether you can build the system on time within the budget.</li>
+<li>Is the expertise available?</li>
+<li><strong>Importance</strong>: It determines whether you can go ahead or not, otherwise you waste your money.</li>
+</ul>
+</li>
+<li><strong>Analysis</strong><ul>
+<li>Determine detailed user requirements.</li>
+<li>Create system models to confirm requirements and for design.</li>
+<li>Perform <em>Build vs Buy</em> analysis.</li>
+<li><strong>Importance</strong>: it is vital that you demonstrate to the client that you understand their requirements otherwise you can’t build the system they want to pay for.</li>
+</ul>
+</li>
+<li><strong>Design</strong><ul>
+<li>Define technical architecture.</li>
+<li>Produce technical specs. Interface Design/ prototypes/ Security/ network</li>
+<li>Create database.</li>
+<li><strong>Importance</strong>: easy to maintain</li>
+</ul>
+</li>
+<li><strong>Implementation</strong><ul>
+<li>Build, Test, Validate if the system works.</li>
+<li>Conduct Integration, System and Acceptance testing.</li>
+<li>Create User Docs, Train users.</li>
+<li>Install, Deploy new system.</li>
+<li><strong>Importance</strong>: developers know what they’re building and users know that they are using. users need to know how to use the system. </li>
+</ul>
+</li>
+<li><strong>Support</strong><ul>
+<li>post-implementation review</li>
+<li>Ready to fix errors, handle the system.</li>
+<li><strong>Importance</strong>: be able to handle the system, you can get benefit and opportunity to reflect and learn.</li>
+</ul>
+</li>
+</ul>
+<h3 id="System-developers-Critical-skills-for-every-role"><a href="#System-developers-Critical-skills-for-every-role" class="headerlink" title="System developers - Critical skills for every role"></a>System developers - Critical skills for every role</h3><h4 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h4><ul>
+<li><strong>Understanding business</strong> - awareness and sensitivity to the business processes<br>and needs that require technology in the first place</li>
+<li><strong>Broad and up-to-date understanding of technology</strong> – can be invaluable in<br>creating the ‘best’ solutions for the organization</li>
+<li><strong>Multiple Perspectives</strong> - The ability to understand that there are multiple<br>perspectives to solving a problems is required to find the best solution</li>
+<li><strong>People/Soft Skills</strong> - the ability to interact with other people and to be a part of a<br>team</li>
+<li><strong>Continuous Learning</strong> – essential in a high-change industry, like IT</li>
+</ul>
+<h4 id="Sample-Question-1"><a href="#Sample-Question-1" class="headerlink" title="Sample Question"></a>Sample Question</h4><p>You are attending a job interview as a System Developer. What skills are you going to showcase in your interview? (Seminar 1)</p>
+<h2 id="S2-System-Development-Approaches-Agile-Software-Development-Stakeholder-management"><a href="#S2-System-Development-Approaches-Agile-Software-Development-Stakeholder-management" class="headerlink" title="S2: System Development Approaches, Agile Software Development, Stakeholder management"></a>S2: System Development Approaches, Agile Software Development, Stakeholder management</h2><h3 id="Approaches"><a href="#Approaches" class="headerlink" title="Approaches"></a>Approaches</h3><ul>
+<li><p>predictive</p>
+<ul>
+<li>requirements -&gt; well understood&amp;defined</li>
+<li>low tech risk</li>
+</ul>
+</li>
+<li><p>adaptive</p>
+<ul>
+<li>requirements&amp;needs-&gt;uncertain</li>
+<li>high tech risk</li>
+</ul>
+</li>
+</ul>
+<h3 id="Waterfall"><a href="#Waterfall" class="headerlink" title="Waterfall"></a>Waterfall</h3><ul>
+<li>sequential stages(no overlap and iteration)</li>
+<li>strong emphasis on planning and specification development</li>
+<li>works well for clearly defined projects</li>
+</ul>
+<h3 id="Aglie"><a href="#Aglie" class="headerlink" title="Aglie"></a>Aglie</h3><ul>
+<li><p>value(RVVV)<br>CP/IPT/WCD/CCCN</p>
+<ul>
+<li>responding to change over following a plan</li>
+<li>value interactions and individuals over process and tools </li>
+<li>value working software over comprehensive documentation</li>
+<li>value costumer collaboration over contact negotiation </li>
+</ul>
+</li>
+<li><p>12 Principles</p>
+<ul>
+<li>software is the primary goal</li>
+<li>next effort is the secondary goal</li>
+<li>…</li>
+</ul>
+</li>
+<li><p>SCRUM(Agile frameworks) artifact</p>
+<ul>
+<li><p>product backlog</p>
+<ul>
+<li>the single source of requirements</li>
+<li>cumulative list of the desired deliverable for the project - every feature, enhancement, bug fix, documentation requirement, every bit of work required by the team</li>
+<li>prioritised to maximise value</li>
+</ul>
+</li>
+<li><p>sprint backlog</p>
+<ul>
+<li>a list of tasks the team must complete to deliver an increment of functional software at the end of each Sprint</li>
+<li>Once decided Team owns the Sprint Backlog - only they can decide on scope change.</li>
+</ul>
+</li>
+<li><p>sprint burndown charts</p>
+<ul>
+<li>shows the total estimated work remaining for the entire forecasted sprint backlog against time</li>
+</ul>
+</li>
+<li><p>task board</p>
+<ul>
+<li>allows visibility and transparency across the project</li>
+<li>display the live status of team work and focus</li>
+<li>Most have - Backlog, to-do, doing and done status</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="stakeholder-management"><a href="#stakeholder-management" class="headerlink" title="stakeholder management"></a>stakeholder management</h3><ul>
+<li><p>define</p>
+<ul>
+<li><p>internal stakeholders</p>
+<ul>
+<li>within the organisation</li>
+</ul>
+</li>
+<li><p>external stakeholders</p>
+<ul>
+<li>outside the organization</li>
+</ul>
+</li>
+<li><p>operational stakeholders</p>
+<ul>
+<li>regularly interact with the system</li>
+</ul>
+</li>
+<li><p>executive stakeholders</p>
+<ul>
+<li>don’t interact directly but use the information or have a financial interest </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>**prioritise and understand your stakeholders</p>
+<p>- </p>
+</li>
+</ul>
+<h2 id="S3-Investigating-System-Requirements-Information-Gathering-Techniques"><a href="#S3-Investigating-System-Requirements-Information-Gathering-Techniques" class="headerlink" title="S3: Investigating System Requirements/ Information Gathering Techniques"></a>S3: Investigating System Requirements/ Information Gathering Techniques</h2><h3 id="requirements-gathering"><a href="#requirements-gathering" class="headerlink" title="requirements gathering"></a>requirements gathering</h3><ul>
+<li>investigating requirements using a range of techniques</li>
+<li>developing a deep understanding of the business domain</li>
+<li>defining what the solution needs to be to meet the requirements</li>
+<li>requirements must be verified by the client</li>
+</ul>
+<h3 id="requirements"><a href="#requirements" class="headerlink" title="requirements"></a>requirements</h3><ul>
+<li><p>functional requirements</p>
+<ul>
+<li>represents the activities a software system must perform</li>
+<li>business functions that end-users carry out </li>
+<li>expressed in terms of models</li>
+</ul>
+</li>
+<li><p>non-functional requirements</p>
+<ul>
+<li>represents other characteristics from a software system </li>
+<li>like constraints</li>
+<li>performance goals(speed)</li>
+</ul>
+</li>
+</ul>
+<h3 id="information-gathering-techniques"><a href="#information-gathering-techniques" class="headerlink" title="information gathering techniques"></a>information gathering techniques</h3><ul>
+<li><p>Interviewing users and stakeholders</p>
+<ul>
+<li><p>efficient way but time-consuming</p>
+</li>
+<li><p>how to prapre</p>
+<ul>
+<li><p>set clear objectives &amp; what information is needed</p>
+</li>
+<li><p>select appropriate stakeholders to interview</p>
+</li>
+<li><p>determine one-on-one/group interview</p>
+</li>
+<li><p>consider outside information - reports, forms, etc</p>
+</li>
+<li><p>review related documents and develop an agenda</p>
+</li>
+<li><p>documents objectives, nothing forgotten, logical progression</p>
+</li>
+<li><p>avoid long interviews - stakeholder do not have much time/ choose several shorter interviews</p>
+</li>
+<li><p>planning- interviewees has been sent Location, time, objectives &amp; list of questions</p>
+</li>
+<li><p>send reminders</p>
+</li>
+<li><p>arrive early</p>
+</li>
+<li><p>room is prepared for the interview</p>
+</li>
+<li><p>decide on a documentation method(get permission)</p>
+<ul>
+<li>take notes</li>
+<li>video taped</li>
+<li>recording</li>
+</ul>
+</li>
+<li><p>follow up as needed - in future meetings or interviews</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>distributing and collecting questionnaires</p>
+<ul>
+<li><p>online, paper-based or email</p>
+</li>
+<li><p>advantages</p>
+<ul>
+<li>cover a wide spectrum of people</li>
+<li>faster responses</li>
+<li>low costs of distribution</li>
+<li>good when people are widely dispersed</li>
+<li>can give a preliminary insight into business </li>
+</ul>
+</li>
+<li><p>disadvantages</p>
+<ul>
+<li>low response rate - not many people are willing to respond</li>
+<li>not well for gathering the detailed information</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Reviewing existing reports, forms and procedure descriptions</p>
+<ul>
+<li><p>existing business documents and procedures within organisation </p>
+<ul>
+<li>obtain preliminary understanding of precess </li>
+<li>identify business rules, discrepancies, redundancies</li>
+<li>be cautious of outdated material</li>
+<li>can help guide interviews</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Observation</p>
+<ul>
+<li><p>avoid hawthorne effect</p>
+<ul>
+<li><p>also referred to as the observer effect refers to a phenomenon, whereby workers :</p>
+<ul>
+<li>improve or modify an aspect of their behaviours/activities</li>
+<li>or STOP WORKING in response to the fact that they are being observed</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Researching vendor solution</p>
+<ul>
+<li><p>many problems have been solved by other companies - have a look around for good ideas</p>
+</li>
+<li><p>positive contributions of vendor solutions</p>
+<ul>
+<li>frequently provide new ideas</li>
+<li>may be the state of the art</li>
+<li>cheaper and less risky</li>
+</ul>
+</li>
+<li><p>danger</p>
+<ul>
+<li>may need to purchase solution before understanding problem</li>
+<li>vendor support may not be there in the future</li>
+<li>upgrade issues</li>
+<li>may not address all business requirements</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Prototyping</p>
+</li>
+<li><p>story-writing workshops</p>
+</li>
+</ul>
+<h3 id="Investigating-documenting-system-requirements"><a href="#Investigating-documenting-system-requirements" class="headerlink" title="Investigating/documenting system requirements"></a>Investigating/documenting system requirements</h3><p>User Stories, Activity diagrams</p>
+<ul>
+<li><p>Models</p>
+<ul>
+<li><p>why do we use them?</p>
+<ul>
+<li><p>The model serves as an abstraction - an approximate representation of the real item</p>
+</li>
+<li><p>A simplified picture of complex reality</p>
+</li>
+<li><p>Reasons/advantages for modelling in system analysis </p>
+<ul>
+<li>reducing complexity of systems to be built by abstraction</li>
+<li>communication with other development team members</li>
+<li>communication with stakeholders/users</li>
+<li>learning from the model process</li>
+<li>documenting all the detailed of requirements for future maintenance/enhancement - represents some key aspects of the system being built</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>User stories</p>
+<ul>
+<li><p>define - what are they?</p>
+<ul>
+<li>short, simple description of a product feature - told from the perspective of the user who wants that feature</li>
+<li>They go into product backlog</li>
+</ul>
+</li>
+<li><p>reason - why User Stories</p>
+<ul>
+<li>encourages user communication and collaboration and real-time feedback</li>
+<li>focus on end user value</li>
+<li>planning is simplified - if it’s too big, you can’t estimate it</li>
+<li>avoids locking in design detail too early - focus on WHAT - leaves the technical aspects to the developers, testers, etc.</li>
+<li>Users do not need to be trained to understand User Stories</li>
+<li>never out of date, just in time</li>
+<li>eliminates weighty documentation - create what you need to deliver the story</li>
+<li>easier to communicate with users</li>
+</ul>
+</li>
+<li><p>how do you write</p>
+<ul>
+<li>As xxxx I want xxxxxx so that xxx</li>
+<li>exam included</li>
+</ul>
+</li>
+<li><p>good stories?(INVEST)</p>
+<ul>
+<li><p>independent</p>
+<ul>
+<li>not depend on other stories</li>
+</ul>
+</li>
+<li><p>negotiable</p>
+<ul>
+<li>leave room for negotiation</li>
+</ul>
+</li>
+<li><p>valuable</p>
+<ul>
+<li>gives value to the customer</li>
+</ul>
+</li>
+<li><p>estimable</p>
+<ul>
+<li>should have enough information to be estimated</li>
+</ul>
+</li>
+<li><p>small</p>
+<ul>
+<li>small enough to fit within a sprint</li>
+</ul>
+</li>
+<li><p>Testable</p>
+<ul>
+<li>includes acceptance criteria to test that customer needs met.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Activity diagrams</p>
+<ul>
+<li><p>define</p>
+<ul>
+<li><p>a technique to describe a procedural logic, business process, and workflow.</p>
+</li>
+<li><p>describes</p>
+<ul>
+<li>user activities</li>
+<li>the person who does each activity</li>
+<li>the sequence of activities</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="S5-Use-Case-Diagrams"><a href="#S5-Use-Case-Diagrams" class="headerlink" title="S5: Use Case Diagrams"></a>S5: Use Case Diagrams</h2><h3 id="Use-Case-Diagram"><a href="#Use-Case-Diagram" class="headerlink" title="Use Case Diagram"></a>Use Case Diagram</h3><ul>
+<li><p>Actor</p>
+<ul>
+<li><p>Primary Actor</p>
+<ul>
+<li>using the system to achieve a goal</li>
+</ul>
+</li>
+<li><p>Secondary Actor</p>
+<ul>
+<li>The system needs assistance to achieve the primary actor’s goal(s)</li>
+</ul>
+</li>
+<li><p>generalisation</p>
+<ul>
+<li>inherits the behaviours of its parents and adds new behaviours</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Use-Case-Description"><a href="#Use-Case-Description" class="headerlink" title="Use Case Description"></a>Use Case Description</h3><ul>
+<li>Identify the Actors</li>
+<li>identify the goal</li>
+<li>identify the pre-conditions</li>
+<li>define the Post-conditions</li>
+<li>describe Main Flows</li>
+<li>describe Alternative Flows</li>
+</ul>
+<h2 id="S6-Domain-Class-Modelling"><a href="#S6-Domain-Class-Modelling" class="headerlink" title="S6: Domain Class Modelling"></a>S6: Domain Class Modelling</h2><h3 id="be-able-to-draw"><a href="#be-able-to-draw" class="headerlink" title="be able to draw"></a>be able to draw</h3><h2 id="S7-Prototyping"><a href="#S7-Prototyping" class="headerlink" title="S7: Prototyping"></a>S7: Prototyping</h2><p>Usability of systems</p>
+<h3 id="Prototyping"><a href="#Prototyping" class="headerlink" title="Prototyping"></a>Prototyping</h3><ul>
+<li><p>Definition of Prototyping</p>
+<ul>
+<li>a process of quickly mocking up the future system functionality</li>
+<li>use visuals to describe how a system should behave and look</li>
+<li>can be horizontal or vertical</li>
+<li>can be experimental or evolutionary</li>
+</ul>
+</li>
+<li><p>Advantage of Prototyping</p>
+<ul>
+<li>explore the idea before you invest in them(improve communication, reduce risk)</li>
+<li>saves time and money</li>
+<li>proof of concept</li>
+<li>technical and design exploration</li>
+</ul>
+</li>
+<li><p>Disadvantage of Prototyping</p>
+<ul>
+<li>make the users think the system is developed</li>
+<li>create a system that does not scale</li>
+<li>Waste time(as developers spend much time making throw away prototypes looks good)</li>
+</ul>
+</li>
+</ul>
+<h3 id="Usability"><a href="#Usability" class="headerlink" title="Usability"></a>Usability</h3><ul>
+<li><p>Definition</p>
+<ul>
+<li><p>the extent to which a product can be used by specified users to achieve specified goals with effectiveness, efficiency, and satisfaction</p>
+<ul>
+<li>Effectiveness: accuracy and completeness</li>
+<li>Efficiency: resources expended in relation to effectiveness</li>
+<li>Satisfaction: the comfort and acceptability of the work system to its users.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>why is it important</p>
+<ul>
+<li>help improve user effciency</li>
+<li>can make users feel more in control</li>
+<li>help improve sales of products</li>
+<li>help improve usage of the system</li>
+<li>can improve user satisfication</li>
+</ul>
+</li>
+<li><p>usability of an interface design<br>evaluating usability</p>
+<ul>
+<li>Learnability: how easy is it for users to accomplish basic tasks at the first time?</li>
+<li>Efficiency: once users learned the design, how quickly they can perform the task</li>
+<li>Memorability: When users return to the design after of a period of not using it, how easily they can re-establish proficiency</li>
+<li>Errors: how many errors do users make?how severe are these errors? How easily can they recover from the errors?</li>
+<li>Satisfaction: how pleasant is it to use the design</li>
+</ul>
+</li>
+<li><p>type of usability of evaluation</p>
+<ul>
+<li><p>formative evaluation</p>
+<ul>
+<li>Users experience prototypes and identify usability problems </li>
+<li>Evaluation by HCI expert </li>
+</ul>
+</li>
+<li><p>Summative evaluation</p>
+<ul>
+<li>takes place post development</li>
+<li>quantitive results collected</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="S8-Interface-Design-Guidelines-and-tips"><a href="#S8-Interface-Design-Guidelines-and-tips" class="headerlink" title="S8: Interface Design Guidelines and tips"></a>S8: Interface Design Guidelines and tips</h2><h3 id="guidlines"><a href="#guidlines" class="headerlink" title="guidlines"></a>guidlines</h3><ul>
+<li><p>Ben Shneiderman’s 8 Golden rules</p>
+<ul>
+<li>Ben Shneiderman’s 8 Golden rules</li>
+</ul>
+</li>
+<li><p>Jakob Nielsen’s 10 heuristics</p>
+</li>
+<li><p>Don Norman’s Guidlines</p>
+</li>
+</ul>
+<h3 id="personas"><a href="#personas" class="headerlink" title="personas"></a>personas</h3><ul>
+<li><p>why important</p>
+<ul>
+<li><p>Build Empathy</p>
+<ul>
+<li>Help users seem more real - designers empathise and build for their users</li>
+</ul>
+</li>
+<li><p>Provide direction for making design decisions</p>
+<ul>
+<li>help focus design decision on users</li>
+</ul>
+</li>
+<li><p>communicate Research Finding</p>
+<ul>
+<li>Team on the same page communicate the information in an easy to understand format</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="S9-Use-Case-Realisation"><a href="#S9-Use-Case-Realisation" class="headerlink" title="S9: Use Case Realisation"></a>S9: Use Case Realisation</h2><h3 id="Quality-of-design-models"><a href="#Quality-of-design-models" class="headerlink" title="Quality of design models"></a>Quality of design models</h3><ul>
+<li><p>cohesion measures the consistency of functions in a class</p>
+<ul>
+<li><p>a single focus of class</p>
+</li>
+<li><p>a single focus of the methods in a class</p>
+</li>
+<li><p>no methods with multiple functions</p>
+</li>
+<li><p>low cohesion(Tight)</p>
+<ul>
+<li>hard to maintain</li>
+<li>hard to reuse</li>
+<li>hard to understand</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>coupling</p>
+<ul>
+<li><p>Qualitative measure of how closely classes are linked. </p>
+</li>
+<li><p>low or loos coupling make system easier to understand and maintain, minimal ripple effort</p>
+</li>
+<li><p>Tight coupling often leads to low cohesion</p>
+<ul>
+<li>increase the extent to which objects are independent</li>
+<li>can causes ripple trough effects</li>
+<li>reduces the ability to reuse parts of the system</li>
+<li>hard to maintain</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Design-Class-Diagram"><a href="#Design-Class-Diagram" class="headerlink" title="Design Class Diagram"></a>Design Class Diagram</h3><ul>
+<li>design and document the programming classes that will be built for the new system</li>
+<li>shows set of problem domain classes and their association relationships</li>
+</ul>
+<h2 id="S10-Security-amp-Testing"><a href="#S10-Security-amp-Testing" class="headerlink" title="S10: Security &amp; Testing"></a>S10: Security &amp; Testing</h2><h3 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h3><ul>
+<li><p>definition</p>
+<ul>
+<li><p>represents the process of examining a component, subsystem, or system to: </p>
+<ul>
+<li>if it determines any defect</li>
+<li>uncover design flows and limitations</li>
+<li>verify that it is “fits for purpose” and meets the needs of the Business/End User</li>
+<li>reduce the risk of failure</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Testing process in different development approaches</p>
+<ul>
+<li><p>Waterfall</p>
+<ul>
+<li>generally all testing and quality control points late in the project </li>
+</ul>
+</li>
+<li><p>Agile</p>
+<ul>
+<li>Testing is integrated throughout the lifecycle; testing the software continuously throughout  its development</li>
+<li>NO a separate test phase </li>
+<li>Developers write automated repeatable unit tests to validate their code</li>
+<li>Supports the principle of small, iterative, incremental releases.</li>
+<li>Testing is done as part of the build. Ensure that all features are working correctly each time the build is produced.</li>
+<li>integration is done as you go</li>
+<li>the purpose of these principles is to keep the software in releasable condition thought the development, so it can be shipped whenever it’s appropriate.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Testing methods</p>
+<ul>
+<li><p>Black Box Testing</p>
+<ul>
+<li>without reference to the internal structure of the component and system </li>
+</ul>
+</li>
+<li><p>White Box Testing</p>
+<ul>
+<li>uses an internal perspective of the system to design test cases based on internal structure </li>
+</ul>
+</li>
+<li><p>Grey Box Testing</p>
+<ul>
+<li>increase testing coverage</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Testing type</p>
+<ul>
+<li>functional testing</li>
+<li>regression testing</li>
+<li>static &amp; dynamic testing</li>
+<li>performance &amp; load &amp; stress testing - usability testing</li>
+<li>accessibility testing</li>
+<li>security testing</li>
+<li>Backup&amp;Recovery testing</li>
+</ul>
+</li>
+</ul>
+<h2 id="S11-Implementation-amp-Maintainance"><a href="#S11-Implementation-amp-Maintainance" class="headerlink" title="S11. Implementation &amp; Maintainance"></a>S11. Implementation &amp; Maintainance</h2><h3 id="Implementation-phase-activities"><a href="#Implementation-phase-activities" class="headerlink" title="Implementation phase activities"></a>Implementation phase activities</h3><ul>
+<li><p>implementation Planning</p>
+<ul>
+<li>review acceptance Checklist, Prepare Implementation Schedule </li>
+</ul>
+</li>
+<li><p>Build the system or buy the system</p>
+<ul>
+<li>will result in a varied implementation path</li>
+</ul>
+</li>
+<li><p>test the system</p>
+<ul>
+<li>System Testing(functional and performance) Acceptance Testing</li>
+</ul>
+</li>
+<li><p>finalise documentation</p>
+<ul>
+<li>system documentation</li>
+<li>user documentation</li>
+</ul>
+</li>
+<li><p>get ready for the system to go into Production</p>
+<ul>
+<li>data conversion</li>
+<li>configure the production environment</li>
+<li>conduct trainning</li>
+</ul>
+</li>
+<li><p>Deploy the system</p>
+<ul>
+<li>install/deploy the system, Monitor Operations, benchmark Testing, tune the system</li>
+</ul>
+</li>
+<li><p>wrapup</p>
+<ul>
+<li>Opperation handover</li>
+<li>transition support </li>
+<li>system closure</li>
+<li>post-implementation review</li>
+</ul>
+</li>
+</ul>
+<h3 id="data-conversion"><a href="#data-conversion" class="headerlink" title="data conversion"></a>data conversion</h3><ul>
+<li>Original</li>
+<li>consolidation</li>
+<li>Cleansing</li>
+<li>Update</li>
+<li>Final Load</li>
+</ul>
+<h3 id="trainning"><a href="#trainning" class="headerlink" title="trainning"></a>trainning</h3><ul>
+<li><p>consideration</p>
+<ul>
+<li>users, number of users</li>
+<li>existing skills level - on-going level</li>
+<li>who conduct the meeting</li>
+<li>when/where training should be conducted</li>
+<li>training documentation</li>
+<li>need supported User Manager who committed allocating time for training</li>
+</ul>
+</li>
+</ul>
+<h3 id="deployment"><a href="#deployment" class="headerlink" title="deployment"></a>deployment</h3><ul>
+<li><p>Direct deployment</p>
+<ul>
+<li><p>install a new system</p>
+</li>
+<li><p>This approach is meaningful when:</p>
+<ul>
+<li><p>the system is not replacing any other system</p>
+</li>
+<li><p>– the old system is judged absolutely without value</p>
+</li>
+<li><p>– the new system is completely different from the old and comparisons would be meaningless</p>
+</li>
+<li><p>– the old system is either very small and/or very simple</p>
+</li>
+</ul>
+</li>
+<li><p>advantage</p>
+<ul>
+<li>Simple, fewer logistic issues to manage, costs minimised</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Parallel deployment</p>
+<ul>
+<li><p>old and new systems both operate for an extended period of time</p>
+</li>
+<li><p>advantage</p>
+<ul>
+<li>Risk low if problems occurs – continual backup</li>
+</ul>
+</li>
+<li><p>disadvantage</p>
+<ul>
+<li>High cost: increased personnel, extra space, increased managerial and logistic complexity</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Pilot deployment(multiple locations)</p>
+<ul>
+<li><p>old and new systems operated concurrectly</p>
+</li>
+<li><p>only part of organisation tries out the new system</p>
+</li>
+<li><p>The pilot system must prove itself at the test site</p>
+</li>
+<li><p>advantage</p>
+<ul>
+<li>Risks relatively low if problems occur</li>
+<li>Errors are localised to pilot site</li>
+<li>Can be used to train users before implementation at their own site</li>
+</ul>
+</li>
+<li><p>disadvantage</p>
+<ul>
+<li>Lack of consistency between different parts of the organisation</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Phased deployment(multiple functions)</p>
+<ul>
+<li><p>A New system installed in series of steps or phase, where each phase adds components to the existing system</p>
+</li>
+<li><p>advantage</p>
+<ul>
+<li>Reduces risk because phase failure is less serious than system failure</li>
+<li>Lower costs for earlier results</li>
+<li>Benefits can be realised earlier</li>
+<li>Rate of change minimised for users</li>
+</ul>
+</li>
+<li><p>Disadvantage</p>
+<ul>
+<li>Multiple phases cause more activities, milestones, and management complexity for entire effort</li>
+<li>Close control of systems development is essential</li>
+<li>Costs associated with the development of temporary interfaces to old systems</li>
+<li>Limited business applicability</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Maintenance-closure"><a href="#Maintenance-closure" class="headerlink" title="Maintenance/closure"></a>Maintenance/closure</h3><ul>
+<li><p>Corrective maintenance</p>
+<ul>
+<li>corrects analysis, design, and implementation errors</li>
+<li>focus on moving defects</li>
+</ul>
+</li>
+<li><p>Adaptive maintenance</p>
+<ul>
+<li>to satisfy changes in the new environment, changing business needs or new user requirements</li>
+</ul>
+</li>
+<li><p>Perfective maintenance</p>
+<ul>
+<li>to enhance performance, maintainability, usability</li>
+<li>To meet user requirements not previously recognised or given high<br>priority</li>
+</ul>
+</li>
+<li><p>Preventative maintenance</p>
+<ul>
+<li>identify and fix any<br>potential problems noted while fixing other errors</li>
+</ul>
+</li>
+</ul>
+<h3 id="Change-Management-system"><a href="#Change-Management-system" class="headerlink" title="Change Management system"></a>Change Management system</h3><ul>
+<li>manage change effectively </li>
+<li>reduce the confusion and complexity of<br>developing and maintaining systems</li>
+</ul>
+<h3 id="why-post-implementation-review-important"><a href="#why-post-implementation-review-important" class="headerlink" title="why post implementation review important"></a>why post implementation review important</h3><ul>
+<li>post implementation analyses what went wrong and right with a project </li>
+<li>compare costs of development and operation against original estimates</li>
+<li>look at original requirements and evaluate how well they were met</li>
+<li>compare original and actual benefits</li>
+<li>new system reviewed to see whether more of original or additional benefits can be realised</li>
+</ul>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Leihehe</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://leihehe.top/2021/06/04/Systems-Development-Course-Review/" title="Systems Development Course Review">https://leihehe.top/2021/06/04/Systems-Development-Course-Review/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/06/06/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E9%9B%86%E5%90%88/" rel="prev" title="不同数据库的SQL注入集合"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">不同数据库的SQL注入集合</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/06/01/arlSetup/" rel="next" title="Web安全之ARL灯塔搭建"><span class="post-nav-text">Web安全之ARL灯塔搭建</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div></body></html>

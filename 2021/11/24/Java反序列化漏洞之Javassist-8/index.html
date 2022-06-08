@@ -1,0 +1,168 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 5.4.2"><meta name="theme" content="hexo-theme-yun"><title>Java反序列化漏洞之Javassist(8) | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="前言Javassist是一个可以动态生成Java字节码(.class)的库，它可以在运行的时候生成新的类。有时候，我们需要在所有class都被编译完后，运行时再修改或新建一个class文件，Javassist可以帮助我们达到这个目的。 Javassist基本元素CtClass - Compile Time Class - 即编译时的Class，每个需要修改编辑的class都对应一个CtClass">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java反序列化漏洞之Javassist(8)">
+<meta property="og:url" content="https://leihehe.top/2021/11/24/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="前言Javassist是一个可以动态生成Java字节码(.class)的库，它可以在运行的时候生成新的类。有时候，我们需要在所有class都被编译完后，运行时再修改或新建一个class文件，Javassist可以帮助我们达到这个目的。 Javassist基本元素CtClass - Compile Time Class - 即编译时的Class，每个需要修改编辑的class都对应一个CtClass">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://leihehe.top/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/image-20211124203629163.png">
+<meta property="article:published_time" content="2021-11-24T06:14:01.000Z">
+<meta property="article:modified_time" content="2022-06-08T23:43:07.127Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="Web Security">
+<meta property="article:tag" content="Java反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leihehe.top/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/image-20211124203629163.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="我的主页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">39</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">18</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">23</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Javassist%E5%9F%BA%E6%9C%AC%E5%85%83%E7%B4%A0"><span class="toc-number">2.</span> <span class="toc-text">Javassist基本元素</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E6%BC%94%E7%A4%BA"><span class="toc-number">3.</span> <span class="toc-text">简单演示</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E4%BE%9D%E8%B5%96"><span class="toc-number">3.1.</span> <span class="toc-text">导入依赖</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9Apom-xml"><span class="toc-number">3.1.1.</span> <span class="toc-text">方法一：pom.xml</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAClass"><span class="toc-number">3.2.</span> <span class="toc-text">创建Class</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C"><span class="toc-number">3.3.</span> <span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E7%89%B9%E6%AE%8A%E5%8F%82%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">一些特殊参数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">5.</span> <span class="toc-text">Reference</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/11/24/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java反序列化漏洞之Javassist(8)</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-11-24 17:14:01" itemprop="dateCreated datePublished" datetime="2021-11-24T17:14:01+11:00">2021-11-24</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">627</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">2m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/" style="--text-color:#F4645F" itemprop="url" rel="index"><span itemprop="text">Web Security</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">JAVA反序列化漏洞</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Web-Security/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Web Security</span></a><a class="tag-item" href="/tags/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Java反序列化</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><strong>Javassist</strong>是一个可以<strong>动态</strong>生成Java字节码(.class)的库，它可以在<strong>运行</strong>的时候生成新的类。有时候，我们需要在所有class都被编译完后，运行时再修改或新建一个class文件，Javassist可以帮助我们达到这个目的。</p>
+<h1 id="Javassist基本元素"><a href="#Javassist基本元素" class="headerlink" title="Javassist基本元素"></a>Javassist基本元素</h1><p><strong>CtClass</strong> - Compile Time Class - 即编译时的Class，每个<strong>需要修改编辑</strong>的class都对应一个CtClass instance</p>
+<p><strong>ClassPool</strong> - 一个存储<strong>CtClass对象</strong>的容器</p>
+<p><strong>CtField</strong> - Java中的field</p>
+<p><strong>CtMethod</strong> - Java中的method</p>
+<span id="more"></span>
+
+<h1 id="简单演示"><a href="#简单演示" class="headerlink" title="简单演示"></a>简单演示</h1><h2 id="导入依赖"><a href="#导入依赖" class="headerlink" title="导入依赖"></a>导入依赖</h2><h3 id="方法一：pom-xml"><a href="#方法一：pom-xml" class="headerlink" title="方法一：pom.xml"></a>方法一：pom.xml</h3><pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>javassist<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>javassist<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>3.12.1.GA<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>方法二：导入jar包</strong></p>
+<p>可在网上下载jar包，导入module，library</p>
+<h2 id="创建Class"><a href="#创建Class" class="headerlink" title="创建Class"></a>创建Class</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">javassist<span class="token punctuation">.</span></span><span class="token operator">*</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> javassistTest <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">NotFoundException</span><span class="token punctuation">,</span> <span class="token class-name">CannotCompileException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
+        
+		<span class="token comment">/*创建Class*/</span>
+        <span class="token comment">//需要创建的class对应一个CtClass, ClassPool是一个容器，包含了各种CtClass</span>
+        <span class="token class-name">ClassPool</span> cp <span class="token operator">=</span> <span class="token class-name">ClassPool</span><span class="token punctuation">.</span><span class="token function">getDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取一个默认的ClassPool</span>
+        <span class="token class-name">CtClass</span> test <span class="token operator">=</span> cp<span class="token punctuation">.</span><span class="token function">makeClass</span><span class="token punctuation">(</span><span class="token string">"Evil"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//用这个ClassPool来创建一个CtClass，名字为Evil</span>
+
+		<span class="token comment">/*添加Field*/</span>
+        <span class="token class-name">CtField</span> name <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CtField</span><span class="token punctuation">(</span>cp<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"java.lang.String"</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">"name"</span><span class="token punctuation">,</span>test<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//create a String-type field called name for the class test</span>
+        name<span class="token punctuation">.</span><span class="token function">setModifiers</span><span class="token punctuation">(</span><span class="token class-name">Modifier</span><span class="token punctuation">.</span>PRIVATE<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//private attribute</span>
+        test<span class="token punctuation">.</span><span class="token function">addField</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span><span class="token class-name">CtField<span class="token punctuation">.</span>Initializer</span><span class="token punctuation">.</span><span class="token function">constant</span><span class="token punctuation">(</span><span class="token string">"Mark"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//给test class里的name字段初始化为Mark</span>
+
+        <span class="token comment">/*添加constructor*/</span>
+        <span class="token class-name">CtConstructor</span> ctConstructor <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CtConstructor</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">CtClass</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>test<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//给Test Class创建一个无参constructor</span>
+        ctConstructor<span class="token punctuation">.</span><span class="token function">setBody</span><span class="token punctuation">(</span><span class="token string">"&#123;name=\"Jack\";&#125;"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        test<span class="token punctuation">.</span><span class="token function">addConstructor</span><span class="token punctuation">(</span>ctConstructor<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//有参构造函数</span>
+        <span class="token class-name">CtConstructor</span> ctConstructor1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CtConstructor</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">CtClass</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>cp<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"java.lang.String"</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>test<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        ctConstructor1<span class="token punctuation">.</span><span class="token function">setBody</span><span class="token punctuation">(</span><span class="token string">"&#123;$0.name=$1;&#125;"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//this.name = name(第一个parameter)</span>
+        test<span class="token punctuation">.</span><span class="token function">addConstructor</span><span class="token punctuation">(</span>ctConstructor1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">/*添加method*/</span>
+        <span class="token class-name">CtMethod</span> printName <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CtMethod</span><span class="token punctuation">(</span><span class="token class-name">CtClass</span><span class="token punctuation">.</span>voidType<span class="token punctuation">,</span><span class="token string">"printName"</span><span class="token punctuation">,</span><span class="token keyword">new</span> <span class="token class-name">CtClass</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>test<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        printName<span class="token punctuation">.</span><span class="token function">setModifiers</span><span class="token punctuation">(</span><span class="token class-name">Modifier</span><span class="token punctuation">.</span>PUBLIC<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        printName<span class="token punctuation">.</span><span class="token function">setBody</span><span class="token punctuation">(</span><span class="token string">"&#123;System.out.println($0.name);&#125;"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        printName<span class="token punctuation">.</span><span class="token function">insertBefore</span><span class="token punctuation">(</span><span class="token string">"System.out.println(\"before:\");"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//在方法体前面加入（注意必须有了方法体才能插入）</span>
+        printName<span class="token punctuation">.</span><span class="token function">insertAfter</span><span class="token punctuation">(</span><span class="token string">"System.out.println(\"after:\");"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//在方法体后面加入</span>
+        test<span class="token punctuation">.</span><span class="token function">addMethod</span><span class="token punctuation">(</span>printName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">/*写出Class到本地*/</span>
+        test<span class="token punctuation">.</span><span class="token function">writeFile</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        test<span class="token punctuation">.</span><span class="token function">detach</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/image-20211124203629163.png" alt="image-20211124203629163" loading="lazy"></p>
+<h1 id="一些特殊参数"><a href="#一些特殊参数" class="headerlink" title="一些特殊参数"></a>一些特殊参数</h1><table>
+<thead>
+<tr>
+<th>标识符</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0、1、$2、 3 、 3、 3、…</td>
+<td>this和方法参数（1-N是方法参数的顺序，如第一个parameter）</td>
+</tr>
+<tr>
+<td>$args</td>
+<td>方法参数数组，类型为Object[]</td>
+</tr>
+<tr>
+<td>$$</td>
+<td>所有方法参数，例如：m($$)相当于m(1,1,2,…)</td>
+</tr>
+<tr>
+<td>$cflow(…)</td>
+<td>control flow 变量</td>
+</tr>
+<tr>
+<td>$r</td>
+<td>返回结果的类型，在强制转换表达式中使用。</td>
+</tr>
+<tr>
+<td>$w</td>
+<td>包装器类型，在强制转换表达式中使用。</td>
+</tr>
+<tr>
+<td>$_</td>
+<td>返回的结果值</td>
+</tr>
+<tr>
+<td>$sig</td>
+<td>类型为java.lang.Class的参数类型对象数组</td>
+</tr>
+<tr>
+<td>$type</td>
+<td>类型为java.lang.Class的返回值类型</td>
+</tr>
+<tr>
+<td>$class</td>
+<td>类型为java.lang.Class的正在修改的类</td>
+</tr>
+</tbody></table>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6952765170544279566#heading-13">Java字节码编程之非常好用的javassist</a></p>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Leihehe</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://leihehe.top/2021/11/24/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/" title="Java反序列化漏洞之Javassist(8)">https://leihehe.top/2021/11/24/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/12/02/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/" rel="prev" title="NCK逆向课后作业writeup"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">NCK逆向课后作业writeup</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/11/16/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/" rel="next" title="Java反序列化漏洞之URLDNS利用链(7)"><span class="post-nav-text">Java反序列化漏洞之URLDNS利用链(7)</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div></body></html>

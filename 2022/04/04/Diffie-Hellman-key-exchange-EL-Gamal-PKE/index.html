@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 5.4.2"><meta name="theme" content="hexo-theme-yun"><title>Diffie-Hellman key exchange and EL Gamal PKE | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="IntroductionDiffie-hellman key exchange is a crypto that is widely used. You can see it everywhere:  SSL&#x2F;TLS: web IPsec: IPpackets Bluetooth 5G IOT  In this blog, we are looking into DHKE, to see how">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Diffie-Hellman key exchange and EL Gamal PKE">
+<meta property="og:url" content="https://leihehe.top/2022/04/04/Diffie-Hellman-key-exchange-EL-Gamal-PKE/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="IntroductionDiffie-hellman key exchange is a crypto that is widely used. You can see it everywhere:  SSL&#x2F;TLS: web IPsec: IPpackets Bluetooth 5G IOT  In this blog, we are looking into DHKE, to see how">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231440796.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231502424.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231539461.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231707126.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231728520.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231745506.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231801397.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404225848657.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231821863.png">
+<meta property="article:published_time" content="2022-04-04T11:00:50.000Z">
+<meta property="article:modified_time" content="2022-06-08T23:43:07.126Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="cryptography">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231440796.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="我的主页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">39</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">18</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">23</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#How-DHKE-works"><span class="toc-number">2.</span> <span class="toc-text">How DHKE works</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Digital-signatures"><span class="toc-number">3.</span> <span class="toc-text">Digital signatures</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Problems-why-use-it"><span class="toc-number">3.1.</span> <span class="toc-text">Problems - why use it?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Generate-digital-signatures"><span class="toc-number">3.2.</span> <span class="toc-text">Generate digital signatures</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#EL-Gamal-PKE"><span class="toc-number">4.</span> <span class="toc-text">EL Gamal PKE</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Differences"><span class="toc-number">4.1.</span> <span class="toc-text">Differences</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#How-it-works"><span class="toc-number">4.2.</span> <span class="toc-text">How it works</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scenario"><span class="toc-number">4.3.</span> <span class="toc-text">Scenario</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Generate-Public-Key-B-Bob"><span class="toc-number">4.3.1.</span> <span class="toc-text">Generate Public Key B(Bob)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Encryption-Alice"><span class="toc-number">4.3.2.</span> <span class="toc-text">Encryption(Alice)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Decryption-Bob"><span class="toc-number">4.3.3.</span> <span class="toc-text">Decryption(Bob)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Calculation-Trick"><span class="toc-number">5.</span> <span class="toc-text">Calculation Trick</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">6.</span> <span class="toc-text">Reference</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2022/04/04/Diffie-Hellman-key-exchange-EL-Gamal-PKE/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Diffie-Hellman key exchange and EL Gamal PKE</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2022-04-04 21:00:50" itemprop="dateCreated datePublished" datetime="2022-04-04T21:00:50+10:00">2022-04-04</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">600</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">3m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/cryptography/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">cryptography</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/cryptography/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">cryptography</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p><strong>Diffie-hellman key exchange</strong> is a crypto that is widely used. You can see it everywhere:</p>
+<ul>
+<li>SSL/TLS: web</li>
+<li>IPsec: IPpackets</li>
+<li>Bluetooth</li>
+<li>5G</li>
+<li>IOT</li>
+</ul>
+<p>In this blog, we are looking into DHKE, to see how it works. Moreover, EL Gamal PKE is a crypto that is based on DHKE, we will learn this as well.</p>
+<span id="more"></span>
+
+<h1 id="How-DHKE-works"><a href="#How-DHKE-works" class="headerlink" title="How DHKE works"></a>How DHKE works</h1><p>Let’s say we have Alice and Bob will use their public keys to encrypt a message and private keys to decrypt a message.</p>
+<blockquote>
+<p><strong>Alice’s public key</strong>: A<br><strong>Alice’s private key</strong>: a<br><strong>Bob’s public key</strong>: B<br><strong>Bob’s private key</strong>: b</p>
+<p><strong>public parameters</strong>: p and g, p is a prime number, g&lt;p</p>
+</blockquote>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231440796.png" alt="image-20220404231440796" loading="lazy"></p>
+<p>According to the formulas above, we can see that Alice and Bob will communicate the public keys and the shared keys they generate will be the same. Since there are some mathematical relationships between a private key and a public key, Alice or Bob can use their private keys and others’ public keys to get the shared key.</p>
+<p>Then this shared key could be used in any symmetric cipher(like AES).</p>
+<p>There’s a discrete log problem that prevents the shared key from being deduced by an attacker.</p>
+<h1 id="Digital-signatures"><a href="#Digital-signatures" class="headerlink" title="Digital signatures"></a>Digital signatures</h1><h2 id="Problems-why-use-it"><a href="#Problems-why-use-it" class="headerlink" title="Problems - why use it?"></a>Problems - why use it?</h2><p>There’s a significant risk that Alice cannot authenticate Bob. In other words, another person Peter can pretend to be Bob, and send his public key to Alice, then Alice will generate a shared key using Peter’s public key. In this case, Peter would decrypt the messages that Alice sends to Bob.</p>
+<p>This is the so-called <strong>Man in the middle attack</strong>.</p>
+<p>Thus, cryptographist were trying to find a more secure way.</p>
+<blockquote>
+<p><strong>Digital signature</strong> is used for proving authenticity of the origin of documents as well as for non-repudiation as it can prove the authenticity of the signer.</p>
+<p>Another use of digital signature is to ensure the integrity of the messages against unauthorized modification</p>
+</blockquote>
+<h2 id="Generate-digital-signatures"><a href="#Generate-digital-signatures" class="headerlink" title="Generate digital signatures"></a>Generate digital signatures</h2><p>TBC.</p>
+<h1 id="EL-Gamal-PKE"><a href="#EL-Gamal-PKE" class="headerlink" title="EL Gamal PKE"></a>EL Gamal PKE</h1><h2 id="Differences"><a href="#Differences" class="headerlink" title="Differences"></a>Differences</h2><p><strong>For PKE</strong>, both Alice and Bob will need to publish their public keys, while <strong>for EL-Gamal PKE</strong>, we only need one of them(receiver) to publish the public key.</p>
+<p>For <strong>DHKE</strong>, it only explains how a shared key is generated, <strong>EL-Gamal PKE</strong> shows how a message could be encrypted and decrypted using <strong>DHKE</strong>.</p>
+<p>A very strong and solid explanation here:</p>
+<p><a target="_blank" rel="noopener" href="https://www.quora.com/What-is-the-difference-between-Diffie-Hellman-and-ElGamal">https://www.quora.com/What-is-the-difference-between-Diffie-Hellman-and-ElGamal</a></p>
+<h2 id="How-it-works"><a href="#How-it-works" class="headerlink" title="How it works"></a>How it works</h2><ul>
+<li><p>Asymmetric crypto to generate a shared key</p>
+</li>
+<li><p>symmetric crypto to encrypt a message</p>
+</li>
+</ul>
+<h2 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h2><p>Bob published his key to his website, and was happy with receiving messages from all.</p>
+<p>Alice is sending a message to Bob.</p>
+<h3 id="Generate-Public-Key-B-Bob"><a href="#Generate-Public-Key-B-Bob" class="headerlink" title="Generate Public Key B(Bob)"></a>Generate Public Key B(Bob)</h3><ul>
+<li>pick a random Prime(<code>p</code>), and a <code>g </code> such that<code>g&lt;p</code></li>
+<li>pick a random private key <code>b</code></li>
+</ul>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231502424.png" alt="image-20220404231502424" loading="lazy"></p>
+<p>Bob’s public key set will be like <code>&lt;p,g,B&gt;</code></p>
+<p>Now Bob’s waiting for someone who is sending a encrypted message to him.</p>
+<h3 id="Encryption-Alice"><a href="#Encryption-Alice" class="headerlink" title="Encryption(Alice)"></a>Encryption(Alice)</h3><p>Alice picks a random private key <code>a</code>, then calculate <strong>the shared key</strong> <code>K</code> by using Bob’s public key <code>B</code></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231539461.png" alt="image-20220404231539461" loading="lazy"></p>
+<p>Generate public key <code>A</code></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231707126.png" alt="image-20220404231707126" loading="lazy"></p>
+<p>Then Alice uses the shared key <code>K</code> to encrypt a plaintext P to get a <strong>ciphertext</strong> <code>C</code></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231728520.png" alt="image-20220404231728520" loading="lazy"></p>
+<p>This actually used the <strong>symmetric crypto</strong></p>
+<p>Then Alice sends &lt;A, C&gt;(public key, ciphertext) to Bob</p>
+<h3 id="Decryption-Bob"><a href="#Decryption-Bob" class="headerlink" title="Decryption(Bob)"></a>Decryption(Bob)</h3><p>According to Alice’s public key <code>A</code>, Bob can calculate the shared key <code>K</code></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231745506.png" alt="image-20220404231745506" loading="lazy"></p>
+<p>Then Bob decrypts the message by using the shared key <code>K</code></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231801397.png" alt="image-20220404231801397" loading="lazy"></p>
+<h1 id="Calculation-Trick"><a href="#Calculation-Trick" class="headerlink" title="Calculation Trick"></a>Calculation Trick</h1><p><strong>Square &amp; Multiply Algorithm</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404225848657.png" alt="image-20220404225848657" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220404231821863.png" alt="image-20220404231821863" loading="lazy"></p>
+<p>From the most left number(ignore it)</p>
+<p><strong>binary 0</strong>: square</p>
+<p><strong>binary 1</strong>: square then times <code>a</code></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Leihehe</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://leihehe.top/2022/04/04/Diffie-Hellman-key-exchange-EL-Gamal-PKE/" title="Diffie-Hellman key exchange and EL Gamal PKE">https://leihehe.top/2022/04/04/Diffie-Hellman-key-exchange-EL-Gamal-PKE/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/2022/01/25/%E4%BB%8A%E5%A4%A9%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%AE%B0%E5%BD%95%E6%88%91%E7%9A%84%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%94%9F%E6%B4%BB/" rel="next" title="今天怎么样 - 记录我的学习与生活"><span class="post-nav-text">今天怎么样 - 记录我的学习与生活</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div></body></html>

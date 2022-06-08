@@ -1,0 +1,362 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 5.4.2"><meta name="theme" content="hexo-theme-yun"><title>汇编个人学习笔记 | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="前言汇编是很多课程的重要基础，正好最近在学习操作系统，发现在操作系统的学习中，汇编也表现得极为重要，同样在逆向的学习中，不会汇编基本等于与逆向无门了。 此篇是个人笔记，供自己复习和做笔记。 参考资料：《汇编语言(第3版) 》王爽著">
+<meta property="og:type" content="article">
+<meta property="og:title" content="汇编个人学习笔记">
+<meta property="og:url" content="https://leihehe.top/2021/09/06/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="前言汇编是很多课程的重要基础，正好最近在学习操作系统，发现在操作系统的学习中，汇编也表现得极为重要，同样在逆向的学习中，不会汇编基本等于与逆向无门了。 此篇是个人笔记，供自己复习和做笔记。 参考资料：《汇编语言(第3版) 》王爽著">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://leihehe.top/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210906135049439.png">
+<meta property="og:image" content="https://leihehe.top/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210906140434026.png">
+<meta property="og:image" content="https://leihehe.top/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210906140647234.png">
+<meta property="og:image" content="https://leihehe.top/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210907170044257.png">
+<meta property="og:image" content="https://leihehe.top/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210909145406877.png">
+<meta property="og:image" content="https://leihehe.top/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210909155520090.png">
+<meta property="og:image" content="https://leihehe.top/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20211202103533130.png">
+<meta property="article:published_time" content="2021-09-06T03:36:09.000Z">
+<meta property="article:modified_time" content="2022-06-08T23:43:07.131Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="汇编基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leihehe.top/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210906135049439.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="我的主页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">39</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">18</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">23</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2%E5%92%8C%E6%95%B0%E6%8D%AE%E5%AE%BD%E5%BA%A6"><span class="toc-number">2.1.</span> <span class="toc-text">进制转换和数据宽度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU%E5%AF%B9%E5%AD%98%E5%82%A8%E5%99%A8%E7%9A%84%E8%AF%BB%E5%86%99"><span class="toc-number">2.2.</span> <span class="toc-text">CPU对存储器的读写</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%B0%E5%9D%80%E6%80%BB%E7%BA%BF"><span class="toc-number">2.3.</span> <span class="toc-text">地址总线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%80%BB%E7%BA%BF"><span class="toc-number">2.4.</span> <span class="toc-text">数据总线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E6%80%BB%E7%BA%BF"><span class="toc-number">2.5.</span> <span class="toc-text">控制总线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98-1-1"><span class="toc-number">2.6.</span> <span class="toc-text">课后习题 1.1</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">3.</span> <span class="toc-text">寄存器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">3.1.</span> <span class="toc-text">通用寄存器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E6%9D%A1%E6%B1%87%E7%BC%96%E6%8C%87%E4%BB%A4"><span class="toc-number">3.2.</span> <span class="toc-text">几条汇编指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%982-1"><span class="toc-number">3.3.</span> <span class="toc-text">课后习题2.1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80%E3%80%81%E6%AE%B5%E5%92%8C%E5%81%8F%E7%A7%BB%E5%9C%B0%E5%9D%80"><span class="toc-number">3.4.</span> <span class="toc-text">物理地址、段和偏移地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%982-2"><span class="toc-number">3.5.</span> <span class="toc-text">课后习题2.2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">3.6.</span> <span class="toc-text">段寄存器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98-2-3"><span class="toc-number">3.7.</span> <span class="toc-text">课后习题 2.3</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%88%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">寄存器（内存访问）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E4%B8%AD%E5%AD%97%E7%9A%84%E5%AD%98%E5%82%A8"><span class="toc-number">4.1.</span> <span class="toc-text">内存中字的存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DS%E5%92%8C-address"><span class="toc-number">4.2.</span> <span class="toc-text">DS和[address]</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E7%9A%84%E4%BC%A0%E9%80%81"><span class="toc-number">4.3.</span> <span class="toc-text">字的传送</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mov-add-sub%E6%8C%87%E4%BB%A4"><span class="toc-number">4.4.</span> <span class="toc-text">mov, add, sub指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%AE%B5"><span class="toc-number">4.5.</span> <span class="toc-text">数据段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88"><span class="toc-number">4.6.</span> <span class="toc-text">栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E9%A1%B6%E8%B6%8A%E7%95%8C%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.7.</span> <span class="toc-text">栈顶越界的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#push%E3%80%81pop%E6%8C%87%E4%BB%A4"><span class="toc-number">4.8.</span> <span class="toc-text">push、pop指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E6%AE%B5"><span class="toc-number">4.9.</span> <span class="toc-text">栈段</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F"><span class="toc-number">5.</span> <span class="toc-text">第一个程序</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/09/06/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">汇编个人学习笔记</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-09-06 13:36:09" itemprop="dateCreated datePublished" datetime="2021-09-06T13:36:09+10:00">2021-09-06</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">3k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">12m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Reverse-Engineering/" style="--text-color:#8892BF" itemprop="url" rel="index"><span itemprop="text">Reverse Engineering</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E9%80%86%E5%90%91/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">逆向</span></a><a class="tag-item" href="/tags/%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">汇编基础</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>汇编是很多课程的重要基础，正好最近在学习操作系统，发现在操作系统的学习中，汇编也表现得极为重要，同样在逆向的学习中，不会汇编基本等于与逆向无门了。</p>
+<p>此篇是个人笔记，供自己复习和做笔记。</p>
+<p>参考资料：<strong>《汇编语言(第3版) 》王爽著</strong></p>
+<span id="more"></span>
+
+<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="进制转换和数据宽度"><a href="#进制转换和数据宽度" class="headerlink" title="进制转换和数据宽度"></a>进制转换和数据宽度</h2><p><strong>16进制</strong>：</p>
+<p>0123456789ABCDEF</p>
+<p>10 11 12 13 14 15 16 17 18 19 20 21….</p>
+<p><strong>One single hexadecimal digit = 4 bit</strong></p>
+<p><strong>8进制</strong>：</p>
+<p>01234567</p>
+<p>10 11 12 13 14 15</p>
+<p><strong>One single Octal digit = 3 bit</strong></p>
+<p><strong>数据宽度：</strong></p>
+<p>1 Byte = 8 Bit</p>
+<p>1 Word = 2 Bytes =》四个十六进制数字为一个word</p>
+<p>Double Word = 2 Word</p>
+<p><strong>需要记住的一些数字</strong>：</p>
+<p><code>1024=2^10</code></p>
+<p>1KB=1024B(Byte)</p>
+<p>1MB=1024KB</p>
+<p>1GB=1024MB</p>
+<p>1TB=1024GB</p>
+<h2 id="CPU对存储器的读写"><a href="#CPU对存储器的读写" class="headerlink" title="CPU对存储器的读写"></a>CPU对存储器的读写</h2><p>比如CPU要从内存地址3中读写数据：</p>
+<p><strong>读</strong></p>
+<ul>
+<li>CPU通过<strong>地址总线</strong>将地址信息3发出。</li>
+<li>CPU通过<strong>控制总线</strong>发出<strong>读</strong>内存的命令，选中存储器的芯片，通知它我要读取数据。</li>
+<li>存储器将地址3中的数据通过<strong>数据线</strong>送入CPU</li>
+</ul>
+<h2 id="地址总线"><a href="#地址总线" class="headerlink" title="地址总线"></a>地址总线</h2><p>地址总线是一根导线，我们知道一根导线传输数据的时候只有两种稳定状态 - 要么是<strong>高电平</strong>要么是<strong>低电平</strong> - 二进制表示就是<strong>0和1</strong>。</p>
+<p>CPU用地址总线来寻址，有多少不同的信息，CPU就可以对多少个<strong>存储单元</strong>(一个存储单元里有1byte的信息)寻址</p>
+<p>所以如果现一CPU有10根导线，那么它可以发出10 bit的二进制数，而10bit的二进制数可以表示2^10=1024个不同的数据，也就是可以寻找2^10=1024个<strong>内存单元</strong>。</p>
+<p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210906135049439.png" alt="image-20210906135049439" loading="lazy"></p>
+<p>上图演示的是将地址<strong>1011</strong>通过地址总线发出</p>
+<h2 id="数据总线"><a href="#数据总线" class="headerlink" title="数据总线"></a>数据总线</h2><p><strong>CPU和其他器件之间的数据传送是通过数据总线进行的。数据总线的宽度决定了CPU和外界数据传送的速度。</strong></p>
+<p>一个数据总线可以传送一个bit（位）的数据，<strong>8根数据总线可以传送一个byte的数据</strong></p>
+<p>假设你有16根数据线，那么你一次性可以传输16bit的数据 - 所以你可以传输<strong>89D8</strong>H - 因为89D8是十六进制，一个十六进制数字为4bit，所以89D8刚好16bit. 如果数据线只有八根，意味着你只能传输8bit的数据，那么你只能分两次传送：先D8后89(从低位开始传)</p>
+<p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210906140434026.png" alt="image-20210906140434026" loading="lazy"></p>
+<h2 id="控制总线"><a href="#控制总线" class="headerlink" title="控制总线"></a>控制总线</h2><p>CPU对外部器件的控制是通过控制总线来进行的。此处控制总线是一个总称，它有多少根控制总线，意味着CPU提供了对外部器件的多少种控制。所以控制总线的宽度决定了CPU对外部器件的控制能力。</p>
+<p>比如读和写就分别为两条控制总线。</p>
+<h2 id="课后习题-1-1"><a href="#课后习题-1-1" class="headerlink" title="课后习题 1.1"></a>课后习题 1.1</h2><p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210906140647234.png" alt="image-20210906140647234" loading="lazy"></p>
+<pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">(1) 该CPU的寻址能力为8Kb，换算成Byte为8*1024Byte。 我们知道一个内存单元可以储存1个Byte，那么意味着该CPU可以寻址8*1024&#x3D;2^13个内存单元。
+
+所以我们可以得出他有13个地址总线，则宽度为13。
+
+(2) 1KB的存储器有1024个存储单元，因为一个存储单元存储1Byte信息。存储单元的编号从0到1023
+
+(3) 1KB的存储器可以存储10248&#x3D;2^13 bit, 和1024个Byte
+
+(4) 1GB&#x3D;2^30 Byte, 1MB &#x3D; 2^20 Byte, 1KB&#x3D; 2^10 Byte.
+
+(5) 2^16*2^(-10)&#x3D;2^6, 2^20*2^(-20)&#x3D;1, 2^24*2^(-20)&#x3D;2^4,2^32*2^(-30)&#x3D;2^2&#x3D;4
+
+(6) 1B,1B,2B,2B,4B
+
+(7) 
+
+要读的数据：1024&#x3D;2^10 byte, 
+
+根据上面的问题，8086一次可以读2 Byte，那么要读2^9&#x3D;512次
+
+80386一次可以读4 Byte,那么要读2^8&#x3D;256次
+
+(8) 在存储器中，数据和程序以二进制形式存放<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h1><h2 id="通用寄存器"><a href="#通用寄存器" class="headerlink" title="通用寄存器"></a>通用寄存器</h2><p>CPU由运算器、控制器、寄存器构成。</p>
+<ul>
+<li><strong>运算器</strong>进行<strong>信息处理</strong></li>
+<li><strong>寄存器</strong>进行<strong>信息存储</strong></li>
+<li><strong>控制器</strong>控制各种器件进行工作</li>
+<li>内部总线连接各种器件，在它们之间进行数据的传送</li>
+</ul>
+<p><strong>16位寄存器：</strong></p>
+<blockquote>
+<p>AX</p>
+<p>BX</p>
+<p>CX</p>
+<p>DX</p>
+</blockquote>
+<p><strong>8位寄存器：</strong>会被<strong>单独</strong>使用，比如AH溢出后，<strong>不会</strong>把溢出的位补到AX前面的高位（AH）去</p>
+<blockquote>
+<p>H表示high，L表示low</p>
+<p>AH AL</p>
+<p>BH BL</p>
+<p>CH CL</p>
+<p>DH DL</p>
+</blockquote>
+<h2 id="几条汇编指令"><a href="#几条汇编指令" class="headerlink" title="几条汇编指令"></a>几条汇编指令</h2><p>mov 寄存器，数据    <code>mov ax,2</code></p>
+<p>mov 寄存器，寄存器    <code>mov ax,bx</code></p>
+<p>mov 寄存器，内存单元    <code>mov ax,[0]</code></p>
+<p>mov 内存单元，寄存器    <code>mov [0], ax</code></p>
+<p>mov 段寄存器，寄存器    <code>mov ds,ax</code></p>
+<p>mov 寄存器，段寄存器    <code>mov ax,ds</code></p>
+<h2 id="课后习题2-1"><a href="#课后习题2-1" class="headerlink" title="课后习题2.1"></a>课后习题2.1</h2><p>（1）</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">mov ax,62627	AX&#x3D;F4A3H
+mov ah,31H		AX&#x3D;31A3H
+mov al,23H		AX&#x3D;3123H
+add ax,ax		AX&#x3D;6246H
+mov bx,826CH	BX&#x3D;826CH
+mov cx,ax		CX&#x3D;6246H
+mov ax,bx		AX&#x3D;826CH
+add ax,bx		AX&#x3D;04D8H
+mov al,bh		AX&#x3D;0482H
+mov ah,bl		AX&#x3D;6C82H
+add ah,ah		AX&#x3D;D882H
+add al,6		AX&#x3D;D888H
+add al,al		AX&#x3D;D810H
+mov ax,cx		AX&#x3D;6246H
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>（2）用目前学过的汇编指令，最多使用四条指令，计算2的4次方</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">mov ax,0002
+add ax,ax
+add ax,ax
+add ax,ax<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="物理地址、段和偏移地址"><a href="#物理地址、段和偏移地址" class="headerlink" title="物理地址、段和偏移地址"></a>物理地址、段和偏移地址</h2><p><strong>8086中，地址总线有20根，但是数据总线只有16根。所以需要用两个16进制表示20进制的地址。段地址（16位）×16＋偏移地址（16位）=地址（20位）</strong></p>
+<p>地址加法器处理后可以得到物理地址</p>
+<p><code>物理地址=段地址*16+偏移地址</code></p>
+<blockquote>
+<p><code>短地址*16</code>表示十六进制左移1位，也就是二进制左移4位</p>
+<p>比如十进制20要左移一位：20*10=200</p>
+<p>二进制10B左移一位：100B转换成十进制2*2=4</p>
+<p>一个数据的二进制形式左移1位，相当于该数据×2</p>
+<p>一个数据的二进制形式左移N位，相当于该数据×2^N</p>
+</blockquote>
+<p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210907170044257.png" alt="image-20210907170044257" loading="lazy"></p>
+<p>偏移地址16位，最多可以寻址64KB(2^16bit个内存单元，一个内存单元8bit，所以2^16*2^3=2^19bit=2^6KB=64KB)</p>
+<h2 id="课后习题2-2"><a href="#课后习题2-2" class="headerlink" title="课后习题2.2"></a>课后习题2.2</h2><pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">（1）给定段地址位0001H，仅通过变化偏移地址寻址，CPU的寻址范围为？
+
+最小：0001H*16+0000H&#x3D;0010H
+
+最大：0001H*16+FFFFH&#x3D;1 000FH
+
+**所以寻址范围为0001H~1000FH**
+
+（2）有一段数据存放在内存 20000H单元中，先给定段地址为SA，想用偏移地址寻到此单元，则SA应该满足的条件是：
+
+最小为:
+
+当偏移地址为最大FFFFH时，20000H-FFFFH&#x3D;1 0001H
+
+SA必须为16的倍数,所以SA左移后的最后一位必须是0
+
+1 0010H-》1001H
+
+**所以最小为1001H**
+
+最大为:
+
+20000H-&gt;2000H
+
+**所以最大为2000H**
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="段寄存器"><a href="#段寄存器" class="headerlink" title="段寄存器"></a>段寄存器</h2><p>8086CPU有四个段寄存器：</p>
+<p><strong>CS（code segment）, DS(data segment), SS(stack segment), ES(extra segment)</strong></p>
+<p>CS和IP（instructor pointer指令指针寄存器）是最关键寄存器 -》指向了CPU当前要读的地址</p>
+<p>8086CPU工作过程：</p>
+<ul>
+<li>从CS:IP指向的内存单元获取指令</li>
+<li>IP=IP+所读取指令的长度，从而指向下一条按指令</li>
+<li>执行指令，回到第一步，重复这个过程</li>
+</ul>
+<p>修改CS IP的指令不用<code>mov</code>指令（因为不支持把数据直接送入段寄存器）而是用<code>jmp</code></p>
+<ul>
+<li>同时修改CS 和 IP：<ul>
+<li>jmp CS: IP</li>
+<li>如 jmp 2AE3:3<ul>
+<li>CS=2AE3H, IP=0003H -&gt; 2AE30+0003=2AE33H</li>
+</ul>
+</li>
+<li>jmp 3:0B16<ul>
+<li>CS=0003H, IP =0B16H -&gt; 0030+0B16=0B46H</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>只修改IP，当前CS不变<ul>
+<li>jmp IP</li>
+</ul>
+</li>
+</ul>
+<h2 id="课后习题-2-3"><a href="#课后习题-2-3" class="headerlink" title="课后习题 2.3"></a>课后习题 2.3</h2><p>下列3条指令执行后，CPU几次修改IP？都是在什么时候？最后IP中的值是多少？</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">mov ax,bx#读取指令后IP被修改
+
+sub ax,ax#读取指令后IP被修改
+
+jmp ax #读取指令后IP被修改，然后IP又被修改为ax
+
+# cpu修改了4次IP，因为每执行完一个指令，IP都会递增1， -》 在jmp ax处，最后IP被修改为了0
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210909145406877.png" alt="image-20210909145406877" loading="lazy"></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mount</span> c: d:<span class="token punctuation">\</span>asm
+c:<span class="token punctuation">\</span>
+debug<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="寄存器（内存访问）"><a href="#寄存器（内存访问）" class="headerlink" title="寄存器（内存访问）"></a>寄存器（内存访问）</h1><h2 id="内存中字的存储"><a href="#内存中字的存储" class="headerlink" title="内存中字的存储"></a>内存中字的存储</h2><p>一个内存单元是一个byte（字节）</p>
+<p>一个字单元由两个内存单元组成，也就是两个字节（bytes）=1个word</p>
+<p>0地址: 2E</p>
+<p>1地址：3C</p>
+<p>问0地址单元存储的**字型(word)**数据是：3C2EH</p>
+<p>0地址单元存储的**字节型(byte)**数据是：2EH</p>
+<h2 id="DS和-address"><a href="#DS和-address" class="headerlink" title="DS和[address]"></a>DS和[address]</h2><p>要给ds寄存器赋值，必须要先把值赋给通用寄存器，然后通用寄存器再赋值给ds寄存器。数据不能直接送进段寄存器。</p>
+<p><code>[]</code>是对数据段操作</p>
+<p><strong>例如：从10000H中读取数据</strong></p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">mov bx,1000H#为什么是1000H，因为1000H段地址*16&#x3D;左移一位，然后加上偏移地址就可以得到最后的真实地址
+mov ds, bx
+mov al,[0]#10000+0&#x3D;10000H<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="字的传送"><a href="#字的传送" class="headerlink" title="字的传送"></a>字的传送</h2><p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210909155520090.png" alt="image-20210909155520090" loading="lazy"></p>
+<p>ax是一个<strong>word的长度</strong>，所以这里mov ax,[0]其实取的是1123而不是23</p>
+<p>11是高位，22是低位，我们取了连续的<strong>两个内存单元而不是一个内存单元</strong></p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">sub ax,1CH#ax&#x3D;ax-1CH<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="mov-add-sub指令"><a href="#mov-add-sub指令" class="headerlink" title="mov, add, sub指令"></a>mov, add, sub指令</h2><p>mov ds, ax和mov ax,ds都可以实现。</p>
+<p>段寄存器也可以给通用寄存器传数据</p>
+<h2 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h2><p>我们用123B0H~123B9H这段空间来存放数据：</p>
+<ul>
+<li>段地址：123BH</li>
+<li>长度：10字节（一个地址指向一个内存单元，一个内存单元等于一个字节，0~9有10个内存单元，所以有10个字节）</li>
+</ul>
+<p>高位字节存放在高位内存</p>
+<p>低位字节存在低位内存</p>
+<h2 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h2><p>由高地址向低地址增长</p>
+<blockquote>
+<p>CS:IP指向指令</p>
+<p>DS:IP指向数据</p>
+<p>SS栈段寄存器(Stack segment) - 存放栈顶的段地址</p>
+<p>SP寄存器(Stack pointer) - 存放栈顶的偏移地址</p>
+<p>SS:SP指向栈顶元素，但如果stack为空的时候，会指向最高地址单元的下一个单元，比如栈空间是10000H~1000FH，如果stack为空，会指向1000:10（所以不存在栈顶元素）</p>
+<ul>
+<li>也可以说是最后一个元素被pop, SP=E(最后一个元素所在栈地址)+2=10</li>
+</ul>
+</blockquote>
+<p>push ax</p>
+<ul>
+<li><p>先SP = SP-2(因为ax是2个bytes = word，所以是<strong>2</strong>个内存空间)</p>
+</li>
+<li><p>把ax放进SS:SP指向的位置</p>
+</li>
+</ul>
+<p>pop ax</p>
+<ul>
+<li><p>先把SS:SP指向位置的内容pop并赋值给ax</p>
+</li>
+<li><p>SP = SP+2</p>
+</li>
+</ul>
+<p>pop的时候其实没有删除数据，只是指针改变了（所以被pop的数据就不在栈里了，因为它的地址不在栈顶），下次push的时候原本的东西就被覆盖了。</p>
+<p>C语言里面的函数其实就是用到了栈，函数会把局部变量什么的都放在stack里，当函数返回后，stack就没有了。</p>
+<h2 id="栈顶越界的问题"><a href="#栈顶越界的问题" class="headerlink" title="栈顶越界的问题"></a>栈顶越界的问题</h2><p>8086CPU只知道：</p>
+<ul>
+<li>当前栈顶在何处</li>
+<li>当前要执行的指令是哪一条</li>
+</ul>
+<p>要防止push和pop导致栈顶超界，根据可能用到的最大栈空间，来安排栈的大小 - 防止push的数据太多而导致超界、栈空的时候继续pop导致超界。</p>
+<h2 id="push、pop指令"><a href="#push、pop指令" class="headerlink" title="push、pop指令"></a>push、pop指令</h2><pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">push 寄存器
+push 段寄存器
+push 内存单元#push [0] -&gt; ds:ip
+pop 寄存器
+pop 段寄存器<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20211202103533130.png" alt="image-20211202103533130" loading="lazy"></p>
+<p>上图演示了将2266H放入10000H的位置。因为push会先减去sp，所以我们要先把sp+2</p>
+<h2 id="栈段"><a href="#栈段" class="headerlink" title="栈段"></a>栈段</h2><p><strong>再次强调：</strong></p>
+<p>SS:SP指向栈顶元素，但如果stack为空的时候，会指向最高地址单元的下一个单元，比如栈空间是10000H~1000FH，如果stack为空，会指向1000:10（所以不存在栈顶元素）</p>
+<ul>
+<li>也可以说是最后一个元素被pop, SP=E(最后一个元素所在栈地址)+2=10</li>
+</ul>
+<h1 id="第一个程序"><a href="#第一个程序" class="headerlink" title="第一个程序"></a>第一个程序</h1><p>伪指令是让编译器去处理</p>
+<p>汇编指令是</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">assume cs:codesg #假设代码代码段叫做codesg
+
+codesg segement
+
+start:	mov ax,0123H
+		mov bx,056H
+		add ax,bx
+		add ax,ax
+	
+	mov ax,4c00H
+	int 21H
+codesg ends #段的结束
+
+end start#结束 这里的start可以随便什么名字，程序只会查找end后面的东西<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>程序返回：</strong></p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">mov ax,4c00H
+int 21H<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>CMD将程序载入内存，将CPU的CS:IP指向程序，程序运行结束后回到command，CPU继续运行command</p>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Leihehe</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://leihehe.top/2021/09/06/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="汇编个人学习笔记">https://leihehe.top/2021/09/06/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/09/06/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/" rel="prev" title="Java反序列化漏洞之使用Ysoserial(6)"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">Java反序列化漏洞之使用Ysoserial(6)</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/09/04/Apache-HTTPD%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/" rel="next" title="Apache HTTPD 漏洞复现系列"><span class="post-nav-text">Apache HTTPD 漏洞复现系列</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div></body></html>
