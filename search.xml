@@ -675,7 +675,7 @@ done
 <p><strong>Digital signature</strong> is used for proving authenticity of the origin of documents as well as for non-repudiation as it can prove the authenticity of the signer.</p>
 <p>Another use of digital signature is to ensure the integrity of the messages against unauthorized modification</p>
 </blockquote>
-<h2 id="Generate-digital-signatures"><a href="#Generate-digital-signatures" class="headerlink" title="Generate digital signatures"></a>Generate digital signatures</h2><p>TBC.</p>
+<h2 id="Generate-digital-signatures"><a href="#Generate-digital-signatures" class="headerlink" title="Generate digital signatures"></a>Generate digital signatures</h2><p>![digital signatures](<a href="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/digital">https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/digital</a> signature.png)</p>
 <h1 id="EL-Gamal-PKE"><a href="#EL-Gamal-PKE" class="headerlink" title="EL Gamal PKE"></a>EL Gamal PKE</h1><h2 id="Differences"><a href="#Differences" class="headerlink" title="Differences"></a>Differences</h2><p><strong>For PKE</strong>, both Alice and Bob will need to publish their public keys, while <strong>for EL-Gamal PKE</strong>, we only need one of them(receiver) to publish the public key.</p>
 <p>For <strong>DHKE</strong>, it only explains how a shared key is generated, <strong>EL-Gamal PKE</strong> shows how a message could be encrypted and decrypted using <strong>DHKE</strong>.</p>
 <p>A very strong and solid explanation here:</p>
@@ -10794,6 +10794,125 @@ int 21H<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
     <url>/2022/06/11/Bug-Bounty-Learning-Edit-target-website&#39;s-aws-file/</url>
     <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="Oh, these decrypted content cannot be verified, but you can still have a look.">
   <script id="hbeData" type="hbeData" data-hmacdigest="cc6729f8a43a85557d04f9171de269d3418eb5bd5fb3883432fec15c98b3ed5b">b60e26754db75fa005b995163af0d5a1ec8bbd33d365b1eadf7044f4ac4eb25e1f8d703834b10e832769189d33c4333e4a6c446b1a1b24c0a4a762e275c5b56303e7a6271428e9533bd5418f1e92716a8594277c6189e2c20a5bac9bf580e8415059f684ed2cbe2bd2cbbce017c8a5e5430d4af22650c4092ebfe41f3bb23bfe70d0da9df65750060d397cc99dd31e081f6d2a735086cafb75cbb4132509a58372bd042ccd4903c73eef049afd095125f6ca8e14ad1589c22cce4910cd640c00d8d4835b3ea37316a441cc884b6226a80e487de42b2488c3cd17e83e6375c7f0636fda760bb08742d64eaaa8a10d913ca3949268b41a758c4caf30b4eebfdab259a9485c7cb22e7158a9fa6a2ce5525ae3ce4af97cd4fa4694343c7c5afeef2369c434f985bf6cac6a25a9dec923f50779b9b701596b921fdb592206b311b05260144e5be2b4829d1a063b0ae792d18444f47e22c692876611fc24d7624b93b2b9fb643bea04ee0c77035744660ac8243104337cee291afa7f1e08c9a28e95d5ad5ba7712699575efce3b020fa4429bc8b54aa9547af3baebc15b6646b3d8d992f5b863a90619622d60d87b47d1d9c505c7f2bbd5170dcbf2691e64f8d8c074fd3cd7a0595d22d9fc0ffbc9eef2d2f77126848703ac3c78e6a788b36cf452ad95ad38347fd337dccfb974512511c1c0ad9839eedbbc592f97880aba594e2c1cc700116a6f95c5ebcbf9da3c549f9603a69adaadd17a80d5cfd83c703f1e6e31337239f3841d844602b3f504d9805d976e3d09e63ee51dc0992974326c44c66c67bef49a7a42e06016240fc4cfd9d4105f49efc0d2cc209327801b80e77862f26fc5cc6b7d7e0c2faaa67c5d191115d592348636df0051d7da2ff5f4258a5c59250071e9bd26db6c61cabb677114e20dab366db90ed0de234d05534dd68c7fce527497f62565d9c1fd1a7667823e4e524c5451f6c320b6747ded29ac67eca8a55bb98e0d45127071865b6b83adaa8f9732b920720b5fd48f22097cefd2d056a0d94f6cdceb3f8b34d9aea9ddc0fba54ba65440d7348787a864ec153fe6abe6f708919648026562187a6c21190d60a3b62c5d25f7b9e4078710d37895608f7837e978361957b9f31f4edb6515634ce954028623b12297de13fca471ab3d12bf37eebc45784853274880711a715619f65bd45675982a9992f4736e03d744c9e36ef056ec478124ed2a6110f8602b47dbf175ecf8977365b0883faedb5dc5276d69112afb2e2ad990798b231c81d91971606efa0cb2a3dc05fb3457f944f32dcd3dd1e178ec83b124a00514e7624bba77423378b3767671eef29f89e3f389b3547985fe86fbfa244f23f1027fa28ae1c2b8ec0d6abdc8ff1ee08f85aec203995a7ae074648c04a40b68585a5f777418ad184bfd40cb21f7acba4f0addbb8ab1547022f60a5eb0e911be55036bd2da42f3c7726c43607afcfd197dd76f6cdfdffbb12dfb36ee4172292592ceb41397ebe7b4ca1fb4b6908248dc9d4d50be5b7a7df8e220a1c5cc25c5632a7676597c3af22bf04222afa4ec8eeaaf00cc8a895c0b80f3c84a0d79ee2e34815e32a40521283dd9f8262f43d614afe9825be28ce7b3596c393fb1e22f48471737233579935d409f74b552ed8b3529678a0c0d2fd9768ac9209d3eaff6ee8d9e29dbec400786b5bc1fd9b6ad37d6b9bf56df6c50c2edc38fd526911b82e04d86aa564db029e989e06e8b9e5e16340430eb93777f1d8aa0820b2bb9b5e6f05b40efd2f699f9b2b7376ea9a48ac2d5b0dd73354be73a5e8eca4bd2819827a12b5820f6827c21c349813805df89db196e9d0c39d2a3097bfd454943c7cb57a4b9086de6260bbff7e06622f23038d3f71752a1d443819712c652325ca371b79f2b609e46f99377db2fff167b8f0b65e1e36ca43d953e22520c0d4168c77c865877760948357a52d0128ae1c94f30325ba044c5b139e3fe21e63ff4b35f470fd0b99114f45c32d701149021a0a54718a59b66d82b546c68d071b3a47a93d18b13211a83c8a0bee8890e2e030732dfefab07b6145271aff8f4ba9f1cbaecc220fcab81a87993a467fe3fa682eb7822cbd7071655229705d452a1ad74f3fcf3d243aab867743d64cf479d76b60184b2800c112827f9866af3671e537d40d4e8e203c929c6461fa9666c1d84671a09d71dc1d48ef4a56f41afaba31e990b176b47591e0eb872eeb95c10fc5429cbba698529b1f1463849bd650af43dcbbd3746cc8b5eaf9c704d14778e6fc74e3bf4e3a165f6cf1894ae9395335933ddea876715f27ef79e5e98e35bdbe0d1ddbb26a958b7f9a4751a009f60181dc3c23e94063e6cd1d9f69bd30a2a89f8541d8febe572e84974c68b2808080007d81596e4af8bc4c23b01efff048282b0d2164bfa477002d99f91f7423e9ea0084d0c16e117a78ef68d8cd3cb2e382fe006653fdfc7ba28be68452df04cd40c2898cd96e5cffcc651ebe59c249d1eadf3d1def9830a6d3199f2513ac3dfb33d9a7507885ef491852a5e6452d701abd6de6f9bc072452a60611ac4a0d1b918ff98e0f6ceb6cde5cb1c10e7f8f11d103eee7a50b431eba2565ccf7e867a9f5897253b09c9b2871bc5b04049c02c53fae9baa7397a5fb105b7ff3470683bae354abaec2df255673974429ad5967390caac0efc380803b2c66ae1d165544a00cc7a549bf7fadf8cf427cd4fee6186e2eacd3123074b8cda6c2023abb94111f268721f040480ca5277af7a7cc3ad6989733fe3151ffbd43b3589cd9c3f12c8d5aa74615d98c180900ea9c1291aac7489041592ad09dc756f9440cdeda00ba1280945e2b0941e9562f625fc3475e3687c8fc4e2dab72215c22a5783971f9ffebe8d7952c6a881aca6e98a9cc3ee0f035385f89a9e70b4d49db23f72f4a57ad7665c2ede9e3ac3573d8610ac517e3d1f39ac5a18389b0ac327ea73d21b2f5b91a47e6ffb592d87be31f965991c37e65fbc9bb5878739bff28ff91b1d8d86d1a6a0c31c35eee8bcd52e3ffeb1b2fb84c4fa2c6f430767fe9ea0cd8f0a2cc7de2de42c5460a896f99847df5b624ff01d6a513b6becb418847e19f8693fa756ab224f8a4b663b4e9c85993c72ea73d73ebff4fd2839f58666e36b0421c076eae3a76724a1296a3e911ac3153f9a3df896bdaedea06653b05be95ebbc67bb1e7a9c99741bb617574166477de7d14be5db5770d3c4c01472cf2eef847343947e6ddfbd5a4a2a5b508572a2bfb68d59fcbbd5fbb3500e9d1ba00ec9862bd655d7336ddedb84803295db5b1e0da668a575cc5152255afbe7b14d8dbcea5eefd727f0b4226af7ac590d58cd4d591a2174a4673b65abf75b651462091e8eeb8f45ba832a1eab4d407719fd3e0580e5b4955d31b5feabd82df5b54c9169d2ece2017b294aa8bf077ace425ae33d3bcd35452130dabc564328bee3e3caeda27612ab439778e9e80b1545539a67c39b7e7b37b41063c179cf9ebf5f9a07a5b2060517ce2bab8fb64080ac1a7f37865f2458596805aeaa2402c9f77a482d77d13a6c0d57da39009188e5e33b854443391a9f6de18b5843b22e36915a905ea4556f21a2ee310c8cf3a412e5753ed2f8a8730a9516c36d308ef4e928271e3ebd932fd6e2c4679259e5c0c54cff1c3e8630034904a6c0b1a9d9435eb01ec68a8f065f8903dfa795c2c2b12d8feef212221f4dc97d080bcf62fcd60549571028dc6ec7f52bc327f806ea088ccdb6b389a36ad71e3fd22c87ba935d9327abf597287001900be4714c7dab0fc8cfff4ece50277a185c39014874be7a246489aa7167b284270deff000cd9b746f50021ed7e2725893d48f9d764804138a72</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+      <categories>
+        <category>Bug Bounty</category>
+      </categories>
+      <tags>
+        <tag>Bug bounty learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Security Protocols</title>
+    <url>/2022/06/12/Security-Protocols/</url>
+    <content><![CDATA[<h1 id="SSL-TLS-Protocol"><a href="#SSL-TLS-Protocol" class="headerlink" title="SSL/TLS Protocol"></a>SSL/TLS Protocol</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>SSL</code> stands for <strong>Secure Sockets Layer</strong>, and TLS stands for <strong>Transport Layer Security</strong>. TLS is an updated and more secure version of SSL. Nowadays, the SSL has been deprecated and replaced with TLS, therefore, we will use the term “TLS” to explain this protocol.</p>
+<span id="more"></span>
+
+<p>SSL/TLS protocol is used to achieve the following goals</p>
+<ul>
+<li>CONFidentiality</li>
+<li>INTegrity</li>
+<li>AUTHentication</li>
+</ul>
+<p>A very common use is <strong>HTTPS</strong>. <strong>HTTPS</strong> is the HTTP protocol with data encryption using SSL/TLS.</p>
+<h2 id="TLS-Handshake-Explanation"><a href="#TLS-Handshake-Explanation" class="headerlink" title="TLS Handshake Explanation"></a>TLS Handshake Explanation</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612155851.png" alt="TLS handshake" loading="lazy"></p>
+<ol>
+<li><p>Client sends hello, supported TLS version, supported cipher suite and Random(client random string).</p>
+</li>
+<li><p>Server sends message “server hello” back to the client, and also responds with chosen cipher suite, server random string, and SSL certificate(with server’s public key).</p>
+</li>
+<li><p>The client will verify the SSL certificate information, get the public key of the server.</p>
+</li>
+<li><p>Client sends pre-master key generated using the public key he just got from the server.</p>
+</li>
+<li><p>Server decrypts the pre-master key from the client by using his private key.</p>
+</li>
+<li><p>Both client and server use “client random”, “server random” and pre-master key to generate the same shared key using the same algorithm</p>
+</li>
+<li><p>Client is ready: client sends “finished” message which is encrypted by the shared key.</p>
+</li>
+<li><p>Server is ready: server sends “finished” message which is encrypted by the shared key.</p>
+</li>
+<li><p>Handshake is finished, server and client use symmetric crypto to communicate with each other.</p>
+</li>
+</ol>
+<h2 id="How-SSL-TLS-protocol-prevent-attack"><a href="#How-SSL-TLS-protocol-prevent-attack" class="headerlink" title="How SSL/TLS protocol prevent attack"></a>How SSL/TLS protocol prevent attack</h2><h3 id="Scenario-1"><a href="#Scenario-1" class="headerlink" title="Scenario 1"></a>Scenario 1</h3><p>Attacker intercpet the message sending from the client to the server, direct it to themselves, and the attacker itself will send hello message to the client. Server will send its certificate to attacker and attacker will send this back to the client. </p>
+<p><strong>Solution</strong></p>
+<p>Eventhough the client verified the certificate, the attcker has no idea what the private key of the server, so he cannot decrypt the key transport and also cannot get the shared key generated later.</p>
+<h3 id="Scenario-2"><a href="#Scenario-2" class="headerlink" title="Scenario 2"></a>Scenario 2</h3><p>Attacker sends client a fake certificate for google.com, will client uses the fake public key to generate a symmetric key?</p>
+<p><strong>Solution</strong></p>
+<p>After receiving the fake certificate, client would look up from the online public database for the public key of the certificate received to verify the certificate. Obviously, the certificate is fake and the website will then be labelled as not secure and the attack failed.</p>
+<h2 id="Common-Attacks"><a href="#Common-Attacks" class="headerlink" title="Common Attacks"></a>Common Attacks</h2><h3 id="SSL-Stripping-Attack"><a href="#SSL-Stripping-Attack" class="headerlink" title="SSL Stripping Attack"></a>SSL Stripping Attack</h3><p>Attacker modifies web traffic to trick a client into accepting http connection instead of https </p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612172551.png" alt="SSL stripping attack" loading="lazy"></p>
+<p><strong>Countermeasure</strong></p>
+<p>Server tells browser upon first visit to only accept HTTPS(not HTTP) for future requests to this domain.</p>
+<h3 id="BEASAT-POODLE"><a href="#BEASAT-POODLE" class="headerlink" title="BEASAT/POODLE"></a>BEASAT/POODLE</h3><p>Browser Exploit Against SSL/TLS / Padding Oracle On Downgraded Legacy</p>
+<ul>
+<li>Attacker exploits Bugs in encryption/MAC mode of operation algorithm in TLS 1.0 to extract information on secret key.</li>
+</ul>
+<p><strong>Countermeasure</strong></p>
+<p>Patches to TLS algorithms/implementations.</p>
+<h3 id="Compression-ratio-info-leak-Made-Easy-CRIME"><a href="#Compression-ratio-info-leak-Made-Easy-CRIME" class="headerlink" title="Compression ratio info-leak Made Easy(CRIME)"></a>Compression ratio info-leak Made Easy(CRIME)</h3><p>TLS has a compress-then-encrypt mode; Compressed data length no hidden by encryption, reveals information to attacker on secret web site cookies. </p>
+<p><strong>Countermeasure</strong></p>
+<p>Disable TLS compression, avoid if possible record layer compression.</p>
+<h1 id="IPsec-Protocol"><a href="#IPsec-Protocol" class="headerlink" title="IPsec Protocol"></a>IPsec Protocol</h1><h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>IPsec</code> stands for <strong>Internet Protocol Security</strong>, and is common used by VPN(<strong>Virtual Private Network</strong>).</p>
+<h2 id="IPsec-methods"><a href="#IPsec-methods" class="headerlink" title="IPsec methods"></a>IPsec methods</h2><h3 id="AH-Authentication-Header"><a href="#AH-Authentication-Header" class="headerlink" title="AH - Authentication Header"></a>AH - Authentication Header</h3><p>AH can only authenticate data, and it cannot encrypt data. It adds an Authentication after the <strong>original IP header</strong>. AH authenticate the whole IP packet.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204412.png" alt="authentication header" loading="lazy"></p>
+<p><strong>Security parameters index</strong>: point to entry corresponding to browser/server; includes info on shared key.</p>
+<p><strong>Sequence Number</strong> is used for freshness vs replay attacks</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204929.png" alt="AH example" loading="lazy"></p>
+<h3 id="ESP-Encapsulating-Security-Payload"><a href="#ESP-Encapsulating-Security-Payload" class="headerlink" title="ESP - Encapsulating Security Payload"></a>ESP - Encapsulating Security Payload</h3><p><strong>ESP supports both Authentication and Encryption.</strong> However, ESP does not encrypt and authenticate the IP header.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205320.png" alt="ESP" loading="lazy"></p>
+<h2 id="Modes"><a href="#Modes" class="headerlink" title="Modes"></a>Modes</h2><ul>
+<li><strong>Transport Mode</strong><ul>
+<li>IP packet inserted with IPsec header(AH header/ESP header)</li>
+</ul>
+</li>
+<li><strong>Tunnel Mode</strong><ul>
+<li><strong>original packet preserved</strong> incl original header, new header added/prepended(at the begining of the whole packet)</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205922.png" alt="modes" loading="lazy"></p>
+<h1 id="PAN"><a href="#PAN" class="headerlink" title="PAN"></a>PAN</h1><h2 id="Introduction-2"><a href="#Introduction-2" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>PAN</code> stands for <strong>Personal Area Network</strong>. This technique is mainly used by Bluetooth. </p>
+<p><strong>Bluetooth’s Secure Connections</strong></p>
+<blockquote>
+<p>leverage on <strong>human channel</strong> during pairing, e.g.</p>
+<ul>
+<li><p>compare passkey on both devices</p>
+</li>
+<li><p>see passkey on one, type into the other</p>
+</li>
+<li><p>type same passkey into both</p>
+</li>
+<li><p>which option, depends on device I/O capability </p>
+</li>
+</ul>
+</blockquote>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
+<p><a href="https://blog.csdn.net/qq_38265137/article/details/89423551">https://blog.csdn.net/qq_38265137/article/details/89423551</a></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bug Bounty Learning - Journey from LFI to RCE</title>
+    <url>/2022/06/12/Bug-Bounty-Learning-Journey-from-LFI-to-RCE/</url>
+    <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="Oh, these decrypted content cannot be verified, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="80f61f7e55d51f6ea71860e8702cca7ac42d0b155ad6fdd524abdc91b15f3017">b60e26754db75fa005b995163af0d5a1ec8bbd33d365b1eadf7044f4ac4eb25e1f8d703834b10e832769189d33c4333e4a6c446b1a1b24c0a4a762e275c5b56303e7a6271428e9533bd5418f1e92716a8594277c6189e2c20a5bac9bf580e841c744478c42fb3e54f8c63c9a5a31b75692a38a8da8abe572bfec09842aa3c2cb4a6cf86c983afd2c9a9484060dca82af904af7fa83a4d6b633a3da8f53e04b40991654921349ebbe9401c90612b4697c80bfecbfee0c5456441201278d82fda2eb5c646eb70e80adf37345a3665578726739ee234e114c3e73641b2cd2e449ed035facd0cda614247cbac9d8a3b346895d121302c4de63eb2f7a8b761683511d9daf2fc2970bb348771f0ed7f7aaf81b796a2fd9d993bb53cee526fc0fbe513d810427ef71b584fc1e0818c9a9baac19e3112385cb996c40eca2827e5a0195707acdd1edf121eadb5f624a089d7c12d3d3c93f048839d4c1069de885fc95784f3bdc9095b5ac48dd0e226e0315ccec5507b49f8f37d9c6c7a78a082059dda1c1d4ca79e51f7890f321b63724664b791f0e0bc1704348a2cbe7e0048c6f1be0e467a294b374e83815ae4185a08413d2cb49d399b7fd6c193007739257a757078fc4df8bef5a9cd33c3e1f80a8b817783adc272cedc89e3c1c740b53b2d35a077e6a39047fbb09a67253dd2111f63f28a895f0fa6dff12fd0981cd35a5635c7b6747264c39137f2e0b3733fffb4f6b30d2ed0612af625db95f10bcf433f31cc4b94675b826bfef3909e824cc736a163b5a4c5287942a15c703bd954c1faacf482146de21c2a5c3002d9ec3bacb213404bfa88fd76b78083708b8cbeb4cc05cb3bc8c45eba9e57524b7ee76f02a718d780b557dcae9711f81d75cfe657306a9e189271379a2c1d06e4b093af6043c9cb1f6cc89e8d4418f6d29688f3431a78337b539812478d65df5f2b7bbc20fd76b2335462d8ba6a94926d6cab94436731e0d9965d919d5cb4948f6465c36b6041ea303820361e016f0b65d7f05bfe8f396ae9e89d10a70159193a6b6e0947ca30044fc1ab6e9ceab7f8d3c930fe850975a83a19dc5188b36c52be4b266d2b1470c90616a2258eb982582ef1fba4a6ddd54534e30b04be6bbfca0378521ed3243dcd7508e75fbbdcc1335d88454674ab8afead8c06806817a671b227f2409f5b23b7aa1f9c60bfe245158d9313927b7cdc062ff19bcd7685f6f2d1979b6b6ae964d1478916ff9b0499bce3c001843cc6631706232da4c998dc7abc0af2b19e962d58e920559908410b3f045db6b05ef121103391ead5e526fdcada5e8fec3ed0314dce834dd3ca36106da71c2d1cbc1d3bb317962a14d0de042af5592cf242b30fdc33ea6a8ee660a1c990ab45159d4c19da48f1c274d1f1db61adb4c4fe80f4a96c42d51a0803d496cdd0d93fa31c9e813fea27a31a5e8c38dac7892d870fb331f9deef94724462416a95498aaa22bf7b0a535de8da8ccba4c6a60602937a90537a038806e50c8c416bd16eb8306ada5c41d85a599837eb03b58559b23e1df99a16e0104d43c26500a1d2b053e2d18b4ec1dd782795a826f6b992ab9fdbf2049ec652fc43b62dc4861f29faa16eed12af65aa6ca2f489ebd578c1225b378ae1e51d670c5b464b3ef391a2617e1ccb161ea830df6abd210b5b3a050d71da51d1049a40cc3b09ee587e51b55e62305ab276e1f646c07476a5522ecb11c7f0375fb14abc8900d49242c11c78aff773c15011e94e23a454c1bb3613d7f064d5fd423a0654b1b443536c3f0ebdad326a45873957c645384e890f910138d397a80724d1b7defb656446d63e4334c34b5aa8e2a5b40b1881c15a70119300df796b623224b4dfddeba850a3f04fa2bbc083fc4f2640164cf5cbca4efd5311e0461fbf558d0a07344336d1ba4eef41b96463c4e8b250f6aed46880a2439f382b5ddfb419c2650ae79eebe409f3dcf9810dc1f68eaa9b9173c8d31d2785027e744eab929b2d02a4d6bf44286be0d5c6849f0b540578fecf848f3f6fef14b2ce2b7baad1ddbe1ab152ecc23d665b980690ef523e830428038bdda0556f258f7f97241e02042075c54aad4593373ea9df0922000837d3a04e6f9527c6474e101e1a1c403ffc6fce311df2015e49cd079dc9166ace23676c43d30a9f8db4c668dc514f8abc17945729c7e46f963d8fe91c65abaf12cab9b94cbe02f680bda9e269fbb24330eaac76b0d1bed3f6d3fe304336edc204d31a95d317b0745305eef60abd827c963920137a2686c7f0fa1b68560fed9c1eaedb3287f4979ed8b8101d1d3316dfabc842fed695b6bfc8d98514d496bc996f6bf4c5fc42c51767c674d4b4210fe673997d7916d34ff24d5f4c9b6f34217894d20f1cc275d32fe4e6cc3572231e2c180877a3ed12d292462347ed756d6a9ca782f9fe9e2dc3a36b08d67fc5e79d398e740ae8e3d977143a5b27a427bda451385ab1717c1c51a935401394b346e3adb325d2d54c4ceafdcda95d2c4fcab811382283c24c209ee2f0ccb7be5e0e23aa9e1a3e95f5279e4816f022eff779c381d4db1231c03355d6a6a7549485bda21cbdd7ae6a1bdbeff90459984e9cf01051a018a051b6859a3e0fe0b7ee39504eac6d417d45c91f13fac8c3307061d535fc08f6fac87aaf90bccb07a911c2f954a0494d02cbad291edb895197aa6c03d639a140a21d6a65b57216a2799d851aa566c50137d4c828cdaf763dc493677ae7d66a875a9fda99be7e0a5f45bb1a400a39c59586a8a0000e92eb70ac8142faf5fc563a68115efe9250538852357587096605dcf293a0394f31c9348463b408d0131d004e8c71b1bea4fa0cd7abed76d2326d4d50fbd3a66c758cabea48eb63fe55bc8095615aec6e97798ffd0a778c7a1e578940e9953e6027ac522f3ab756ecb5ad75005357dea364aeddb5222e471c445418819bccc9251da7aefa1e87624e34a5794a136ec99fb36da22a15fd580fea9a41d0203b5f0f276909d6a4d8b0f75c0e9ee0235165eb002b2afcaa21aec8158241b3af3104196e681210bacbd7eaf690265bffc37a7f770872c2425f659932bf47396246c43272c3f919f693f94c996ba5f8eaedf</script>
   <div class="hbe hbe-content">
     <div class="hbe hbe-input hbe-input-default">
       <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
