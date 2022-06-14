@@ -668,17 +668,6 @@ done
 <p>According to the formulas above, we can see that Alice and Bob will communicate the public keys and the shared keys they generate will be the same. Since there are some mathematical relationships between a private key and a public key, Alice or Bob can use their private keys and others’ public keys to get the shared key.</p>
 <p>Then this shared key could be used in any symmetric cipher(like AES).</p>
 <p>There’s a discrete log problem that prevents the shared key from being deduced by an attacker.</p>
-<h1 id="RSA-crypto"><a href="#RSA-crypto" class="headerlink" title="RSA crypto"></a>RSA crypto</h1><h3 id="RSA-key-generation"><a href="#RSA-key-generation" class="headerlink" title="RSA key generation"></a>RSA key generation</h3><p>choose two primes: <code>p = 5 and q = 11</code></p>
-<pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">n &#x3D; p*q &#x3D; 5 * 11 &#x3D; 55
-ϕ(n)&#x3D;(p-1)*(q-1)&#x3D;4*10&#x3D;40<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>Find two numbers e and e according to<code> (e*d) mod ϕ(n) = 1</code>, thus, <code>e = 3, d = 27</code></p>
-<p><strong>Public key:</strong> (e,n)=(3, 55)</p>
-<p><strong>Private key:</strong> (d,n)=(27, 55)</p>
-<h3 id="RSA-encryption"><a href="#RSA-encryption" class="headerlink" title="RSA encryption"></a>RSA encryption</h3><pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">s &#x3D; m^(e)mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="RSA-decryption"><a href="#RSA-decryption" class="headerlink" title="RSA decryption"></a>RSA decryption</h3><pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">m &#x3D; s^(d)mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <h1 id="EL-Gamal-PKE"><a href="#EL-Gamal-PKE" class="headerlink" title="EL Gamal PKE"></a>EL Gamal PKE</h1><h2 id="Differences"><a href="#Differences" class="headerlink" title="Differences"></a>Differences</h2><p><strong>For PKE</strong>, both Alice and Bob will need to publish their public keys, while <strong>for EL-Gamal PKE</strong>, we only need one of them(receiver) to publish the public key.</p>
 <p>For <strong>DHKE</strong>, it only explains how a shared key is generated, <strong>EL-Gamal PKE</strong> shows how a message could be encrypted and decrypted using <strong>DHKE</strong>.</p>
 <p>A very strong and solid explanation here:</p>
@@ -716,6 +705,17 @@ done
 <p>From the most left number(ignore it)</p>
 <p><strong>binary 0</strong>: square</p>
 <p><strong>binary 1</strong>: square then times <code>a</code></p>
+<h1 id="RSA-crypto"><a href="#RSA-crypto" class="headerlink" title="RSA crypto"></a>RSA crypto</h1><h3 id="RSA-key-generation"><a href="#RSA-key-generation" class="headerlink" title="RSA key generation"></a>RSA key generation</h3><p>choose two primes: <code>p = 5 and q = 11</code></p>
+<pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">n &#x3D; p*q &#x3D; 5 * 11 &#x3D; 55
+ϕ(n)&#x3D;(p-1)*(q-1)&#x3D;4*10&#x3D;40<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>Find two numbers e and e according to<code> (e*d) mod ϕ(n) = 1</code>, thus, <code>e = 3, d = 27</code></p>
+<p><strong>Public key:</strong> (e,n)=(3, 55)</p>
+<p><strong>Private key:</strong> (d,n)=(27, 55)</p>
+<h3 id="RSA-encryption"><a href="#RSA-encryption" class="headerlink" title="RSA encryption"></a>RSA encryption</h3><pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">s &#x3D; m^(e)mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="RSA-decryption"><a href="#RSA-decryption" class="headerlink" title="RSA decryption"></a>RSA decryption</h3><pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">m &#x3D; s^(d)mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
 ]]></content>
       <categories>
