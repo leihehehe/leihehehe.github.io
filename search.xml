@@ -668,14 +668,17 @@ done
 <p>According to the formulas above, we can see that Alice and Bob will communicate the public keys and the shared keys they generate will be the same. Since there are some mathematical relationships between a private key and a public key, Alice or Bob can use their private keys and others’ public keys to get the shared key.</p>
 <p>Then this shared key could be used in any symmetric cipher(like AES).</p>
 <p>There’s a discrete log problem that prevents the shared key from being deduced by an attacker.</p>
-<h1 id="Digital-signatures"><a href="#Digital-signatures" class="headerlink" title="Digital signatures"></a>Digital signatures</h1><h2 id="Problems-why-use-it"><a href="#Problems-why-use-it" class="headerlink" title="Problems - why use it?"></a>Problems - why use it?</h2><p>There’s a significant risk that Alice cannot authenticate Bob. In other words, another person Peter can pretend to be Bob, and send his public key to Alice, then Alice will generate a shared key using Peter’s public key. In this case, Peter would decrypt the messages that Alice sends to Bob.</p>
-<p>This is the so-called <strong>Man in the middle attack</strong>.</p>
-<p>Thus, cryptographist were trying to find a more secure way.</p>
-<blockquote>
-<p><strong>Digital signature</strong> is used for proving authenticity of the origin of documents as well as for non-repudiation as it can prove the authenticity of the signer.</p>
-<p>Another use of digital signature is to ensure the integrity of the messages against unauthorized modification</p>
-</blockquote>
-<h2 id="Generate-digital-signatures"><a href="#Generate-digital-signatures" class="headerlink" title="Generate digital signatures"></a>Generate digital signatures</h2><p>![digital signatures](<a href="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/digital">https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/digital</a> signature.png)</p>
+<h1 id="RSA-crypto"><a href="#RSA-crypto" class="headerlink" title="RSA crypto"></a>RSA crypto</h1><h3 id="RSA-key-generation"><a href="#RSA-key-generation" class="headerlink" title="RSA key generation"></a>RSA key generation</h3><p>choose two primes: <code>p = 5 and q = 11</code></p>
+<pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">n &#x3D; p*q &#x3D; 5 * 11 &#x3D; 55
+ϕ(n)&#x3D;(p-1)*(q-1)&#x3D;4*10&#x3D;40<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>Find two numbers e and e according to<code> (e*d) mod ϕ(n) = 1</code>, thus, <code>e = 3, d = 27</code></p>
+<p><strong>Public key:</strong> (e,n)=(3, 55)</p>
+<p><strong>Private key:</strong> (d,n)=(27, 55)</p>
+<h3 id="RSA-encryption"><a href="#RSA-encryption" class="headerlink" title="RSA encryption"></a>RSA encryption</h3><pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">s &#x3D; m^(e)mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="RSA-decryption"><a href="#RSA-decryption" class="headerlink" title="RSA decryption"></a>RSA decryption</h3><pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">m &#x3D; s^(d)mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <h1 id="EL-Gamal-PKE"><a href="#EL-Gamal-PKE" class="headerlink" title="EL Gamal PKE"></a>EL Gamal PKE</h1><h2 id="Differences"><a href="#Differences" class="headerlink" title="Differences"></a>Differences</h2><p><strong>For PKE</strong>, both Alice and Bob will need to publish their public keys, while <strong>for EL-Gamal PKE</strong>, we only need one of them(receiver) to publish the public key.</p>
 <p>For <strong>DHKE</strong>, it only explains how a shared key is generated, <strong>EL-Gamal PKE</strong> shows how a message could be encrypted and decrypted using <strong>DHKE</strong>.</p>
 <p>A very strong and solid explanation here:</p>
@@ -10928,6 +10931,81 @@ int 21H<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
       </categories>
       <tags>
         <tag>Bug bounty learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hash, Mac, and Digital Signature</title>
+    <url>/2022/06/14/Hash-Mac-and-Digital-Signature/</url>
+    <content><![CDATA[<h1 id="Hash-functions"><a href="#Hash-functions" class="headerlink" title="Hash functions"></a>Hash functions</h1><ul>
+<li>One-way security<ul>
+<li>h= H(m), knowing H(m) but should still be hard to find h(input)</li>
+</ul>
+</li>
+<li>COL: collision-resistance security<ul>
+<li>computationally infeasible to find any pair of distinct messages m1, m2 such that <code>h1=H(m1)</code> is equal to <code>h2=H(m2)</code></li>
+<li>Find collision using <strong>≈√(2^n )=2^(n/2)</strong> random inputs to H</li>
+</ul>
+</li>
+</ul>
+<h1 id="Message-Authentication-Code-MAC"><a href="#Message-Authentication-Code-MAC" class="headerlink" title="Message Authentication Code(MAC)"></a>Message Authentication Code(MAC)</h1><ul>
+<li><p>MAC is fast, and it has similar building blocks as symmetric key encryption.</p>
+</li>
+<li><p>is a many-to-one function</p>
+<ul>
+<li>many messages generate the same MAC</li>
+</ul>
+</li>
+<li><p>Both Sender and Reciever can send MAC since they both have the same secret key.</p>
+</li>
+</ul>
+<h2 id="CMAC"><a href="#CMAC" class="headerlink" title="CMAC"></a>CMAC</h2><p>CMAC is a CBC mode for authentication, and it will use the final block as a MAC.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220614130709.png" alt="CMAC" loading="lazy"></p>
+<h2 id="HMAC"><a href="#HMAC" class="headerlink" title="HMAC"></a>HMAC</h2><p>A MAC based on a hash function.</p>
+<p>HMAC(K,M)= Hash[<code>(K+ XOR opad) </code>|| <code>Hash[(K+ XOR ipad) || M)]</code> ]</p>
+<h1 id="Digital-signatures"><a href="#Digital-signatures" class="headerlink" title="Digital signatures"></a>Digital signatures</h1><p>The digital signature is slow.</p>
+<p><strong>Properties</strong></p>
+<ul>
+<li>Verifies author<ul>
+<li>UNForgebale</li>
+<li>Undeniable - non-repudiatable</li>
+</ul>
+</li>
+<li>universally verifiable</li>
+</ul>
+<h2 id="Problems-why-use-it"><a href="#Problems-why-use-it" class="headerlink" title="Problems - why use it?"></a>Problems - why use it?</h2><p>There’s a significant risk that Alice cannot authenticate Bob. In other words, another person Peter can pretend to be Bob, and send his public key to Alice, and then Alice will generate a shared key using Peter’s public key. In this case, Peter would decrypt the messages that Alice sends to Bob.</p>
+<p>This is the so-called <strong>Man in the middle attack</strong>.</p>
+<p>Thus, cryptographist were trying to find a more secure way.</p>
+<blockquote>
+<p><strong>Digital signature</strong> is used for proving authenticity of the origin of documents as well as for non-repudiation as it can prove the authenticity of the signer.</p>
+<p>Another use of digital signature is to ensure the integrity of the messages against unauthorized modification</p>
+</blockquote>
+<h2 id="Generate-digital-signatures"><a href="#Generate-digital-signatures" class="headerlink" title="Generate digital signatures"></a>Generate digital signatures</h2><p>![digital signatures](<a href="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/digital">https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/digital</a> signature.png)</p>
+<p><strong>Generate digital signatures using RSA</strong></p>
+<p>Encrypting the hashed message using the private key:</p>
+<p><code>s = m^d (mod n)</code></p>
+<p>Decrypting the hashed message using the public key:</p>
+<p><code>m = s^e (mod n)</code></p>
+<h2 id="Security"><a href="#Security" class="headerlink" title="Security"></a>Security</h2><blockquote>
+<p><strong>Attack capability</strong>: attacker knows signer’s public key pk</p>
+<p><strong>Chosen-message attacks(CMA)</strong></p>
+<ul>
+<li>should be unforgeable even if the attacker can see many valid signatures on many messages, even messages chosen by the attacker.</li>
+</ul>
+<p>Attack goal:</p>
+<ul>
+<li>Existential UnForgeability <strong>(EUF):</strong><ul>
+<li>Should be infeasible for an attacker to produce <strong>any</strong> valid (msg, sig) pair where msg <strong>has not been signed by the honest signer</strong> (even for randomly looking msg)</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
+]]></content>
+      <categories>
+        <category>cryptography</category>
+      </categories>
+      <tags>
+        <tag>cryptography</tag>
       </tags>
   </entry>
 </search>
