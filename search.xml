@@ -716,6 +716,8 @@ done
 
 <h3 id="RSA-decryption"><a href="#RSA-decryption" class="headerlink" title="RSA decryption"></a>RSA decryption</h3><pre class="line-numbers language-mathematica" data-language="mathematica"><code class="language-mathematica">m &#x3D; s^(d)mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
+
+
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
 ]]></content>
       <categories>
@@ -10947,6 +10949,8 @@ int 21H<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
 </ul>
 </li>
 </ul>
+<span id="more"></span>
+
 <h1 id="Message-Authentication-Code-MAC"><a href="#Message-Authentication-Code-MAC" class="headerlink" title="Message Authentication Code(MAC)"></a>Message Authentication Code(MAC)</h1><ul>
 <li><p>MAC is fast, and it has similar building blocks as symmetric key encryption.</p>
 </li>
