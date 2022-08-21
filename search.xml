@@ -3437,9 +3437,9 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
       </tags>
   </entry>
   <entry>
-    <title>Rancher resolved issues</title>
+    <title>Rancher Resolved Issues</title>
     <url>/2022/08/21/Rancher-resolved-issues/</url>
-    <content><![CDATA[<h1 id="Rancher-Problems-and-Solutions"><a href="#Rancher-Problems-and-Solutions" class="headerlink" title="Rancher Problems and Solutions"></a>Rancher Problems and Solutions</h1><h2 id="Quickly-clean-a-node"><a href="#Quickly-clean-a-node" class="headerlink" title="Quickly clean a node"></a>Quickly clean a node</h2><p>Nodes need to be cleaned completely, use the following script.</p>
+    <content><![CDATA[<h1 id="Rancher-Problems-and-Solutions"><a href="#Rancher-Problems-and-Solutions" class="headerlink" title="Rancher Problems and Solutions"></a>Rancher Problems and Solutions</h1><h2 id="Quickly-Clean-a-Node"><a href="#Quickly-Clean-a-Node" class="headerlink" title="Quickly Clean a Node"></a>Quickly Clean a Node</h2><p>Nodes need to be cleaned completely, use the following script.</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> https://gist.githubusercontent.com/Ileriayo/1bef407602208911e86f42d5d208c1fb/raw/af8fa882add9c0a7ccd72b92f1cfab5c95c355ba/nuke_rancher_kube_node.sh <span class="token operator">|</span> <span class="token function">sh</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <span id="more"></span>
