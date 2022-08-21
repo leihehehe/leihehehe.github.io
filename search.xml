@@ -473,6 +473,8 @@ delimiter: :-<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <p>All the levels of the tree are filled completely except the lowest level nodes which are filled from as left as possible.</p>
 </blockquote>
 <p><img src="https://media.geeksforgeeks.org/wp-content/uploads/20220414154428/complete.jpg" loading="lazy"></p>
+<span id="more"></span>
+
 <h2 id="Perfect-Binary-Tree"><a href="#Perfect-Binary-Tree" class="headerlink" title="Perfect Binary Tree"></a>Perfect Binary Tree</h2><p>A binary tree of height <strong>h</strong> having the maximum number of nodes is a <strong>perfect</strong> binary tree. </p>
 <h2 id="Full-Binary-Tree"><a href="#Full-Binary-Tree" class="headerlink" title="Full Binary Tree"></a>Full Binary Tree</h2><p>A full Binary tree is a special type of binary tree in which every parent node/internal node <strong>has either two or no children</strong>. It is also known as a proper binary tree.</p>
 <h1 id="Tree-Traversal"><a href="#Tree-Traversal" class="headerlink" title="Tree Traversal"></a>Tree Traversal</h1><h2 id="Iterative-Preorder-Traversal"><a href="#Iterative-Preorder-Traversal" class="headerlink" title="Iterative Preorder Traversal"></a>Iterative Preorder Traversal</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Integer</span><span class="token punctuation">></span></span> <span class="token function">preorderTraversal</span><span class="token punctuation">(</span><span class="token class-name">TreeNode</span> root<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -3439,6 +3441,8 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
     <url>/2022/08/21/Rancher-resolved-issues/</url>
     <content><![CDATA[<h1 id="Rancher-Problems-and-Solutions"><a href="#Rancher-Problems-and-Solutions" class="headerlink" title="Rancher Problems and Solutions"></a>Rancher Problems and Solutions</h1><h2 id="Quickly-clean-a-node"><a href="#Quickly-clean-a-node" class="headerlink" title="Quickly clean a node"></a>Quickly clean a node</h2><p>Nodes need to be cleaned completely, use the following script.</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> https://gist.githubusercontent.com/Ileriayo/1bef407602208911e86f42d5d208c1fb/raw/af8fa882add9c0a7ccd72b92f1cfab5c95c355ba/nuke_rancher_kube_node.sh <span class="token operator">|</span> <span class="token function">sh</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<span id="more"></span>
 
 <h2 id="Waiting-for-API-Readey-False-xxx-mins-ago-Disconnected-Cluster-agent-is-not-connected"><a href="#Waiting-for-API-Readey-False-xxx-mins-ago-Disconnected-Cluster-agent-is-not-connected" class="headerlink" title="Waiting for API [Readey False xxx mins ago [Disconnected] Cluster agent is not connected]"></a>Waiting for API [Readey False xxx mins ago [Disconnected] Cluster agent is not connected]</h2><p>The newest version of rancher brought this error to me, I’m not sure about the cause.</p>
 <blockquote>
