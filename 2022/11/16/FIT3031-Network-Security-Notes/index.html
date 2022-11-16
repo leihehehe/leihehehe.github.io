@@ -1,0 +1,1302 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 6.0.0"><meta name="theme" content="hexo-theme-yun"><title>FIT3031 Network Security Notes | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="FIT3031 Network Security NotesWeek 1: OverviewType of Network Attacks Interruption Availability   Interception Confidentiality   Modification Integrity   Fabrication Authentication    Threats, Attacks">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FIT3031 Network Security Notes">
+<meta property="og:url" content="https://leihehe.top/2022/11/16/FIT3031-Network-Security-Notes/index.html">
+<meta property="og:site_name" content="LeiH - Blog">
+<meta property="og:description" content="FIT3031 Network Security NotesWeek 1: OverviewType of Network Attacks Interruption Availability   Interception Confidentiality   Modification Integrity   Fabrication Authentication    Threats, Attacks">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2019090612012265.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104124318376.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104124353614.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104104444256.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104105253255.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104131545588.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104151025128.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104151909960.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104151758274.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104153525217.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221105101117217.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221105105559855.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221106101507795.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221106103411619.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221106220121668.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221106221639327.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221107102250059.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221114100445315.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221107162059195.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221108132402663.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221108154033521.png">
+<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221109101915386.png">
+<meta property="article:published_time" content="2022-11-15T23:54:13.000Z">
+<meta property="article:modified_time" content="2022-11-16T00:16:07.242Z">
+<meta property="article:author" content="Leihehe">
+<meta property="article:tag" content="Network Security">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/2019090612012265.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="Table of Contents"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="Overview"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info mickey-mouse"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"><span class="site-author-status" title="学习学习再学习努力努力再努力">😊</span></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="My Home"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="Archives"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">47</span></a></div><div class="site-state-item"><a href="/categories/" title="Categories"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">21</span></a></div><div class="site-state-item"><a href="/tags/" title="Tags"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">27</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#FIT3031-Network-Security-Notes"><span class="toc-number">1.</span> <span class="toc-text">FIT3031 Network Security Notes</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-1-Overview"><span class="toc-number">1.1.</span> <span class="toc-text">Week 1: Overview</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Type-of-Network-Attacks"><span class="toc-number">1.1.1.</span> <span class="toc-text">Type of Network Attacks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Threats-Attacks-Vulnerabilities-amp-Risks"><span class="toc-number">1.1.2.</span> <span class="toc-text">Threats, Attacks, Vulnerabilities &amp; Risks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Security-Mechanisms"><span class="toc-number">1.1.3.</span> <span class="toc-text">Security Mechanisms</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Security-Goals"><span class="toc-number">1.1.4.</span> <span class="toc-text">Security Goals</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Crypto-Overview"><span class="toc-number">1.1.5.</span> <span class="toc-text">Crypto Overview</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Symmetric-vs-Asymmetric"><span class="toc-number">1.1.6.</span> <span class="toc-text">Symmetric vs Asymmetric</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Adversarial-Capability-Against-Encryption"><span class="toc-number">1.1.7.</span> <span class="toc-text">Adversarial Capability Against Encryption</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-2-Public-Key-Infrastructure"><span class="toc-number">1.2.</span> <span class="toc-text">Week 2: Public Key Infrastructure</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Man-in-the-Middle-MITM-Attack"><span class="toc-number">1.2.1.</span> <span class="toc-text">Man-in-the-Middle (MITM) Attack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Digital-Signature"><span class="toc-number">1.2.2.</span> <span class="toc-text">Digital Signature</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Digital-Certificate"><span class="toc-number">1.2.3.</span> <span class="toc-text">Digital Certificate</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#X-509-Certificate-Example"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">X.509 Certificate Example</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Domain-Validated-Certificate-DV"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">Domain Validated Certificate(DV)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Organizational-Validated-Certificate-OV"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">Organizational Validated Certificate(OV)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Extended-Validated-Certificate-EV"><span class="toc-number">1.2.3.4.</span> <span class="toc-text">Extended Validated Certificate(EV)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Digital-signature-in-Digital-Certificate"><span class="toc-number">1.2.3.5.</span> <span class="toc-text">Digital signature in Digital Certificate</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Certificate-Authorities"><span class="toc-number">1.2.4.</span> <span class="toc-text">Certificate Authorities</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Attack-Scenario-Authentic-Certificate"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">Attack Scenario: Authentic Certificate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Attack-Scenario-Fake-Certificate"><span class="toc-number">1.2.4.2.</span> <span class="toc-text">Attack Scenario: Fake Certificate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Attack-Scenario-Attacker%E2%80%99s-Certificate"><span class="toc-number">1.2.4.3.</span> <span class="toc-text">Attack Scenario: Attacker’s Certificate</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Attacks-on-PKI"><span class="toc-number">1.2.5.</span> <span class="toc-text">Attacks on PKI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-3-Email-Security"><span class="toc-number">1.3.</span> <span class="toc-text">Week 3: Email Security</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Overview-Questions"><span class="toc-number">1.3.1.</span> <span class="toc-text">Overview Questions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Simple-Mail-Transfer-Protocol-SMTP"><span class="toc-number">1.3.2.</span> <span class="toc-text">Simple Mail Transfer Protocol (SMTP)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Email-Threats"><span class="toc-number">1.3.3.</span> <span class="toc-text">Email Threats</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pretty-Good-Privacy-PGP"><span class="toc-number">1.3.4.</span> <span class="toc-text">Pretty Good Privacy (PGP)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MIME"><span class="toc-number">1.3.5.</span> <span class="toc-text">MIME</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Domain-Keys-Identified-Mail-DKIM"><span class="toc-number">1.3.6.</span> <span class="toc-text">Domain Keys Identified Mail(DKIM)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-4-IPSec"><span class="toc-number">1.4.</span> <span class="toc-text">Week 4: IPSec</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Concepts"><span class="toc-number">1.4.1.</span> <span class="toc-text">Concepts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IPSec-Services"><span class="toc-number">1.4.2.</span> <span class="toc-text">IPSec Services</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IPSec-Modes"><span class="toc-number">1.4.3.</span> <span class="toc-text">IPSec Modes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Anti-replay-Services"><span class="toc-number">1.4.4.</span> <span class="toc-text">Anti-replay Services</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Security-Policy-Database-SPD"><span class="toc-number">1.4.5.</span> <span class="toc-text">Security Policy Database(SPD)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Security-Association-Database-SAD"><span class="toc-number">1.4.6.</span> <span class="toc-text">Security Association Database(SAD)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IPSec-Architecture"><span class="toc-number">1.4.7.</span> <span class="toc-text">IPSec Architecture</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Virtual-Private-Networks-VPN"><span class="toc-number">1.4.8.</span> <span class="toc-text">Virtual Private Networks(VPN)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Question"><span class="toc-number">1.4.8.1.</span> <span class="toc-text">Question</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TOR"><span class="toc-number">1.4.9.</span> <span class="toc-text">TOR</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Components-for-Tor"><span class="toc-number">1.4.9.1.</span> <span class="toc-text">Components for Tor</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Process"><span class="toc-number">1.4.9.2.</span> <span class="toc-text">Process</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-5-Transport-Layer-Security-TLS"><span class="toc-number">1.5.</span> <span class="toc-text">Week 5: Transport Layer Security (TLS)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Overview"><span class="toc-number">1.5.1.</span> <span class="toc-text">Overview</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stages"><span class="toc-number">1.5.2.</span> <span class="toc-text">Stages</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trunction-Attack"><span class="toc-number">1.5.3.</span> <span class="toc-text">Trunction Attack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POODLE-Attack"><span class="toc-number">1.5.4.</span> <span class="toc-text">POODLE Attack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Attack-Scenario"><span class="toc-number">1.5.5.</span> <span class="toc-text">Attack Scenario</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Countermeasures"><span class="toc-number">1.5.6.</span> <span class="toc-text">Countermeasures</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-6-Network-Attacks"><span class="toc-number">1.6.</span> <span class="toc-text">Week 6: Network Attacks</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Review-Questions"><span class="toc-number">1.6.1.</span> <span class="toc-text">Review Questions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SYN-Flooding-Attack"><span class="toc-number">1.6.2.</span> <span class="toc-text">SYN Flooding Attack</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#TCP-3-way-Handshake"><span class="toc-number">1.6.2.1.</span> <span class="toc-text">TCP 3-way Handshake</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Scenario"><span class="toc-number">1.6.2.2.</span> <span class="toc-text">Scenario</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Contermeasure-SYN-Cookies"><span class="toc-number">1.6.2.3.</span> <span class="toc-text">Contermeasure: SYN Cookies</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Week-Countermeasure"><span class="toc-number">1.6.2.4.</span> <span class="toc-text">Week Countermeasure</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-Reset-Attack"><span class="toc-number">1.6.3.</span> <span class="toc-text">TCP Reset Attack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-Session-Hijacking-Attack"><span class="toc-number">1.6.4.</span> <span class="toc-text">TCP Session Hijacking Attack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DNS-Protocols"><span class="toc-number">1.6.5.</span> <span class="toc-text">DNS Protocols</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Authoritative-Name-Servers"><span class="toc-number">1.6.5.1.</span> <span class="toc-text">Authoritative Name Servers</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Local-DNS-cache-poisoning-attack"><span class="toc-number">1.6.5.2.</span> <span class="toc-text">Local DNS cache poisoning attack</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Remote-DNS-cache-poisoning-attack"><span class="toc-number">1.6.5.3.</span> <span class="toc-text">Remote DNS cache poisoning attack</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Countermeasures-1"><span class="toc-number">1.6.5.3.1.</span> <span class="toc-text">Countermeasures</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-7-Wireless-Security"><span class="toc-number">1.7.</span> <span class="toc-text">Week 7: Wireless Security</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Overview-1"><span class="toc-number">1.7.1.</span> <span class="toc-text">Overview</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Threats"><span class="toc-number">1.7.2.</span> <span class="toc-text">Threats</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Wired-Equivalent-Privacy-WEP"><span class="toc-number">1.7.3.</span> <span class="toc-text">Wired Equivalent Privacy(WEP)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WPA2"><span class="toc-number">1.7.4.</span> <span class="toc-text">WPA2</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#The-4-way-handshake"><span class="toc-number">1.7.4.1.</span> <span class="toc-text">The 4-way handshake</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Reinstallation-Attack"><span class="toc-number">1.7.4.2.</span> <span class="toc-text">Reinstallation Attack</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Jamming"><span class="toc-number">1.7.5.</span> <span class="toc-text">Jamming</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-8-Intrusion-Detection-System-IDS"><span class="toc-number">1.8.</span> <span class="toc-text">Week 8: Intrusion Detection System(IDS)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Intruders"><span class="toc-number">1.8.1.</span> <span class="toc-text">Intruders</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Design-Goals"><span class="toc-number">1.8.2.</span> <span class="toc-text">Design Goals</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IDS-Models"><span class="toc-number">1.8.3.</span> <span class="toc-text">IDS Models</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IDS-Architecture"><span class="toc-number">1.8.4.</span> <span class="toc-text">IDS Architecture</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IDS-Types"><span class="toc-number">1.8.5.</span> <span class="toc-text">IDS Types</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Firewall"><span class="toc-number">1.8.6.</span> <span class="toc-text">Firewall</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Overview-2"><span class="toc-number">1.8.6.1.</span> <span class="toc-text">Overview</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Cloud-based-Web-Application-Firewall"><span class="toc-number">1.8.6.2.</span> <span class="toc-text">Cloud-based Web Application Firewall</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Sliding-window-Based-Tokenisation"><span class="toc-number">1.8.6.3.</span> <span class="toc-text">Sliding-window Based Tokenisation</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Stateful-amp-Stateless-Firewall"><span class="toc-number">1.8.6.4.</span> <span class="toc-text">Stateful &amp; Stateless Firewall</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-10-BGP-and-BGP-Security"><span class="toc-number">1.9.</span> <span class="toc-text">Week 10: BGP and BGP Security</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Autonomous-System-AS"><span class="toc-number">1.9.1.</span> <span class="toc-text">Autonomous System (AS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Types-of-BGP-connections"><span class="toc-number">1.9.2.</span> <span class="toc-text">Types of BGP connections</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Border-Gateway-Protocol-BGP"><span class="toc-number">1.9.3.</span> <span class="toc-text">Border Gateway Protocol (BGP)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IP-Prefix-Announcement"><span class="toc-number">1.9.3.1.</span> <span class="toc-text">IP Prefix Announcement</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IP-Anycast"><span class="toc-number">1.9.4.</span> <span class="toc-text">IP Anycast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Routing-Rule"><span class="toc-number">1.9.5.</span> <span class="toc-text">Routing Rule</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Week-11-Denial-of-Service-Attack"><span class="toc-number">1.10.</span> <span class="toc-text">Week 11: Denial of Service Attack</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Goals"><span class="toc-number">1.10.1.</span> <span class="toc-text">Goals</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mitigation"><span class="toc-number">1.10.2.</span> <span class="toc-text">Mitigation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Countermeasures-2"><span class="toc-number">1.10.3.</span> <span class="toc-text">Countermeasures</span></a></li></ol></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2022/11/16/FIT3031-Network-Security-Notes/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">FIT3031 Network Security Notes</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="Created: 2022-11-16 10:54:13" itemprop="dateCreated datePublished" datetime="2022-11-16T10:54:13+11:00">2022-11-16</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="Word count in article"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="Word count in article">4.8k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="Reading time"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="Reading time">29m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Network-Security/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Network Security</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Network-Security/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Network Security</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="FIT3031-Network-Security-Notes"><a href="#FIT3031-Network-Security-Notes" class="headerlink" title="FIT3031 Network Security Notes"></a>FIT3031 Network Security Notes</h1><h2 id="Week-1-Overview"><a href="#Week-1-Overview" class="headerlink" title="Week 1: Overview"></a>Week 1: Overview</h2><h3 id="Type-of-Network-Attacks"><a href="#Type-of-Network-Attacks" class="headerlink" title="Type of Network Attacks"></a>Type of Network Attacks</h3><ul>
+<li>Interruption<ul>
+<li>Availability</li>
+</ul>
+</li>
+<li>Interception<ul>
+<li>Confidentiality</li>
+</ul>
+</li>
+<li>Modification<ul>
+<li>Integrity</li>
+</ul>
+</li>
+<li>Fabrication<ul>
+<li>Authentication</li>
+</ul>
+</li>
+</ul>
+<h3 id="Threats-Attacks-Vulnerabilities-amp-Risks"><a href="#Threats-Attacks-Vulnerabilities-amp-Risks" class="headerlink" title="Threats, Attacks, Vulnerabilities &amp; Risks"></a>Threats, Attacks, Vulnerabilities &amp; Risks</h3><p> Threats</p>
+<ul>
+<li>a malicious or negative event that takes advantage of vulnerabilities.</li>
+</ul>
+<p>Attacks</p>
+<ul>
+<li>passive attack: eavesdropping, traffic analysis</li>
+<li>active attack: denial of service(DoS), injection</li>
+</ul>
+<p>Vulnerabilities</p>
+<ul>
+<li>Flaws, e.g. lack of AUTH</li>
+</ul>
+<p>Risks</p>
+<ul>
+<li>likelihood of attacks &amp; consequence of attacks</li>
+<li>potential damage or loss when the threat occurs</li>
+</ul>
+<h3 id="Security-Mechanisms"><a href="#Security-Mechanisms" class="headerlink" title="Security Mechanisms"></a>Security Mechanisms</h3><ul>
+<li>Prevention</li>
+<li>Detection</li>
+<li>Recovery</li>
+</ul>
+<h3 id="Security-Goals"><a href="#Security-Goals" class="headerlink" title="Security Goals"></a>Security Goals</h3><ul>
+<li><p>Secrecy/ Confidentiality(CONF)</p>
+<ul>
+<li>Encryption</li>
+</ul>
+</li>
+<li><p>Integrity</p>
+<ul>
+<li>Message Authentication Code(MAC)</li>
+<li>Digital Signature</li>
+</ul>
+</li>
+<li><p>Authentication</p>
+<ul>
+<li>The digital signature, biometrics, password</li>
+</ul>
+</li>
+<li><p>Non-repudiation(NR)</p>
+<ul>
+<li>The digital signature, biometrics</li>
+</ul>
+</li>
+<li><p>Availability</p>
+</li>
+</ul>
+<h3 id="Crypto-Overview"><a href="#Crypto-Overview" class="headerlink" title="Crypto Overview"></a>Crypto Overview</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>Symmetric</th>
+<th>Asymmetric</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Confidentiality</td>
+<td>One-time Pad cipher, Stream ciphers, Block Ciphers</td>
+<td>Encryption with Public Key</td>
+</tr>
+<tr>
+<td>Integrity</td>
+<td>Message Authentication Code(e.g. HMAC)</td>
+<td>Digital Signature</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>MAC+Nonce</td>
+<td>Digital Signature + Nonce</td>
+</tr>
+</tbody></table>
+<p><img src="https://img-blog.csdnimg.cn/2019090612012265.png" alt="Comparison of hash,MAC and digital signature" loading="lazy"></p>
+<p>Stream cipher</p>
+<ul>
+<li>an encryption algorithm that <strong>uses a symmetric key</strong> to encrypt and decrypt a given amount of data.</li>
+</ul>
+<p>One-time pad cipher:</p>
+<ul>
+<li>a randomly generated private key is used <strong>only once</strong> to encrypt a message and decrypted by the recipient using a matching one-time pad and key.</li>
+</ul>
+<p>Message Authentication Code(MAC)</p>
+<ul>
+<li>The sender forwards the message along with the MAC which uses a secret key to compress the message.</li>
+<li>The message is sent in clear with MAC.</li>
+<li>The secret key is only known to the sender and the intended recipient.</li>
+<li><strong>cannot</strong> achieve <strong>Non-repudiation</strong> -&gt; we cannot identify who sent this MAC - sender or recipient?</li>
+</ul>
+<h3 id="Symmetric-vs-Asymmetric"><a href="#Symmetric-vs-Asymmetric" class="headerlink" title="Symmetric vs Asymmetric"></a>Symmetric vs Asymmetric</h3><p>Symmetric encryption</p>
+<ul>
+<li>fast</li>
+<li>has a key distribution problem</li>
+<li>Block cipher: ARS</li>
+<li>Stream cipher modes: RC4</li>
+</ul>
+<p>Public-key encryption</p>
+<ul>
+<li>slow</li>
+<li>has no key distribution problem</li>
+<li>RSA, ElGamal</li>
+</ul>
+<h3 id="Adversarial-Capability-Against-Encryption"><a href="#Adversarial-Capability-Against-Encryption" class="headerlink" title="Adversarial Capability Against Encryption"></a>Adversarial Capability Against Encryption</h3><ul>
+<li><p>Ciphertext-only adversary</p>
+<ul>
+<li>the attacker knows ciphertext by eavesdropping</li>
+</ul>
+</li>
+<li><p>Known-plaintext adversary</p>
+<ul>
+<li>the attacker knows at least one sample of both plaintext and ciphertext.</li>
+<li>e.g. <strong>XOR cipher</strong> can be compromised to use <code>plaintext XOR ciphertext</code> to get the key </li>
+</ul>
+</li>
+<li><p>Chosen-plaintext attack</p>
+<ul>
+<li>the attacker can choose what plaintext will be <strong>encrypted</strong>.( Attacker can run the encryption functions for selected inputs)</li>
+</ul>
+</li>
+<li><p>Chosen-ciphertext Adversary</p>
+<ul>
+<li>the attacker can choose ciphertext to be <strong>decrypted</strong>.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Week-2-Public-Key-Infrastructure"><a href="#Week-2-Public-Key-Infrastructure" class="headerlink" title="Week 2: Public Key Infrastructure"></a>Week 2: Public Key Infrastructure</h2><h3 id="Man-in-the-Middle-MITM-Attack"><a href="#Man-in-the-Middle-MITM-Attack" class="headerlink" title="Man-in-the-Middle (MITM) Attack"></a>Man-in-the-Middle (MITM) Attack</h3><p>Scenario:</p>
+<ol>
+<li>Mallory intercepts <code>pk_alice</code> and forwards <code>pk_mallory</code> to Bob</li>
+<li>Bob uses <code>pk_mallory</code> to encrypt messages as he cannot tell the difference</li>
+<li>Mallory intercepts Bob’s encrypted messages and decrypts them.</li>
+</ol>
+<p><strong>Solution</strong></p>
+<blockquote>
+<ul>
+<li>Alice needs to go to a trusted party(<strong>Certificate Authority</strong>) to get a certificate.</li>
+<li>After verifying Alice’s identity, the trusted party issues a certificate with Alice’s name and her public key.</li>
+<li>Alice sends the entire certificate to Bob.</li>
+<li>Bob verifies the certificate using Alice’s public key - make sure it’s from Alice, not others.</li>
+<li>The certificate cannot be forged or tampered</li>
+</ul>
+</blockquote>
+<h3 id="Digital-Signature"><a href="#Digital-Signature" class="headerlink" title="Digital Signature"></a>Digital Signature</h3><p>Use the private key to encrypt the message -&gt; generate the digital signature</p>
+<p>Use the public key to decrypt the digital signature -&gt; verify the digital signature -&gt; check if <code>M == M&#39;</code></p>
+<h3 id="Digital-Certificate"><a href="#Digital-Certificate" class="headerlink" title="Digital Certificate"></a>Digital Certificate</h3><h4 id="X-509-Certificate-Example"><a href="#X-509-Certificate-Example" class="headerlink" title="X.509 Certificate Example"></a>X.509 Certificate Example</h4><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104124318376.png" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104124353614.png" loading="lazy"></p>
+<p>Other fields:</p>
+<ul>
+<li>Usage period</li>
+<li>Serial number</li>
+</ul>
+<h4 id="Domain-Validated-Certificate-DV"><a href="#Domain-Validated-Certificate-DV" class="headerlink" title="Domain Validated Certificate(DV)"></a>Domain Validated Certificate(DV)</h4><p>The CA verifies the domain records to check if the domain belongs to the applicant(before issuing the certificate).</p>
+<p>Domain Control Validation is performed on the domain name in the certificate request.</p>
+<h4 id="Organizational-Validated-Certificate-OV"><a href="#Organizational-Validated-Certificate-OV" class="headerlink" title="Organizational Validated Certificate(OV)"></a>Organizational Validated Certificate(OV)</h4><p>CAs verify the following before issuing OV certificates: </p>
+<ul>
+<li>Domain control validation. </li>
+<li>Applicant’s identity and address. </li>
+<li>Applicant’s link to the organisation. </li>
+<li>Organisation’s address. </li>
+<li>Organisation’s WHOIS record.</li>
+<li>Callback on the organisation’s verified telephone number </li>
+</ul>
+<h4 id="Extended-Validated-Certificate-EV"><a href="#Extended-Validated-Certificate-EV" class="headerlink" title="Extended Validated Certificate(EV)"></a>Extended Validated Certificate(EV)</h4><p>CAs issuing EV certificates require documents that are legally signed from <strong>registration authorities</strong>- needs to verify the organization. (will verify the legal and proper standings of the organisation)</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104104444256.png" loading="lazy"></p>
+<h4 id="Digital-signature-in-Digital-Certificate"><a href="#Digital-signature-in-Digital-Certificate" class="headerlink" title="Digital signature in Digital Certificate"></a>Digital signature in Digital Certificate</h4><p><strong>CA generates a digital signature in the certificate using its private key</strong>. Anyone can verify the digital signature to see if the certificate has been modified using CA’s public key.</p>
+<h3 id="Certificate-Authorities"><a href="#Certificate-Authorities" class="headerlink" title="Certificate Authorities"></a>Certificate Authorities</h3><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104105253255.png" loading="lazy"></p>
+<p><strong>Root CA’s certificates are self-signed.</strong></p>
+<blockquote>
+<p><strong>How Root CA can be trusted?</strong></p>
+<p>Public keys of CAs will be preinstalled in the OS, browser and other software.</p>
+</blockquote>
+<p>Using Root CA’s public key to verify Intermediate CA’s certificate, Using Intermediate CA’s public key to verify Sub CA’s certificate.</p>
+<h4 id="Attack-Scenario-Authentic-Certificate"><a href="#Attack-Scenario-Authentic-Certificate" class="headerlink" title="Attack Scenario: Authentic Certificate"></a>Attack Scenario: Authentic Certificate</h4><p>The attacker forwards the authentic certificate to Alice.</p>
+<p>Alice finds the certificate is authentic so she uses the certificate’s public key to encrypt the <code>secret</code> and send it to the “server”.</p>
+<p>The attacker will intercept the request but he cannot decrypt the <code>secret</code> because he doesn’t know the private key</p>
+<h4 id="Attack-Scenario-Fake-Certificate"><a href="#Attack-Scenario-Fake-Certificate" class="headerlink" title="Attack Scenario: Fake Certificate"></a>Attack Scenario: Fake Certificate</h4><p>The attacker creates a fake certificate for the domain <code>example.com</code> with his own public key.</p>
+<p>CA will not sign the certificate as the attacker is not the owner of <code>example.com</code>.</p>
+<p>The attacker tries to self-sign the certificate and sends it to Alice.</p>
+<p>Alice’s browser will give the warning as it cannot find any trusted certificate to verify the received certificate.</p>
+<h4 id="Attack-Scenario-Attacker’s-Certificate"><a href="#Attack-Scenario-Attacker’s-Certificate" class="headerlink" title="Attack Scenario: Attacker’s Certificate"></a>Attack Scenario: Attacker’s Certificate</h4><p>The attacker has his own valid certificate.</p>
+<p>The attacker sends his certificate to Alice.</p>
+<p>Alice’s browser checks if the certificate’s <strong>subject field</strong> matches Alice’s intent.</p>
+<h3 id="Attacks-on-PKI"><a href="#Attacks-on-PKI" class="headerlink" title="Attacks on PKI"></a>Attacks on PKI</h3><p><strong>The Man-in-the-Middle proxy</strong></p>
+<blockquote>
+<p>The proxy creates a self-signed CA certificate installed on the user’s browser.</p>
+<p>The proxy will intercept the communication.</p>
+</blockquote>
+<p><strong>Attacks on CA’s verification process</strong></p>
+<p><strong>Attacks on CA’s signing process</strong>: the private key is compromised</p>
+<ul>
+<li>How to protect the private key? Use <strong>Hardware Security Model</strong></li>
+</ul>
+<p><strong>Attacks on Algorithms</strong>: Digital certificate depends on one-way hash and digital signature.</p>
+<ul>
+<li>Use stronger algorithms</li>
+</ul>
+<p><strong>Attacks on User confirmation</strong>:  Some software does not compare these two pieces of information(the common name field inside the certificate and information provided or approved by user): <strong>security flaw</strong> </p>
+<h2 id="Week-3-Email-Security"><a href="#Week-3-Email-Security" class="headerlink" title="Week 3: Email Security"></a>Week 3: Email Security</h2><h3 id="Overview-Questions"><a href="#Overview-Questions" class="headerlink" title="Overview Questions"></a>Overview Questions</h3><ul>
+<li>What are the principal services provided by PGP?<ul>
+<li>Key management, Confidentiality, Integrity, Authenticity.</li>
+</ul>
+</li>
+<li>What is the utility of a detached signature?<ul>
+<li>Signatures are sent separately. Two files, original data and the signature.</li>
+</ul>
+</li>
+<li>Why use R64 conversion for an e-mail application?<ul>
+<li>Some email servers don’t accept emails in binary, it needs to be in printable characters. R64 uses ASCII character which are all printable.</li>
+</ul>
+</li>
+<li>What is S/MEME? what are the cryptographic functions used in S/MIME?<ul>
+<li>S/MIME = Encrypted MIME</li>
+<li>3DES/AES for encryption, Elgamal for key exchange, SHA for signatures</li>
+</ul>
+</li>
+<li>What is DKIM? How is the DKIM email authentication service different when compared to S/MIME or PGP?<ul>
+<li>The sender’s email server signs emails</li>
+<li>DKIM is for email server to email server, PGP and S/MIME are end to end encryption.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Simple-Mail-Transfer-Protocol-SMTP"><a href="#Simple-Mail-Transfer-Protocol-SMTP" class="headerlink" title="Simple Mail Transfer Protocol (SMTP)"></a>Simple Mail Transfer Protocol (SMTP)</h3><ul>
+<li>text only</li>
+<li>limited to ASCII</li>
+<li>Size limit</li>
+<li>command only</li>
+<li>issues<ul>
+<li>no security - clear/plain messages</li>
+</ul>
+</li>
+</ul>
+<h3 id="Email-Threats"><a href="#Email-Threats" class="headerlink" title="Email Threats"></a>Email Threats</h3><ul>
+<li>Authenticity<ul>
+<li>unauthorised access</li>
+</ul>
+</li>
+<li>Integrity<ul>
+<li>unauthorised modification of emails</li>
+</ul>
+</li>
+<li>Confidentiality<ul>
+<li>unauthorised disclosure of sensitive information</li>
+</ul>
+</li>
+<li>Availability<ul>
+<li>prevent users from sending/receiving emails</li>
+</ul>
+</li>
+</ul>
+<p>TLS is not enough secure for emails, because it only secures communication between two hops. ALL intermediate hops see plaintext.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104131545588.png" loading="lazy"></p>
+<h3 id="Pretty-Good-Privacy-PGP"><a href="#Pretty-Good-Privacy-PGP" class="headerlink" title="Pretty Good Privacy (PGP)"></a>Pretty Good Privacy (PGP)</h3><ul>
+<li><p>key management</p>
+</li>
+<li><p>AUTH + INT</p>
+<ul>
+<li>Digital signature(Non-repudiation)</li>
+</ul>
+</li>
+<li><p>CONF</p>
+<ul>
+<li>Encryption</li>
+</ul>
+</li>
+<li><p><strong>Encryption steps</strong></p>
+<ul>
+<li>HASH(M) =&gt; <strong>digest</strong></li>
+<li>RSA(digest,secretKey) =&gt; <strong>digital signature</strong><ul>
+<li>RSA is a public-key encryption especially used for signing.</li>
+</ul>
+</li>
+<li>Digital signature || M =&gt; certificate</li>
+<li>Compress(certificate) =&gt; compressed certificate</li>
+<li>AES(sessionKey, compressed certificate) =&gt; encrypted compressed certificate(using symmetric encryption)</li>
+<li>RSA(sessionKey, ReceiverPublicKey) =&gt; encrypted sessionKey, used to transmit session key, another user can use his private key to get the session key.</li>
+<li>Send to the recipient:  encrypted compressed certificate || encrypted sessionKey</li>
+</ul>
+</li>
+<li><p><strong>Decryption steps</strong></p>
+<ul>
+<li>Get decrypted session key using the private key =&gt; sessionKey</li>
+<li>Get decrypted compressed certificate using the seesionKey =&gt; compressed cetrificate</li>
+<li>Get M||digital signature by decompressing the data =&gt; <code>M||digital signature = DeCompress(compressed certificate)</code></li>
+<li>Verify hash(M) and hash(M’)<ul>
+<li>Hash(M’) = decrypt the digital signature using the sender’s public key.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Compression</strong></p>
+<ul>
+<li><p>PGP uses a ZIP compression algorithm, <strong>after</strong> applying the signature and <strong>before</strong> the encryption</p>
+</li>
+<li><p>Why does this order matter?</p>
+<ul>
+<li>It is preferable to sign an uncompressed message so that the signature does not depend on the compression algorithm. If you do the compression first, the signatures will be different when different compression algorithms are applied.</li>
+<li>This has the benefit of saving space both for e-mail transmission and for file storage.</li>
+<li><strong>Encryption after compression</strong> strengthens the encryption, since compression reduces redundancy in the message.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Radix-64 conversion</strong></p>
+<ul>
+<li>used for achieving compatibility with email protocols</li>
+<li>text=&gt;Binary =&gt; ASCII character, every 6bits = 1 ASCII character</li>
+<li><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104151025128.png" loading="lazy"></li>
+</ul>
+</li>
+<li><p><strong>Key Management</strong></p>
+<ul>
+<li>send key identifier(KeyID) instead of full pk for bandwidth efficiency</li>
+<li>users can have multiple key pairs</li>
+<li>two types of key rings to maintain<ul>
+<li>her own public/private key pairs<ul>
+<li><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104151909960.png" loading="lazy"></li>
+<li>Store encrypted private keys instead of clear private keys</li>
+</ul>
+</li>
+<li>public keys of other correspondents<ul>
+<li>all pk of other users known to the user, indexed by their key Ids.</li>
+<li><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104151758274.png" loading="lazy"></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Trust Model</p>
+<ul>
+<li>not rely on certificate authorities (CAs)</li>
+<li>every user is its own CA<ul>
+<li>Sign keys for users they know</li>
+</ul>
+</li>
+<li>forms web of trust<ul>
+<li>trusted keys signed</li>
+<li>trusted keys other have signed if there is a chain of signatures to them</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Limitations</strong></p>
+<ul>
+<li>Must exchange public key</li>
+<li>Target attacks against PGP keyIDs</li>
+<li>prevent useful functionality like search, spam filtering, topic extraction..</li>
+</ul>
+</li>
+</ul>
+<h3 id="MIME"><a href="#MIME" class="headerlink" title="MIME"></a>MIME</h3><p>MIME(Secure/MultipurposeInternet Mail Extensions) supports different types of content.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221104153525217.png" loading="lazy"></p>
+<p>Each client has a list of trusted CA’s certs and their own pairs &amp; certs signed by trusted CA’s</p>
+<h3 id="Domain-Keys-Identified-Mail-DKIM"><a href="#Domain-Keys-Identified-Mail-DKIM" class="headerlink" title="Domain Keys Identified Mail(DKIM)"></a>Domain Keys Identified Mail(DKIM)</h3><p>Tx(user)’s email must be signed by a secret key of the admin domain of Tx before leaving the domain.</p>
+<p>Transparent to user.</p>
+<p>Rx can verify the signature using the domain’s public key.</p>
+<p>the public key will be stored in the DNS server, the signature will be attached to the header of the email.</p>
+<h2 id="Week-4-IPSec"><a href="#Week-4-IPSec" class="headerlink" title="Week 4: IPSec"></a>Week 4: IPSec</h2><h3 id="Concepts"><a href="#Concepts" class="headerlink" title="Concepts"></a>Concepts</h3><p>IPSec =&gt; network layer</p>
+<p>IPSec <strong>secures IP datagrams at the Internet layer according to the security policy</strong> of a communicating IP node, before forwarding them to the network interface layer.</p>
+<p>The intended receiving IP node verifies the datagrams according to the <strong>established security paramaeters</strong> and <strong>rejects</strong> any that have not been protected in accordance with the policy defined for such traffic.</p>
+<h3 id="IPSec-Services"><a href="#IPSec-Services" class="headerlink" title="IPSec Services"></a>IPSec Services</h3><blockquote>
+<p><strong>Authentication</strong></p>
+<ul>
+<li>data origin authentication - verifies the claimed identify of the source data</li>
+</ul>
+<p><strong>Integrity</strong></p>
+<ul>
+<li>connectionless integrity<ul>
+<li>detects tampering of individual ip datagrams</li>
+</ul>
+</li>
+<li>Anti-replay integrity<ul>
+<li>detects arrival of duplicate IP datagrams</li>
+</ul>
+</li>
+</ul>
+<p><strong>Confidentiality:</strong></p>
+<ul>
+<li>Protects data from unauthroised disclosure and provides a limited form of traffic-flow confidentiality.<ul>
+<li>conceals(hides) the source IP address, the destination IP address, the size of an IP datagram and frequency of communication</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>Authentication Header(AH)<ul>
+<li>INT, data-origin AUTH, anti-replay(Sequence number), access control, no CONF</li>
+<li>can only <strong>authenticate</strong> data(IP payload and selected portion of IP header), and <strong>cannot encrypt</strong> data.</li>
+</ul>
+</li>
+<li>Encapsulating Security Payload(ESP)<ul>
+<li>anti-replay, CONF</li>
+<li>encrypts and authenticates IP payload but not IP header</li>
+</ul>
+</li>
+</ul>
+<h3 id="IPSec-Modes"><a href="#IPSec-Modes" class="headerlink" title="IPSec Modes"></a>IPSec Modes</h3><ul>
+<li>Transport Mode<ul>
+<li>IP packet inserted with IPsec header</li>
+</ul>
+</li>
+<li>Tunnel Mode<ul>
+<li>original packet preserved, new header added/prepended.</li>
+<li>ESP/AH Header is immediately after the New IP Header, original IP packet preserved</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Transport Mode</th>
+<th>Tunnel Mode</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AH</td>
+<td>Authenticates IP payload and selected portions of IP header</td>
+<td>Authenticates entire inner IP packet (inner header plus IP payload) plus a selected portion of the outer IP header.</td>
+</tr>
+<tr>
+<td>ESP</td>
+<td>Encrypts IP payload. Allows traffic analysis</td>
+<td>Encrypts entire inner IP packet. No routers on the way can examine the inner IP header.</td>
+</tr>
+<tr>
+<td>ESP+AUTH</td>
+<td>Encrypts IP payload. Authenticates IP payload but not IP header</td>
+<td>Encrypts entire inner IP packet. Authenticates inner IP packet.</td>
+</tr>
+</tbody></table>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221105101117217.png" loading="lazy"></p>
+<h3 id="Anti-replay-Services"><a href="#Anti-replay-Services" class="headerlink" title="Anti-replay Services"></a>Anti-replay Services</h3><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221105105559855.png" loading="lazy"></p>
+<p>Cases</p>
+<ul>
+<li>If sequence number received now is smaller than the most left size of the current window, drop the packet.</li>
+<li>If sequence number received now is within the current window range, check if packet has already been recived</li>
+<li>If sequence number received now is greater than the max size of the current window, make the sequence number received now the max edge, and calculate the min edge through <code>N-W+1</code></li>
+<li>If the recipient sets N=60 and the window size W=64, range should be 0-60</li>
+</ul>
+<h3 id="Security-Policy-Database-SPD"><a href="#Security-Policy-Database-SPD" class="headerlink" title="Security Policy Database(SPD)"></a>Security Policy Database(SPD)</h3><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221106101507795.png" loading="lazy"></p>
+<p><strong>3 IPSec policies:</strong></p>
+<ul>
+<li>DISCARD<ul>
+<li>discard the packet</li>
+</ul>
+</li>
+<li>PROTECT<ul>
+<li>protect the packet with AH and the ESP security protocols</li>
+</ul>
+</li>
+<li>BYPASS<ul>
+<li>bypass the IPSec processing</li>
+</ul>
+</li>
+</ul>
+<h3 id="Security-Association-Database-SAD"><a href="#Security-Association-Database-SAD" class="headerlink" title="Security Association Database(SAD)"></a>Security Association Database(SAD)</h3><ul>
+<li><p>AH info</p>
+</li>
+<li><p>ESP info</p>
+</li>
+<li><p>Lifetime of this SA</p>
+</li>
+<li><p>IPsec Protocol Mode</p>
+<ul>
+<li>Transparent/tunnel</li>
+</ul>
+</li>
+</ul>
+<h3 id="IPSec-Architecture"><a href="#IPSec-Architecture" class="headerlink" title="IPSec Architecture"></a>IPSec Architecture</h3><ul>
+<li>Authentication Header(AH)<ul>
+<li>An extension header for message authentication</li>
+</ul>
+</li>
+<li>Encapsulating Security Payload(ESP)<ul>
+<li>provides encryption for combined encryption/msg INT</li>
+</ul>
+</li>
+<li>Internet Key Exchange(IKE)<ul>
+<li>the key management schemes for use with IPSec</li>
+</ul>
+</li>
+</ul>
+<h3 id="Virtual-Private-Networks-VPN"><a href="#Virtual-Private-Networks-VPN" class="headerlink" title="Virtual Private Networks(VPN)"></a>Virtual Private Networks(VPN)</h3><p>Isolation</p>
+<p>Tunneling</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221106103411619.png" loading="lazy"></p>
+<p>Many logical overlay networks co-exist</p>
+<ul>
+<li>over the same physical network</li>
+<li>provide its own dedicated service</li>
+</ul>
+<h4 id="Question"><a href="#Question" class="headerlink" title="Question"></a>Question</h4><ul>
+<li>Which one is better?<ul>
+<li>Placing VPN server behind the firewall</li>
+<li>Placing VPN server in front of the firewall</li>
+<li>Anwser<ul>
+<li>VPN in front of the firewall is better. VPN has the function of firewall as well, after the VPN gateway, the message will be decrypted so that Firewall can look into the details of the package.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TOR"><a href="#TOR" class="headerlink" title="TOR"></a>TOR</h3><h4 id="Components-for-Tor"><a href="#Components-for-Tor" class="headerlink" title="Components for Tor"></a>Components for Tor</h4><ul>
+<li>Client</li>
+<li>Server</li>
+<li>Tor(onion) router: the special proxy relays the application adata</li>
+<li>Directory server: servs holding Tor router information</li>
+</ul>
+<h4 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h4><p>The last router will see the clear data but not be knowing where the message from.</p>
+<p>Every router only knows the predecessor and successor.</p>
+<p><strong>Send Message from client:</strong></p>
+<ol>
+<li><p>Client obtains a list of Tor nodes from a <strong>directory server</strong></p>
+</li>
+<li><p>Client picks a random path to destination server.</p>
+</li>
+<li><p>Client negotiates an AES key with <strong>each router</strong>(every router has its own encryption key).</p>
+</li>
+<li><p>Client encrypts message</p>
+<ul>
+<li>C3 = Encrypt(K3, data||IP_Server)</li>
+<li>C2 = Encrypt(K2, C3 || IP_OR3)</li>
+<li>C1 = Encrypt(K1, C2 || IP_OR2)</li>
+</ul>
+</li>
+<li><p>Client sends an IP packet as: IP_Client || IP_OR1 || C1</p>
+<ul>
+<li>send IP packet that is consist of current router/machine’s IP, next destination’s IP and encryped message</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><p>Packet arrives at OR1 and OR1 performs:</p>
+<ul>
+<li>C2 || IP_OR2 = DEC(K1, C1)</li>
+<li>caches IP_Client, IP_OR2</li>
+<li>sents an IP packet as: IP_OR1 || IP_OR2 || C2</li>
+</ul>
+</li>
+<li><p>Packet arrives at OR2 and OR2 performs:</p>
+<ul>
+<li>C3 || IP_OR3 = DEC(K2, C2)</li>
+<li>caches IP_OR1 || IP_OR3</li>
+<li>sents an IP packet as IP_OR2 || IP_OR3 || C3</li>
+</ul>
+</li>
+<li><p>Packet arrvies at OR3 and OR3 performs:</p>
+<ul>
+<li>IP_Server || data = DEC(K3,C3)</li>
+<li>Caches IP_OR2, IP_Server</li>
+<li>sents an IP packet as IP_OR3 || IP_SERVER || data</li>
+</ul>
+</li>
+</ul>
+<h2 id="Week-5-Transport-Layer-Security-TLS"><a href="#Week-5-Transport-Layer-Security-TLS" class="headerlink" title="Week 5: Transport Layer Security (TLS)"></a>Week 5: Transport Layer Security (TLS)</h2><h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><p>TLS sits <strong>between</strong> the Transport layer and Application layer(not belong to any of them).</p>
+<ul>
+<li>Unsurported data =&gt; given to TLS by <strong>application layer</strong></li>
+<li>TLS gives protected data to <strong>transport layer</strong>.</li>
+</ul>
+<p>Confidentiality</p>
+<ul>
+<li>Nobody other than the two ends of the channel can see the actual content of the data transmitted.</li>
+</ul>
+<p>Integrity</p>
+<ul>
+<li>Channel can detect any changes</li>
+</ul>
+<p>Authentication</p>
+<ul>
+<li>At least one end of the channel needs to be authenticated, so the other end knows who it is talking to.</li>
+</ul>
+<h3 id="Stages"><a href="#Stages" class="headerlink" title="Stages"></a>Stages</h3><ul>
+<li><p>Setup: TLS handshake</p>
+<ul>
+<li><a href="https://leihehe.top/2022/06/12/Security-Protocols/">https://leihehe.top/2022/06/12/Security-Protocols/</a></li>
+<li><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221106220121668.png" loading="lazy"></li>
+</ul>
+</li>
+<li><p>Secure Chanel: TLS Record</p>
+<ul>
+<li><p>Each record contains a header and a payload.</p>
+<ul>
+<li><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221106221639327.png" loading="lazy"></li>
+<li>Break stream in series of records<ul>
+<li>each record carries a MAC</li>
+<li>receiver can act on each record as it arrives</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Send data process</strong></p>
+<ul>
+<li>Get data from application layer</li>
+<li>Fragement</li>
+<li>Compress(optional)</li>
+<li>Add MAC and padding</li>
+<li>Encrypt</li>
+<li>Add TLS header</li>
+</ul>
+</li>
+<li><p><strong>Receive data process</strong></p>
+<ul>
+<li>Decrypt</li>
+<li>Check integrity<ul>
+<li>use variable-length records to distinguish MAC from data</li>
+<li><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221107102250059.png" loading="lazy"></li>
+</ul>
+</li>
+<li>Decompress</li>
+<li>Buffered</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Trunction-Attack"><a href="#Trunction-Attack" class="headerlink" title="Trunction Attack"></a>Trunction Attack</h3><p>Attacker forges TCP connection close segment</p>
+<p>one or both sides think there is less data than there actually is</p>
+<p><strong>Solution</strong>: record types, with one type for closure</p>
+<ul>
+<li>Type 0 for data, Type closure</li>
+</ul>
+<h3 id="POODLE-Attack"><a href="#POODLE-Attack" class="headerlink" title="POODLE Attack"></a>POODLE Attack</h3><p>it takes advantage of CBC mode (SSL V3.0).</p>
+<ul>
+<li>The client initiates handshake and sends client_hello</li>
+<li>The attacker intercepts via MITM attack, and impersonates the server until the client agrees to downgrade to v3.0</li>
+</ul>
+<h3 id="Attack-Scenario"><a href="#Attack-Scenario" class="headerlink" title="Attack Scenario"></a>Attack Scenario</h3><p>Attacker intercepts the channel between client and web server and injects ciphertexts</p>
+<p>Server responses that an attacker can explore:</p>
+<ul>
+<li>Case 1: Valid ciphertext and padding</li>
+<li>Case 2: Invalid ciphertext with invalid padding</li>
+<li>Case 3: Invalid ciphertext but valid padding</li>
+</ul>
+<h3 id="Countermeasures"><a href="#Countermeasures" class="headerlink" title="Countermeasures"></a>Countermeasures</h3><ul>
+<li><p>Remove server response</p>
+</li>
+<li><p>Use AES GCM model - authenticated encryption</p>
+<ul>
+<li>Ensure that the ciphertext is not modified during the transmission</li>
+</ul>
+</li>
+</ul>
+<h2 id="Week-6-Network-Attacks"><a href="#Week-6-Network-Attacks" class="headerlink" title="Week 6: Network Attacks"></a>Week 6: Network Attacks</h2><h3 id="Review-Questions"><a href="#Review-Questions" class="headerlink" title="Review Questions"></a>Review Questions</h3><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221114100445315.png" loading="lazy"></p>
+<p>Network Level</p>
+<ul>
+<li>VPN, IPSEC</li>
+<li>good when you want to encrypt everything(traffic)</li>
+</ul>
+<p>Transport Level</p>
+<ul>
+<li>TLS<ul>
+<li>services provided<ul>
+<li>Confidentiality<ul>
+<li>Encryption</li>
+</ul>
+</li>
+<li>Integrity<ul>
+<li>MAC</li>
+</ul>
+</li>
+<li>Authentication</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Application Level</p>
+<h3 id="SYN-Flooding-Attack"><a href="#SYN-Flooding-Attack" class="headerlink" title="SYN Flooding Attack"></a>SYN Flooding Attack</h3><h4 id="TCP-3-way-Handshake"><a href="#TCP-3-way-Handshake" class="headerlink" title="TCP 3-way Handshake"></a>TCP 3-way Handshake</h4><p>According to TCP 3-way handshake Protocol, when the server recievs the initial SYN pakcet, it uses TCB(Transmisson Control Block) to store the information about the connection</p>
+<ul>
+<li>This is called half-open connection as only client-server connection is comfirmed.</li>
+<li>The server stores the TCB in a queue that is only for the half-open connection.</li>
+</ul>
+<p>After the server gets ACK packet, it will take this TCB out of queue and store in a different place.</p>
+<h4 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h4><p>Continuously send a lot of SYN packets to the server using spoofed ip addresses. This consumes the space in the queue by inserting the TCB record.</p>
+<p>Do not finish the 3rd stop of hanshake as it dequeue the TCB record</p>
+<h4 id="Contermeasure-SYN-Cookies"><a href="#Contermeasure-SYN-Cookies" class="headerlink" title="Contermeasure: SYN Cookies"></a>Contermeasure: SYN Cookies</h4><ul>
+<li>After receiving a SYN packet, the server will calculate a keyed hash in terms of the SYN packet using a <strong>secret key</strong>.</li>
+<li>This hash(H) is sent to the client(ip address) as the initial sequence number from the server. H is called SYN cookie.</li>
+<li><strong>The server will not store the half-open connection in its queue.</strong></li>
+<li><strong>Attacker will not recived H because of the fake IP address.</strong></li>
+<li>Normal client will send H+1 to the server, and server will check it.</li>
+</ul>
+<h4 id="Week-Countermeasure"><a href="#Week-Countermeasure" class="headerlink" title="Week Countermeasure"></a>Week Countermeasure</h4><ul>
+<li>Do not store any information about SYN packet.<ul>
+<li>ACK flood attack, no corresponding ack number and seq number stored in the buffer.</li>
+</ul>
+</li>
+</ul>
+<h3 id="TCP-Reset-Attack"><a href="#TCP-Reset-Attack" class="headerlink" title="TCP Reset Attack"></a>TCP Reset Attack</h3><ul>
+<li><p>stop the connection between two hosts.</p>
+</li>
+<li><p>use RST(header) packet to immediately break the conneciton.</p>
+<ul>
+<li>get corresponding information from the last packet(sequence number, source port, etc)</li>
+</ul>
+</li>
+<li><p><strong>Can TLS mitigate this attack?</strong></p>
+<ul>
+<li><p>NO. TLS is on top of TCP, TLS cannot protect the header of TCP, so RST can still be set.</p>
+</li>
+<li><p><strong>Solution:</strong></p>
+<ul>
+<li>IDS</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TCP-Session-Hijacking-Attack"><a href="#TCP-Session-Hijacking-Attack" class="headerlink" title="TCP Session Hijacking Attack"></a>TCP Session Hijacking Attack</h3><ul>
+<li><p>What can a hacker do?</p>
+<ul>
+<li><p>Capture the packet and get the <code>next sequence number</code> and <code>acknowledgement number</code></p>
+</li>
+<li><p>Forge a packet using the information got previously.</p>
+<ul>
+<li>Trying to make the packet valid</li>
+</ul>
+</li>
+<li><p>Successfully take over the session</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Solution</strong></p>
+<ul>
+<li>making it difficult for attackers to spoof packets<ul>
+<li>Randomise initial sequence number</li>
+<li>Randomise source port number</li>
+</ul>
+</li>
+<li>Encrypting TCP payload and header</li>
+</ul>
+</li>
+</ul>
+<h3 id="DNS-Protocols"><a href="#DNS-Protocols" class="headerlink" title="DNS Protocols"></a>DNS Protocols</h3><h4 id="Authoritative-Name-Servers"><a href="#Authoritative-Name-Servers" class="headerlink" title="Authoritative Name Servers"></a>Authoritative Name Servers</h4><ul>
+<li>Each DNS zone has at least one authoritative nameserver that publishes information about the zone.</li>
+<li>It provides the original and definitive answers to DNS queries.</li>
+</ul>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221107162059195.png" loading="lazy"></p>
+<h4 id="Local-DNS-cache-poisoning-attack"><a href="#Local-DNS-cache-poisoning-attack" class="headerlink" title="Local DNS cache poisoning attack"></a>Local DNS cache poisoning attack</h4><ul>
+<li>Attack on user machines<ul>
+<li>attacker sends a fake DNS response with an evil IP address to the user machine which sent out a DNS query.</li>
+</ul>
+</li>
+<li>Attack on local DNS server(Cache Poisoning attack)<ul>
+<li>When the local DNS server sends out iterative queries to get an answer from the DNS servers on the internet, attackers can send out spoofed replies to the local DNS server.</li>
+<li>They get accepted as long as they arrive before the actual replies.</li>
+</ul>
+</li>
+</ul>
+<h4 id="Remote-DNS-cache-poisoning-attack"><a href="#Remote-DNS-cache-poisoning-attack" class="headerlink" title="Remote DNS cache poisoning attack"></a>Remote DNS cache poisoning attack</h4><p>Remote DNS cache poisoning attack needs to guess the port number, transaction ID, etc.</p>
+<p><strong>Cache effect</strong>: if no attempt fails, the actual reply will be cached by the local DNS server; the attacker needs to wait for the cache to timeout for the next attempt.</p>
+<p><strong>The Kaminsky Attack</strong>: ask a different question every time, and guess the transaction id and port number.</p>
+<h5 id="Countermeasures-1"><a href="#Countermeasures-1" class="headerlink" title="Countermeasures"></a>Countermeasures</h5><ul>
+<li><p><strong>DNSSEC</strong></p>
+<ul>
+<li>provide authentication and integrity checking on DNS data, not confidentiality.</li>
+<li>No client/server setup “dialog”.</li>
+<li>Check <strong>digital signatures</strong> -&gt; check if the information is authentic or not.</li>
+<li>depend on trust in the Root Name Server’s key, and all other signing keys</li>
+</ul>
+</li>
+<li><p><strong>TLS/SSL</strong></p>
+<ul>
+<li>Client &amp; server agree on crypto, session keys</li>
+<li>depend on trust in Certificate Authorities/decision to sign keys</li>
+</ul>
+</li>
+</ul>
+<h2 id="Week-7-Wireless-Security"><a href="#Week-7-Wireless-Security" class="headerlink" title="Week 7: Wireless Security"></a>Week 7: Wireless Security</h2><h3 id="Overview-1"><a href="#Overview-1" class="headerlink" title="Overview"></a>Overview</h3><p>Basic building block of an 802.11 WLAN:</p>
+<ul>
+<li>AP(BSS) and clients</li>
+</ul>
+<p>Define an Extended Service set</p>
+<ul>
+<li>Network of multiple BSS using Distribution System. e.g. eduroam</li>
+</ul>
+<p>Security areas addressed by IEEE 802.11i</p>
+<ul>
+<li>Authentication, Confidentiality and integrity.</li>
+</ul>
+<p>Difference between TKIP and CCMP</p>
+<ul>
+<li><p>TKIP(Temporal Key Integrity Protocol) was introduced to improve security of WEP</p>
+</li>
+<li><p>CCMP(Computer mode anad Cipher Block Chaining Protocol) is sued in WPA2, it provides authentication, integrity and confidentiality.</p>
+</li>
+</ul>
+<h3 id="Threats"><a href="#Threats" class="headerlink" title="Threats"></a>Threats</h3><ul>
+<li>Man-in-the-Middle attack</li>
+<li>Identity theft, media accesss control(MAC) address spoofing</li>
+<li>Ad hoc networks</li>
+<li>Denial of Service(DoS)</li>
+<li>Network injection</li>
+</ul>
+<h3 id="Wired-Equivalent-Privacy-WEP"><a href="#Wired-Equivalent-Privacy-WEP" class="headerlink" title="Wired Equivalent Privacy(WEP)"></a>Wired Equivalent Privacy(WEP)</h3><ul>
+<li><p><strong>Improper IV management</strong></p>
+<ul>
+<li>Can detect when IV reused<ul>
+<li>IV collision</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>WEP recommends</p>
+<ul>
+<li>IV changed per packet</li>
+<li>some WEP implementations weak</li>
+</ul>
+</li>
+<li><p>Messages can be modified without knowing the key</p>
+</li>
+<li><p>CRC32 not a MAC</p>
+<ul>
+<li>is linear</li>
+</ul>
+</li>
+<li><p>CRC32 used with a stream cipher</p>
+<ul>
+<li>stream cipher is linear</li>
+</ul>
+</li>
+<li><p>can modify ciphertext without disctributing m</p>
+</li>
+</ul>
+<h3 id="WPA2"><a href="#WPA2" class="headerlink" title="WPA2"></a>WPA2</h3><h4 id="The-4-way-handshake"><a href="#The-4-way-handshake" class="headerlink" title="The 4-way handshake"></a>The 4-way handshake</h4><ul>
+<li>used to connect to any protected Wi-Fi network<ul>
+<li>provides mutual authentication</li>
+<li>Negotiates fresh PTK: pairwise temporal key</li>
+</ul>
+</li>
+</ul>
+<h4 id="Reinstallation-Attack"><a href="#Reinstallation-Attack" class="headerlink" title="Reinstallation Attack"></a>Reinstallation Attack</h4><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221108132402663.png" loading="lazy"></p>
+<p>After the client receives <code>msg3</code>, the client will install the key. Once the key is installed, it will be used to encrypt data frames and send <code>msg4</code> to AP. If AP did not receive <code>msg4</code>, it will re-transmit the <code>msg3</code>, client will re-install the same encryption key and thereby reset the <strong>incremental transmit packet number (nonce)</strong> and receive the replay counter used by the encryption protocol.</p>
+<blockquote>
+<p>As a result, <strong>the same encryption key is used with nonce values that have already been used in the past</strong>. In turn, this causes all encryption protocols of WPA2 to reuse <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Keystream">keystream</a> when encrypting packets. In case a message that reuses keystream has known content, it becomes trivial to derive the used keystream. This keystream can then be used to decrypt messages with the same nonce. </p>
+</blockquote>
+<p><strong>Solution</strong></p>
+<ul>
+<li>Do not retransmit message 3/4</li>
+</ul>
+<h3 id="Jamming"><a href="#Jamming" class="headerlink" title="Jamming"></a>Jamming</h3><p>Transmitting a continuous jamming signal or several short jamming pulses causes DoS</p>
+<p><strong>Detection</strong></p>
+<ul>
+<li><p>monitor signal strength</p>
+</li>
+<li><p>monitor carrier sensing time</p>
+</li>
+</ul>
+<h2 id="Week-8-Intrusion-Detection-System-IDS"><a href="#Week-8-Intrusion-Detection-System-IDS" class="headerlink" title="Week 8: Intrusion Detection System(IDS)"></a>Week 8: Intrusion Detection System(IDS)</h2><h3 id="Intruders"><a href="#Intruders" class="headerlink" title="Intruders"></a>Intruders</h3><p>Masquerade</p>
+<ul>
+<li>outsider in general</li>
+</ul>
+<p>Misfeasor</p>
+<ul>
+<li>Insider in general</li>
+</ul>
+<p>Clandestine</p>
+<ul>
+<li>can be both</li>
+</ul>
+<h3 id="Design-Goals"><a href="#Design-Goals" class="headerlink" title="Design Goals"></a>Design Goals</h3><ul>
+<li>Detect a wide variety of intrusions<ul>
+<li>cover known and unknown attacks</li>
+<li>Adapt to new attacks or changes in behaviour</li>
+</ul>
+</li>
+<li>Detect intrusions in real-time<ul>
+<li>analyse user activities efficiently</li>
+<li>Report suspicious cases timely</li>
+</ul>
+</li>
+<li>Ensure accuracy<ul>
+<li>minimise false positives and false negatives</li>
+</ul>
+</li>
+</ul>
+<h3 id="IDS-Models"><a href="#IDS-Models" class="headerlink" title="IDS Models"></a>IDS Models</h3><ul>
+<li>Signature-based<ul>
+<li>unusual behaviours are known</li>
+<li>pro<ul>
+<li>effective and efficient at detecting known threats</li>
+<li>less false positive</li>
+<li>Raise alarm when activities match the signature</li>
+</ul>
+</li>
+<li>con<ul>
+<li>ineffective at detecting unknown threats and many variants of known threats</li>
+<li>cannot track and understand the state of complex communication, so it cannot detect most attacks that consist of multiple events.</li>
+<li>hard to keep signature updates</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Anomaly-based<ul>
+<li>Usual behaviours are known</li>
+<li>Raise alarm when activities deviate from the usual behaviour</li>
+<li>pro<ul>
+<li>can detect the unknown attack</li>
+<li>can use a new user profile to update</li>
+</ul>
+</li>
+<li>con<ul>
+<li>it requires more time and processing capacity than signature-based IDS(less efficient to identify the behaviours)</li>
+<li>it may generate false positives(a normal activity is recognised as malicious) and false negative(a malicious activity is recognised as normal)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Heuristic-based<ul>
+<li>Use a machine learning model for normal behaviour</li>
+<li>Raise alarm when activities are identified as abnormal by the model</li>
+<li>pro<ul>
+<li>reveal the hidden pattern in complicated data</li>
+<li>it is adaptive to the change in users’ behaviours</li>
+</ul>
+</li>
+<li>con<ul>
+<li>Lack of training data</li>
+<li>a model can be poisoned by adversarial input</li>
+<li>still have many false positives</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="IDS-Architecture"><a href="#IDS-Architecture" class="headerlink" title="IDS Architecture"></a>IDS Architecture</h3><ul>
+<li><p>Auditor</p>
+<ul>
+<li>record all security-relevant activities for analysis</li>
+</ul>
+</li>
+<li><p>Analyser</p>
+<ul>
+<li>Automatically analyse the data from the auditor</li>
+<li>update auditor and analyser settings when needed</li>
+</ul>
+</li>
+<li><p>Notifier</p>
+<ul>
+<li>Report detected anomaly</li>
+<li>Update auditor and analyser settings when needed</li>
+<li>Initiate countermeasures</li>
+</ul>
+</li>
+</ul>
+<h3 id="IDS-Types"><a href="#IDS-Types" class="headerlink" title="IDS Types"></a>IDS Types</h3><ul>
+<li>Host-based IDS<ul>
+<li>Deploy in local system to detect malicious activities on a single device.</li>
+<li>It can be sued tas a distributed system in the network.</li>
+<li>Pros<ul>
+<li>low cost since most of the HIDS is software-based</li>
+<li>can see low-level activities</li>
+<li>low error rate for local threats</li>
+</ul>
+</li>
+<li>Cons:<ul>
+<li>limited view on the network</li>
+<li>malicious insider can tamper the system</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Network-based IDS(NIDS)<ul>
+<li>Monitor the traffic on the entire network to detect instrusions</li>
+<li>Pros:<ul>
+<li>can see attacks in network traffic especially in Transport layer or IP layer.</li>
+<li>Hard to temper</li>
+</ul>
+</li>
+<li>Cons<ul>
+<li>dedicated hardware may be needed.</li>
+<li>difficult to check the encrypted traffic.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Firewall"><a href="#Firewall" class="headerlink" title="Firewall"></a>Firewall</h3><h4 id="Overview-2"><a href="#Overview-2" class="headerlink" title="Overview"></a>Overview</h4><p>A network security device that monitors incoming and outgoing network traffic and decides whether to allow or block specific traffic based on a defined set of security rules.</p>
+<h4 id="Cloud-based-Web-Application-Firewall"><a href="#Cloud-based-Web-Application-Firewall" class="headerlink" title="Cloud-based Web Application Firewall"></a>Cloud-based Web Application Firewall</h4><ul>
+<li>In-house hardware firewall =&gt; virtualisation</li>
+<li>Reduced local cost increased service scalability</li>
+<li><strong>Concern on Privacy</strong><ul>
+<li>Traffic contains sensitive information</li>
+<li>Rules are also proprietary</li>
+<li>Threats<ul>
+<li>Cloud(insider) or attacker that breaks into the cloud are interested in rules and traffic contents</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Concern on Integrity</strong><ul>
+<li>Cheating service provider</li>
+<li>Software bugs misconfigurations</li>
+</ul>
+</li>
+</ul>
+<h4 id="Sliding-window-Based-Tokenisation"><a href="#Sliding-window-Based-Tokenisation" class="headerlink" title="Sliding-window Based Tokenisation"></a>Sliding-window Based Tokenisation</h4><ul>
+<li><p><code>Att-&gt;tta-&gt;tac-&gt;ack-&gt;cke-&gt;ker</code></p>
+<ul>
+<li>like a sliding window</li>
+<li>divides the words into small windows and make rules to detect malicious words.</li>
+</ul>
+</li>
+<li><p><strong>Issues</strong></p>
+<ul>
+<li><p>Will consume a lot of memory, may slow down your network.</p>
+</li>
+<li><p>It may drop some of non-malicious or the original legitimate traffic because you made the rules and that pattern may actually occur in other strings.</p>
+</li>
+<li><p>The large brandwith cost.</p>
+</li>
+<li><p>Frequency analysis happens will there are the same contents since the same strings will be encrypted to the same token.</p>
+<ul>
+<li><p><strong>Solution</strong></p>
+<ul>
+<li><p>Cloud firewall <strong>should only know matches</strong> on suspicious strings</p>
+</li>
+<li><p><strong>Adding salt</strong></p>
+<ul>
+<li><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221108154033521.png" loading="lazy"></li>
+<li>Trade-off<ul>
+<li>The needed storage of the rules increased</li>
+<li>The storage of the gateway needs to be increased(for storing counters)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Limitations of current protocols</p>
+<ul>
+<li><p>The large brandwith cost due to sliding-window-based tokenisation</p>
+</li>
+<li><p>Limited functionality - only pattern/header matching only</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="Stateful-amp-Stateless-Firewall"><a href="#Stateful-amp-Stateless-Firewall" class="headerlink" title="Stateful &amp; Stateless Firewall"></a>Stateful &amp; Stateless Firewall</h4><p>Stateless filrewall takes every packet independently to decide whether to drop it or not, because it does not save the state.</p>
+<ul>
+<li>consume a lot of resources</li>
+</ul>
+<p>Stateful Firewall</p>
+<ul>
+<li><p>Get a few packets add see if they are allowed to acually go through. </p>
+</li>
+<li><blockquote>
+<p>Stateful firewalls <strong>intercept packets at the network layer and then derive and analyze data from all communication layers to improve security</strong>. Information about connection state and other contextual data is stored and dynamically updated.</p>
+</blockquote>
+</li>
+<li><p>Challenges</p>
+<ul>
+<li>need more spaces to store the states.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Week-10-BGP-and-BGP-Security"><a href="#Week-10-BGP-and-BGP-Security" class="headerlink" title="Week 10: BGP and BGP Security"></a>Week 10: BGP and BGP Security</h2><h3 id="Autonomous-System-AS"><a href="#Autonomous-System-AS" class="headerlink" title="Autonomous System (AS)"></a>Autonomous System (AS)</h3><blockquote>
+<p>Autonomous System in networking is a collection of one or more associated Internet Protocol (IP) prefixes with a clearly defined <strong>routing policy</strong> that governs how the AS exchanges routing information with other autonomous systems.</p>
+</blockquote>
+<ul>
+<li><p>ASN</p>
+<ul>
+<li>Autonomous System Number(ASN) is a globally unique identifier of a AS</li>
+</ul>
+</li>
+<li><p>AS Path</p>
+<ul>
+<li>AS Path Attribute is a list of AS numbers that the router traverse to reach a destination IP/Network.</li>
+</ul>
+</li>
+<li><p>BGP Speaker</p>
+<ul>
+<li>A router running BGP is a BGP speaker</li>
+</ul>
+</li>
+<li><p>BGP Peer</p>
+<ul>
+<li>Two routers that have stablished connections for exchanging BGP information</li>
+</ul>
+</li>
+<li><p>Types</p>
+<ul>
+<li>Stub AS<ul>
+<li>end customers, do not provide transit to others</li>
+</ul>
+</li>
+<li>Transit AS<ul>
+<li>Provide transit to others</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Types-of-BGP-connections"><a href="#Types-of-BGP-connections" class="headerlink" title="Types of BGP connections"></a>Types of BGP connections</h3><ul>
+<li>EBGP(External BGP)<ul>
+<li>For BGPs from different AS</li>
+</ul>
+</li>
+<li>IBGP(Internal BGP)<ul>
+<li>For BGPs from the same AS</li>
+</ul>
+</li>
+</ul>
+<h3 id="Border-Gateway-Protocol-BGP"><a href="#Border-Gateway-Protocol-BGP" class="headerlink" title="Border Gateway Protocol (BGP)"></a>Border Gateway Protocol (BGP)</h3><h4 id="IP-Prefix-Announcement"><a href="#IP-Prefix-Announcement" class="headerlink" title="IP Prefix Announcement"></a>IP Prefix Announcement</h4><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221109101915386.png" loading="lazy"></p>
+<p><strong>Path selection</strong>: by default, the selector will choose the shortest path.</p>
+<h3 id="IP-Anycast"><a href="#IP-Anycast" class="headerlink" title="IP Anycast"></a>IP Anycast</h3><ul>
+<li>Multiple machines share the same IP</li>
+<li>Naturally supported by BGP</li>
+<li>Routing decides which one gets the packet</li>
+</ul>
+<h3 id="Routing-Rule"><a href="#Routing-Rule" class="headerlink" title="Routing Rule"></a>Routing Rule</h3><ul>
+<li>Longest match wins<ul>
+<li>e.g. packets to 10.164.0.71 will match both 10.164.0.0/25 and 10.164.0.0/24<ul>
+<li>10.164.0.0/25 will be selected because it has 25 bits of the match, while the second only has 24bit of the match.</li>
+</ul>
+</li>
+<li><strong>BGP Hijacking Attack</strong><ul>
+<li>BGP does not have a mechanism to verify the ownership of a network perfix</li>
+<li>Malicious BGP routers can announce fake network prefixes</li>
+<li><strong>Solution</strong><ul>
+<li><strong>Filtering: Active monitoring</strong><ul>
+<li>Using filters, we can block the prefixes with longer lengths</li>
+</ul>
+</li>
+<li><strong>Resource public key infrastructure</strong><ul>
+<li>new route needs to be signed by a trusted authority</li>
+<li>Verify the ownership of IP prefix</li>
+</ul>
+</li>
+<li>BGPSec<ul>
+<li>it is cryptographically and authenticating the whole path in BGP messages. When it reaches one of. the router, it will have signatures from everyone so that you can verify that where it comes from.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Week-11-Denial-of-Service-Attack"><a href="#Week-11-Denial-of-Service-Attack" class="headerlink" title="Week 11: Denial of Service Attack"></a>Week 11: Denial of Service Attack</h2><h3 id="Goals"><a href="#Goals" class="headerlink" title="Goals"></a>Goals</h3><ul>
+<li><p>Target on availability</p>
+<ul>
+<li>take out a large site with little computing work</li>
+</ul>
+</li>
+<li><p>How: amplification</p>
+<ul>
+<li>a small number of packets =&gt; big effect</li>
+</ul>
+</li>
+<li><p>DoS bug -&gt; design flaw</p>
+</li>
+<li><p>DoS flood -&gt; command bot-net to generate a flood of requests</p>
+</li>
+</ul>
+<h3 id="Mitigation"><a href="#Mitigation" class="headerlink" title="Mitigation"></a>Mitigation</h3><ul>
+<li>Client puzzles<ul>
+<li>given challenges</li>
+<li>for TCP connection floods, the first data must contain a puzzle solution, otherwise, the TCP connection is closed.</li>
+<li>for SSL hanshake DoS<ul>
+<li>Challenge C based on TLS session ID</li>
+<li>Server: check puzzle solution before RSA decryption</li>
+</ul>
+</li>
+<li><strong>Limitations</strong><ul>
+<li>Requires changes to both clients and servers</li>
+<li>Hurts low-power legitimate clients during an attack</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>CAPTCHAs</li>
+<li>Source identification<ul>
+<li>identify packet source</li>
+<li>block the attack at the source</li>
+<li>Ingress filtering<ul>
+<li>ISP only forwards packets with legitimate source IP</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Traceback<ul>
+<li>DDoS involves many packets on same path</li>
+<li>Store one link in each packet</li>
+</ul>
+</li>
+</ul>
+<h3 id="Countermeasures-2"><a href="#Countermeasures-2" class="headerlink" title="Countermeasures"></a>Countermeasures</h3><ul>
+<li><p>Prevent initial hack</p>
+</li>
+<li><p>Use of firewalls</p>
+</li>
+<li><p>Check ingress/egress packets</p>
+</li>
+<li><p>Use a server farm and load balancer to offset the effects of a DDoS attack</p>
+</li>
+<li><p>Change the IP address of the attacked system</p>
+</li>
+</ul>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>Post author: </strong>Leihehe</li><li class="post-copyright-link"><strong>Post link: </strong><a href="https://leihehe.top/2022/11/16/FIT3031-Network-Security-Notes/" title="FIT3031 Network Security Notes">https://leihehe.top/2022/11/16/FIT3031-Network-Security-Notes/</a></li><li class="post-copyright-license"><strong>Copyright Notice: </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> unless otherwise stated.</li></ul></section></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/2022/09/26/DownUnder-CTF-2022-writeup/" rel="next" title="DownUnder CTF 2022 writeup"><span class="post-nav-text">DownUnder CTF 2022 writeup</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="Search"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="Searching..." value=""></div><div id="local-search-result"></div></div></div></body></html>
