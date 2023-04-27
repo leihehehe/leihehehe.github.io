@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Development/" title="Development">
+                    <b>#</b> Development
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Development/SpringBoot/" title="SpringBoot">
+                    <b>#</b> SpringBoot
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -191,116 +212,116 @@
 <p><code>maven</code>和其仓库目录根据自己的情况修改。</p>
 <p>创建好项目后，会自动生成一个<code>pom.xml</code>，</p>
 <p><strong>再导入依赖</strong>：（相关说明在注解里）</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">
-<span class="token comment">&lt;!-- Inherit defaults from Spring Boot--></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-parent<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span><span class="token comment">&lt;!--这里SpringBootStarter帮我们集成了很多依赖，必须要继承--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.5.2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span><span class="token comment">&lt;!--这里的版本是根据你的Spring Boot版本来的--></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">></span></span>
-<span class="token comment">&lt;!-- Add typical dependencies for a web application--></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependencies</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span><span class="token comment">&lt;!--这里是实现web功能的必须要的dependency，同样有很多依赖集成--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependencies</span><span class="token punctuation">></span></span>
+<pre><code class="xml">
+    &lt;!-- Inherit defaults from Spring Boot--&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;&lt;!--这里SpringBootStarter帮我们集成了很多依赖，必须要继承--&gt;
+        &lt;version&gt;2.5.2&lt;/version&gt;&lt;!--这里的版本是根据你的Spring Boot版本来的--&gt;
+    &lt;/parent&gt;
+    &lt;!-- Add typical dependencies for a web application--&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;&lt;!--这里是实现web功能的必须要的dependency，同样有很多依赖集成--&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
 
-<span class="token comment">&lt;!-- 可以使用mavin插件 可以用来打包等很多方便的操作--></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>build</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>plugins</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>plugin</span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-maven-plugin<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>plugin</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>plugins</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>build</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    &lt;!-- 可以使用mavin插件 可以用来打包等很多方便的操作--&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+</code></pre>
 <p>这里我们还需要配置下<code>Setting.xml</code>文件</p>
 <p><img src="/image/SpringBoot-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-1/image-20210716233557981.png" alt="image-20210716233557981"></p>
 <p>打开后在Setting标签下添加：</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token comment">&lt;!--下面是添加阿里云镜像，这样下载依赖更快，不过我在国外使用这个镜像反而无法下载，所以如果不适用直接注释掉就好了--></span>
-	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mirrors</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mirror</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">></span></span>aliyunmaven<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mirrorOf</span><span class="token punctuation">></span></span>central<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mirrorOf</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>aliyun maven<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url</span><span class="token punctuation">></span></span>https://maven.aliyun.com/repository/public <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mirror</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mirrors</span><span class="token punctuation">></span></span>
-<span class="token comment">&lt;!--下面是需要指定你的jdk版本，我的是1.8--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>profiles</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>profile</span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">></span></span>jdk-1.8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>activation</span><span class="token punctuation">></span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>activeByDefault</span><span class="token punctuation">></span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>activeByDefault</span><span class="token punctuation">></span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>jdk</span><span class="token punctuation">></span></span>1.8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>jdk</span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>activation</span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>properties</span><span class="token punctuation">></span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maven.compiler.source</span><span class="token punctuation">></span></span>1.8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maven.compiler.source</span><span class="token punctuation">></span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maven.compiler.target</span><span class="token punctuation">></span></span>1.8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maven.compiler.target</span><span class="token punctuation">></span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maven.compiler.compilerVersion</span><span class="token punctuation">></span></span>1.8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maven.compiler.compilerVersion</span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>properties</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>profile</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>profiles</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="xml">&lt;!--下面是添加阿里云镜像，这样下载依赖更快，不过我在国外使用这个镜像反而无法下载，所以如果不适用直接注释掉就好了--&gt;
+    &lt;mirrors&gt;
+    &lt;mirror&gt;
+    &lt;id&gt;aliyunmaven&lt;/id&gt;
+    &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;
+    &lt;name&gt;aliyun maven&lt;/name&gt;
+    &lt;url&gt;https://maven.aliyun.com/repository/public &lt;/url&gt;
+    &lt;/mirror&gt;
+    &lt;/mirrors&gt;
+&lt;!--下面是需要指定你的jdk版本，我的是1.8--&gt;
+    &lt;profiles&gt;
+        &lt;profile&gt;
+            &lt;id&gt;jdk-1.8&lt;/id&gt;
+            &lt;activation&gt;
+                &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+                &lt;jdk&gt;1.8&lt;/jdk&gt;
+            &lt;/activation&gt;
+            &lt;properties&gt;
+                &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+                &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+                &lt;maven.compiler.compilerVersion&gt;1.8&lt;/maven.compiler.compilerVersion&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+</code></pre>
 <h4 id="方法二：-网站下载"><a href="#方法二：-网站下载" class="headerlink" title="方法二： 网站下载"></a>方法二： 网站下载</h4><p>通过<a target="_blank" rel="noopener" href="https://start.spring.io/">Spring Initilizr</a>配置好下载就行了。</p>
 <h4 id="方法三：通过IDEA新建（和方法二差不多）"><a href="#方法三：通过IDEA新建（和方法二差不多）" class="headerlink" title="方法三：通过IDEA新建（和方法二差不多）"></a>方法三：通过IDEA新建（和方法二差不多）</h4><p><img src="/image/SpringBoot-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-1/image-20210716234423763.png" alt="image-20210716234423763"></p>
 <h3 id="Maven配置"><a href="#Maven配置" class="headerlink" title="Maven配置"></a>Maven配置</h3><p>有时候，如果我们依赖文件导入到一半中止，这时候会有一些错误，那么我们可以用一个清理Maven仓库的脚本, 修改一下仓库路径，然后保存为<code>.bat</code>文件，双击即可清理</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">@echo off
+<pre><code class="bash">@echo off
 rem create by NettQun
 rem 这里写你的仓库路径
-<span class="token builtin class-name">set</span> <span class="token assign-left variable">REPOSITORY_PATH</span><span class="token operator">=</span>E:<span class="token punctuation">\</span>Develop<span class="token punctuation">\</span>maven_rep
-rem 正在搜索<span class="token punctuation">..</span>.
-<span class="token keyword">for</span> /f <span class="token string">"delims="</span> %%i <span class="token keyword">in</span> <span class="token punctuation">(</span><span class="token string">'dir /b /s "%REPOSITORY_PATH%\*lastUpdated*"'</span><span class="token punctuation">)</span> <span class="token keyword">do</span> <span class="token punctuation">(</span>
-<span class="token builtin class-name">echo</span> %%i
-del /s /q <span class="token string">"%%i"</span>
-<span class="token punctuation">)</span>
+set REPOSITORY_PATH=E:\Develop\maven_rep
+rem 正在搜索...
+for /f &quot;delims=&quot; %%i in (&#39;dir /b /s &quot;%REPOSITORY_PATH%\*lastUpdated*&quot;&#39;) do (
+echo %%i
+del /s /q &quot;%%i&quot;
+)
 rem 搜索完毕
-pause<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+pause
+</code></pre>
 <h2 id="一个简易的Hello-World"><a href="#一个简易的Hello-World" class="headerlink" title="一个简易的Hello World"></a>一个简易的Hello World</h2><h3 id="Application和Controller"><a href="#Application和Controller" class="headerlink" title="Application和Controller"></a>Application和Controller</h3><p><img src="/image/SpringBoot-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-1/image-20210716234550092.png" alt="image-20210716234550092"></p>
 <p>在<code>src-main-java</code>下新建一个<code>package</code>，然后新建我们的<code>HelloApplication Class</code>，再新建一个<code>Controller package</code> 来存放我们的<code>Controller classes</code>,需要注意的是，<strong>我们的<code>Controller Class</code>必须放在<code>application class</code>的子目录里</strong>。注意，通过<code>Spring Initilizr</code>网站上直接下载的直接就有这些<code>class</code>了。</p>
 <p><code>Application Class</code>的代码：</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloApplication</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">SpringApplication</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">HelloApplication</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="java">@SpringBootApplication
+public class HelloApplication &#123;
+    public static void main(String[] args) &#123;
+        SpringApplication.run(HelloApplication.class,args);
 
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    &#125;
+&#125;
+</code></pre>
 <p><code>Controller</code>的代码：</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">//@Controller</span>
-<span class="token comment">//@ResponseBody 结果返回到响应体，如果没有的话是会返回到新的页面</span>
-<span class="token annotation punctuation">@RestController</span><span class="token comment">//相当于Controller+responseBody</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloController</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"$&#123;name&#125;"</span><span class="token punctuation">)</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
-    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/hello"</span><span class="token punctuation">)</span><span class="token comment">//this is to deal with the request of "/hello"</span>
-    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token string">"hello world"</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">//@Controller
+//@ResponseBody 结果返回到响应体，如果没有的话是会返回到新的页面
+@RestController//相当于Controller+responseBody
+public class HelloController &#123;
+    @Value(&quot;$&#123;name&#125;&quot;)
+    private String name;
+    @RequestMapping(&quot;/hello&quot;)//this is to deal with the request of &quot;/hello&quot;
+    public String hello()&#123;
+        return &quot;hello world&quot;;
+    &#125;
+&#125;
+</code></pre>
 <h3 id="RestController"><a href="#RestController" class="headerlink" title="RestController"></a>RestController</h3><p><code>Controller Class</code>需要加上<code>@Controller</code></p>
 <p>如果要让数据返回到<code>response body</code>中<img src="/image/SpringBoot-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-1/image-20210716235326711.png" alt="image-20210716235326711">，需要使用<code>@ResponseBody</code></p>
 <p><code>@RestController</code> 相当于 <code>@Controller+@ResponseBody</code>，所以我们也可以直接用这个代替</p>
 <p><code>@RequestMapping</code>表示处理请求</p>
 <h2 id="jar打包运行"><a href="#jar打包运行" class="headerlink" title="jar打包运行"></a>jar打包运行</h2><h3 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h3><p><code>pom.xml</code>中加入以下代码</p>
-<pre class="line-numbers language-xml-dtd" data-language="xml-dtd"><code class="language-xml-dtd">&lt;!-- 可以使用mavin插件 可以用来打包 --&gt;
+<pre><code class="xml-dtd">&lt;!-- 可以使用mavin插件 可以用来打包 --&gt;
 &lt;build&gt;
     &lt;plugins&gt;
         &lt;plugin&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;
-            &lt;artifactId&gt;spring-boot-maven-plugin&lt;&#x2F;artifactId&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
 
-        &lt;&#x2F;plugin&gt;
+        &lt;/plugin&gt;
 
-    &lt;&#x2F;plugins&gt;
+    &lt;/plugins&gt;
 
-&lt;&#x2F;build&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+&lt;/build&gt;
+</code></pre>
 <p>然后在Idea右侧的<code>Maven</code>中双击<code>package</code>即可</p>
 <h3 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h3><p>在<code>target</code>文件夹中可找到我们生成的<code>jar</code>文件，在当前文件所在目录的<code>cmd</code>中用<code>java -jar filename</code>运行起来即可</p>
 <h2 id="版本锁定"><a href="#版本锁定" class="headerlink" title="版本锁定"></a>版本锁定</h2><p>Spring Boot所继承的<code>spring-boot-starter-parent</code>这个副工程为我们对常用的依赖进行了版本锁定(在父工程的<code>pom.xml</code>文件中)。</p>
@@ -321,91 +342,91 @@ pause<span aria-hidden="true" class="line-numbers-rows"><span></span><span></spa
 <li><p>命名时，<code>lastName和last-name都可以</code></p>
 </li>
 </ul>
-<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">name1</span><span class="token punctuation">:</span> sangeng//可以不用引号
-<span class="token comment">#单引号中\n不起作用</span>
-<span class="token key atrule">name2</span><span class="token punctuation">:</span> <span class="token string">'sangeng \n caotang'</span>
-<span class="token comment">#双引号中\n要起作用</span>
-<span class="token key atrule">name3</span><span class="token punctuation">:</span> <span class="token string">"sangeng \n caotang"</span>
-<span class="token key atrule">age</span><span class="token punctuation">:</span> <span class="token number">15</span>
-<span class="token key atrule">flag</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
-<span class="token key atrule">date</span><span class="token punctuation">:</span> 2021/07/16
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><pre><code class="yaml">name1: sangeng//可以不用引号
+#单引号中\n不起作用
+name2: &#39;sangeng \n caotang&#39;
+#双引号中\n要起作用
+name3: &quot;sangeng \n caotang&quot;
+age: 15
+flag: true
+date: 2021/07/16
 
-<span class="token comment">#object的attribute和value,也可代表Map：</span>
-<span class="token key atrule">student</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> leihehe
-  <span class="token key atrule">age</span><span class="token punctuation">:</span> <span class="token number">21</span>
-<span class="token comment">#如果要写成一行，如下:</span>
-<span class="token key atrule">student</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token key atrule">name</span><span class="token punctuation">:</span> leihehe<span class="token punctuation">,</span><span class="token key atrule">age</span><span class="token punctuation">:</span> <span class="token number">21</span><span class="token punctuation">&#125;</span>
+#object的attribute和value,也可代表Map：
+student:
+  name: leihehe
+  age: 21
+#如果要写成一行，如下:
+student: &#123;name: leihehe,age: 21&#125;
 
-<span class="token comment">#数组、list、set:</span>
-<span class="token key atrule">pets</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> dog
-  <span class="token punctuation">-</span> pig
-  <span class="token punctuation">-</span> cat
-<span class="token comment">#list如果要写成一行，如下：</span>
-<span class="token key atrule">pets</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span>dog<span class="token punctuation">,</span>pig<span class="token punctuation">,</span>cat<span class="token punctuation">&#125;</span>
-<span class="token comment">#数组写成一行，如下：</span>
-<span class="token key atrule">pets</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>dog<span class="token punctuation">,</span>pig<span class="token punctuation">,</span>cat<span class="token punctuation">]</span>
-<span class="token comment">#修改服务器端口,如果myPort没有被设置，就会被设为88</span>
-<span class="token key atrule">server</span><span class="token punctuation">:</span>
-	<span class="token key atrule">port</span><span class="token punctuation">:</span> $<span class="token punctuation">&#123;</span>myPort<span class="token punctuation">:</span><span class="token number">88</span><span class="token punctuation">&#125;</span>
-<span class="token key atrule">myPort</span><span class="token punctuation">:</span> <span class="token number">8080</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+#数组、list、set:
+pets:
+  - dog
+  - pig
+  - cat
+#list如果要写成一行，如下：
+pets: &#123;dog,pig,cat&#125;
+#数组写成一行，如下：
+pets: [dog,pig,cat]
+#修改服务器端口,如果myPort没有被设置，就会被设为88
+server:
+    port: $&#123;myPort:88&#125;
+myPort: 8080
+</code></pre>
 <h3 id="Spring-Boot读取YML"><a href="#Spring-Boot读取YML" class="headerlink" title="Spring Boot读取YML"></a>Spring Boot读取YML</h3><h4 id="Value注解"><a href="#Value注解" class="headerlink" title="@Value注解"></a>@Value注解</h4><p>该注解只能获取简单类型的值（8种基本数据类型以及其包装类，String，Date）</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloController</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"$&#123;name&#125;"</span><span class="token punctuation">)</span><span class="token comment">//此处从yaml文件中读取到name的值，并赋值给下面的变量</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
-    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"$&#123;student.age&#125;"</span><span class="token punctuation">)</span><span class="token comment">//从student这个object中获取age的值，并赋值给下面的变量</span>
-	<span class="token keyword">private</span> <span class="token class-name">String</span> age<span class="token punctuation">;</span>
+<pre><code class="java">@RestController
+public class HelloController &#123;
+    @Value(&quot;$&#123;name&#125;&quot;)//此处从yaml文件中读取到name的值，并赋值给下面的变量
+    private String name;
+    @Value(&quot;$&#123;student.age&#125;&quot;)//从student这个object中获取age的值，并赋值给下面的变量
+    private String age;
     
-    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/age"</span><span class="token punctuation">)</span><span class="token comment">//处理/age访问请求</span>
-    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">age</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> age<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/test"</span><span class="token punctuation">)</span><span class="token comment">//处理/test访问请求</span>
-    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> name<span class="token punctuation">;</span><span class="token comment">//返回name</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    @RequestMapping(&quot;/age&quot;)//处理/age访问请求
+    public String age()&#123;
+        return age;
+    &#125;
+    @RequestMapping(&quot;/test&quot;)//处理/test访问请求
+    public String test()&#123;
+        return name;//返回name
+    &#125;
+&#125;
+</code></pre>
 <p><strong>加了<code>@Value</code>的Class必须要交由Spring容器管理，如此处的<code>@RestController</code></strong></p>
 <h4 id="ConfigurationProperties-注解-与Lombok插件"><a href="#ConfigurationProperties-注解-与Lombok插件" class="headerlink" title="@ConfigurationProperties 注解 与Lombok插件"></a>@ConfigurationProperties 注解 与Lombok插件</h4><p><strong>使用<code>@ConfigurationProperties</code>的Class必须要交由Spring容器管理。</strong></p>
 <p><code>yml</code>文件中：</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">student2</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token key atrule">name</span><span class="token punctuation">:</span> jack<span class="token punctuation">,</span><span class="token key atrule">age</span><span class="token punctuation">:</span> <span class="token number">21</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="yaml">student2: &#123;name: jack,age: 21&#125;
+</code></pre>
 <p><code>Student Class</code>中：</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Data</span><span class="token comment">//根据我们的attribute帮我们生成set/get方法</span>
-<span class="token annotation punctuation">@NoArgsConstructor</span><span class="token comment">//生成空参constructor</span>
-<span class="token annotation punctuation">@AllArgsConstructor</span><span class="token comment">//生成传参constructor</span>
-<span class="token comment">//以上都是Lombok插件的作用</span>
-<span class="token annotation punctuation">@Component</span><span class="token comment">//把该类交给Spring容器管理</span>
-<span class="token annotation punctuation">@ConfigurationProperties</span><span class="token punctuation">(</span>prefix <span class="token operator">=</span> <span class="token string">"student2"</span><span class="token punctuation">)</span><span class="token comment">//设置前缀</span>
+<pre><code class="java">@Data//根据我们的attribute帮我们生成set/get方法
+@NoArgsConstructor//生成空参constructor
+@AllArgsConstructor//生成传参constructor
+//以上都是Lombok插件的作用
+@Component//把该类交给Spring容器管理
+@ConfigurationProperties(prefix = &quot;student2&quot;)//设置前缀
 
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Student</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span><span class="token comment">//此处的attribute必须和yaml file里的key名字一样才可以赋值</span>
-    <span class="token keyword">private</span> <span class="token keyword">int</span> age<span class="token punctuation">;</span>
-<span class="token comment">//attribute会自动被赋值</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+public class Student &#123;
+    private String name;//此处的attribute必须和yaml file里的key名字一样才可以赋值
+    private int age;
+//attribute会自动被赋值
+&#125;
+</code></pre>
 <p><strong>要求对应的属性要有set/get方法</strong>，而此处我们用<code>Lombok</code>这个依赖帮我们自动完成这件事，所以我们不需要手动生成<code>set/get</code>方法</p>
 <p>当然，我们还需要<strong>安装Lombok 插件</strong>：</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.projectlombok<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>lombok<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+    &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
 <p><code>HelloController</code>中</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Autowired</span><span class="token comment">//因为创建Student类的instance，所以用autowired可以自动注入，从Spring容器中获取数据,赋值给下面的变量</span>
-<span class="token keyword">private</span> <span class="token class-name">Student</span> student<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
+<pre><code class="java">    @Autowired//因为创建Student类的instance，所以用autowired可以自动注入，从Spring容器中获取数据,赋值给下面的变量
+    private Student student;
+</code></pre>
 <h4 id="ConfigurationProperties-配置提示"><a href="#ConfigurationProperties-配置提示" class="headerlink" title="@ConfigurationProperties 配置提示"></a>@ConfigurationProperties 配置提示</h4><p>另外，如果我们使用了<code>@ConfigurationProperties</code>注解，我们可以增加如下依赖，这样在写配置的时候会有提示</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-configuration-processor<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>optional</span><span class="token punctuation">></span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>optional</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="xml">&lt;dependency&gt;
+&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+&lt;artifactId&gt;spring-boot-configuration-processor&lt;/artifactId&gt;
+&lt;optional&gt;true&lt;/optional&gt;
+&lt;/dependency&gt;
+</code></pre>
 <p><strong>重启idea即可</strong></p>
 <h3 id="YML和Properties转换"><a href="#YML和Properties转换" class="headerlink" title="YML和Properties转换"></a>YML和Properties转换</h3><p><code>application.yml</code>需要改成<code>application.properties</code></p>
 <p><a target="_blank" rel="noopener" href="https://www.toyaml.com/index.html">在线yaml转properties</a></p>
@@ -435,6 +456,23 @@ pause<span aria-hidden="true" class="line-numbers-rows"><span></span><span></spa
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Development/" title="Development">
+                        <b>#</b> Development
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Development/SpringBoot/" title="SpringBoot">
+                        <b>#</b> SpringBoot
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

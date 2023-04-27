@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="JAVA反序列化漏洞">
+                    <b>#</b> JAVA反序列化漏洞
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -205,102 +226,102 @@
 <p>客户端调用<code>stub</code>的方法后，<code>stub</code>会将客户端想要调用的方法名及其参数<strong>序列化</strong>，利用<strong>远程引用层</strong>和<strong>传输层</strong>（<strong>Socket通信</strong>）发给<code>Server</code>，<code>Server</code>那边的<strong>远程引用层</strong>接收到数据后发给<code>Skeleton</code>，<strong>反序列化</strong>后在<code>Server</code>执行被调用的方法，然后将方法的返回值或异常打包（序列化后）返回给客户端，客户端再以同样的方法<strong>反序列化</strong>解析返回数据。</p>
 <p>这里需要注意的是，远程方法的调用最后都是在<strong>Server</strong>执行的，最后只是返回序列化后的结果而已。</p>
 <h1 id="案例讲解"><a href="#案例讲解" class="headerlink" title="案例讲解"></a>案例讲解</h1><h2 id="定义远程接口"><a href="#定义远程接口" class="headerlink" title="定义远程接口"></a>定义远程接口</h2><p><code>Server</code>想要提供服务，那么就需要为这些提供的服务定义一个接口，让<code>Client</code>可以访问到它。该接口必须继承<code>Remote</code>，这样该接口才能成为一个远程对象，才可以被JAVA虚拟机所调用。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">Remote</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">RemoteException</span></span><span class="token punctuation">;</span>
+<pre><code class="java">import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-<span class="token comment">//这个接口不仅要给server用，还要给client用，client中通常是把服务端接口打包成jar包使用。</span>
-<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">HelloService</span> <span class="token keyword">extends</span> <span class="token class-name">Remote</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">//继承Remote接口以后，该Class成为Server的一个远程对象，供Client访问并提供一定服务</span>
-    <span class="token comment">//Remote只是一个标识接口，不含任何方法，继承该接口的类可以被远程的JAVA虚拟机调用</span>
+//这个接口不仅要给server用，还要给client用，client中通常是把服务端接口打包成jar包使用。
+public interface HelloService extends Remote &#123;
+    //继承Remote接口以后，该Class成为Server的一个远程对象，供Client访问并提供一定服务
+    //Remote只是一个标识接口，不含任何方法，继承该接口的类可以被远程的JAVA虚拟机调用
 
-    <span class="token comment">//因为远程调用会涉及到网络通信，容易出现网络异常，所以需要抛出RemoteException</span>
-    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">RemoteException</span><span class="token punctuation">;</span><span class="token comment">//事实上，RemoteException也是继承于IOException的</span>
-    <span class="token comment">//修饰符必须为public 否则会报错</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    //因为远程调用会涉及到网络通信，容易出现网络异常，所以需要抛出RemoteException
+    public String hello() throws RemoteException;//事实上，RemoteException也是继承于IOException的
+    //修饰符必须为public 否则会报错
+&#125;
+</code></pre>
 <h2 id="定义Service-Implementation-Class"><a href="#定义Service-Implementation-Class" class="headerlink" title="定义Service Implementation Class"></a>定义Service Implementation Class</h2><p>定义好了远程接口后，需要写出具体的方法内容即实现类。该类需要继承<code>UnicastRemoteObject</code>，而这个父类会生成<code>stub</code>和<code>skeleton</code>。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">RemoteException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span>server<span class="token punctuation">.</span></span><span class="token class-name">UnicastRemoteObject</span></span><span class="token punctuation">;</span>
-<span class="token comment">//用来调用远程接口， 这样客户端访问远程对象的时候，远程对才会把自身的一个拷贝(stub存根)以socket的形式传输给客户端</span>
+<pre><code class="java">import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+//用来调用远程接口， 这样客户端访问远程对象的时候，远程对才会把自身的一个拷贝(stub存根)以socket的形式传输给客户端
 
-<span class="token comment">//UnicastRemoteObject 将生成stub（远程对象在本地的代理）和skeleton（服务端的一个代理，用来处理stub发来的请求）</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloServiceImp</span> <span class="token keyword">extends</span> <span class="token class-name">UnicastRemoteObject</span> <span class="token keyword">implements</span> <span class="token class-name">HelloService</span> <span class="token punctuation">&#123;</span>
+//UnicastRemoteObject 将生成stub（远程对象在本地的代理）和skeleton（服务端的一个代理，用来处理stub发来的请求）
+public class HelloServiceImp extends UnicastRemoteObject implements HelloService &#123;
 
-    <span class="token keyword">public</span> <span class="token class-name">HelloServiceImp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">RemoteException</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
- <span class="token comment">//如果父类的无参构造函数抛出了异常，则子类的无参构造函数不能省略不写，并且必须抛出父类的异常或父类异常的父类</span>
-    <span class="token punctuation">&#125;</span>
+    public HelloServiceImp() throws RemoteException &#123;
+        super();
+ //如果父类的无参构造函数抛出了异常，则子类的无参构造函数不能省略不写，并且必须抛出父类的异常或父类异常的父类
+    &#125;
 
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">RemoteException</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token string">"这是远程服务器发来的消息"</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    @Override
+    public String hello() throws RemoteException &#123;
+        return &quot;这是远程服务器发来的消息&quot;;
+    &#125;
+&#125;
+</code></pre>
 <h2 id="Registry-Class"><a href="#Registry-Class" class="headerlink" title="Registry Class"></a>Registry Class</h2><p>写好了服务接口，那么我们就需要一个中间代理人 - Registry。</p>
 <p>我们需要创建并启动RMIService，并把我们提供的实现类绑定在上面。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">server<span class="token punctuation">.</span></span><span class="token class-name">HelloService</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">server<span class="token punctuation">.</span></span><span class="token class-name">HelloServiceImp</span></span><span class="token punctuation">;</span>
+<pre><code class="java">import server.HelloService;
+import server.HelloServiceImp;
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>net<span class="token punctuation">.</span></span><span class="token class-name">MalformedURLException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">AlreadyBoundException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">Naming</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">RemoteException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span>registry<span class="token punctuation">.</span></span><span class="token class-name">LocateRegistry</span></span><span class="token punctuation">;</span>
+import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 
-<span class="token comment">//中间代理人</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">RMIRegister</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">RemoteException</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">HelloService</span> helloService <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HelloServiceImp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//imp会自动调用父类的构造方法来生成返回stub</span>
-            <span class="token class-name">LocateRegistry</span><span class="token punctuation">.</span><span class="token function">createRegistry</span><span class="token punctuation">(</span><span class="token number">1099</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//在本地创建并启动RMIService，被创建的RMIService服务将会在指定的端口上监听请求。</span>
-            <span class="token class-name">Naming</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token string">"rmi://localhost:1099/helloService"</span><span class="token punctuation">,</span> helloService<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token comment">//执行这个方法后相当于发布了RMI服务，把远程服务的实现类绑定到指定的RMI地址上</span>
-            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"远程对象绑定成功！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">AlreadyBoundException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"发生重复绑定对象异常"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">MalformedURLException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"发生URL协议异常"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span><span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">RemoteException</span> e<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"创建远程对象异常"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+//中间代理人
+public class RMIRegister &#123;
+    public static void main(String[] args) throws RemoteException &#123;
+        try &#123;
+            HelloService helloService = new HelloServiceImp();//imp会自动调用父类的构造方法来生成返回stub
+            LocateRegistry.createRegistry(1099);//在本地创建并启动RMIService，被创建的RMIService服务将会在指定的端口上监听请求。
+            Naming.bind(&quot;rmi://localhost:1099/helloService&quot;, helloService);
+            //执行这个方法后相当于发布了RMI服务，把远程服务的实现类绑定到指定的RMI地址上
+            System.out.println(&quot;远程对象绑定成功！&quot;);
+        &#125; catch (AlreadyBoundException e) &#123;
+            System.out.println(&quot;发生重复绑定对象异常&quot;);
+            e.printStackTrace();
+        &#125; catch (MalformedURLException e) &#123;
+            System.out.println(&quot;发生URL协议异常&quot;);
+            e.printStackTrace();
+        &#125;catch (RemoteException e)&#123;
+            System.out.println(&quot;创建远程对象异常&quot;);
+            e.printStackTrace();
+        &#125;
+    &#125;
+&#125;
+</code></pre>
 <h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p>直接使用<code>Naming.lookup()</code>可以找到我们想要的<strong>stub</strong>。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">server<span class="token punctuation">.</span></span><span class="token class-name">HelloService</span></span><span class="token punctuation">;</span>
+<pre><code class="java">import server.HelloService;
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>net<span class="token punctuation">.</span></span><span class="token class-name">MalformedURLException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">Naming</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">NotBoundException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span></span><span class="token class-name">RemoteException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span>registry<span class="token punctuation">.</span></span><span class="token class-name">LocateRegistry</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>rmi<span class="token punctuation">.</span>registry<span class="token punctuation">.</span></span><span class="token class-name">Registry</span></span><span class="token punctuation">;</span>
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloClient</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token comment">//在远程对象注册表registry中寻找指定name的对象，并返回reference</span>
-        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-            <span class="token comment">//获取register</span>
-            <span class="token class-name">Registry</span> registry <span class="token operator">=</span> <span class="token class-name">LocateRegistry</span><span class="token punctuation">.</span><span class="token function">getRegistry</span><span class="token punctuation">(</span><span class="token string">"127.0.0.1"</span><span class="token punctuation">,</span> <span class="token number">1099</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token class-name">String</span> i <span class="token operator">:</span> registry<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-                <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"注册的服务："</span><span class="token operator">+</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-            <span class="token class-name">HelloService</span> helloService <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">HelloService</span><span class="token punctuation">)</span> <span class="token class-name">Naming</span><span class="token punctuation">.</span><span class="token function">lookup</span><span class="token punctuation">(</span><span class="token string">"rmi://localhost:1099/helloService"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//返回的就是stub</span>
-            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>helloService<span class="token punctuation">.</span><span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">NotBoundException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">MalformedURLException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">RemoteException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+public class HelloClient &#123;
+    public static void main(String[] args) &#123;
+        //在远程对象注册表registry中寻找指定name的对象，并返回reference
+        try &#123;
+            //获取register
+            Registry registry = LocateRegistry.getRegistry(&quot;127.0.0.1&quot;, 1099);
+            for(String i : registry.list())&#123;
+                System.out.println(&quot;注册的服务：&quot;+i);
+            &#125;
+            HelloService helloService = (HelloService) Naming.lookup(&quot;rmi://localhost:1099/helloService&quot;);//返回的就是stub
+            System.out.println(helloService.hello());
+        &#125; catch (NotBoundException e) &#123;
+            e.printStackTrace();
+        &#125; catch (MalformedURLException e) &#123;
+            e.printStackTrace();
+        &#125; catch (RemoteException e) &#123;
+            e.printStackTrace();
+        &#125;
+    &#125;
+&#125;
+</code></pre>
 <h2 id="Client上的接口"><a href="#Client上的接口" class="headerlink" title="Client上的接口"></a>Client上的接口</h2><p>即使我们在服务端上设计了一套接口<code>HelloService</code>，但是Client是不知道的，所以我们需要在Client端设定一模一样的接口，这样Client才知道哪些方法能够被他们所调用。</p>
 <h2 id="运行测试"><a href="#运行测试" class="headerlink" title="运行测试"></a>运行测试</h2><p>先运行<code>RMIRegister</code></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJAVA-RMI%E5%8E%9F%E7%90%86%E3%80%81%E6%B5%81%E7%A8%8B/image-20210725220714621.png" alt="image-20210725220714621"></p>
@@ -311,12 +332,12 @@
 <h1 id="RMI的安全问题"><a href="#RMI的安全问题" class="headerlink" title="RMI的安全问题"></a>RMI的安全问题</h1><h2 id="根本原因"><a href="#根本原因" class="headerlink" title="根本原因"></a>根本原因</h2><p>RMI在数据传输过程中，涉及到序列化和反序列化，这就有构造恶意对象的风险。</p>
 <h2 id="伪造LocateRegister攻击client"><a href="#伪造LocateRegister攻击client" class="headerlink" title="伪造LocateRegister攻击client"></a>伪造LocateRegister攻击client</h2><p>我们客户端获取<strong>stub</strong>的方式是通过**Naming.lookup()**来查找指定url</p>
 <p>例如</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">/*Client.java*/</span>
+<pre><code class="java">/*Client.java*/
 
-<span class="token class-name">HelloService</span> helloService <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">HelloService</span><span class="token punctuation">)</span> <span class="token class-name">Naming</span><span class="token punctuation">.</span><span class="token function">lookup</span><span class="token punctuation">(</span><span class="token string">"rmi://localhost:1099/helloService"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//返回的就是stub</span>
-<span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>helloService<span class="token punctuation">.</span><span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment">//此处我们是通过查找RMI服务地址localhost:1099中的helloService对象</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+HelloService helloService = (HelloService) Naming.lookup(&quot;rmi://localhost:1099/helloService&quot;);//返回的就是stub
+System.out.println(helloService.hello());
+//此处我们是通过查找RMI服务地址localhost:1099中的helloService对象
+</code></pre>
 <p>如果该<strong>lookup()<strong>方法中的</strong>rmi</strong>地址(也就是LocateRegister)是可控的，让Client获取到的service是我们构造的恶意service(攻击者搭建的RMI server和实现的恶意对象)，<strong>我们就能执行恶意helloService中的hello()了</strong></p>
 <p>RMI的利用方法远远不止如此，更多相关内容可见<a target="_blank" rel="noopener" href="https://leihehehe.github.io/2021/07/31/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8B%E5%88%A9%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90%E9%9B%86%E5%90%88-4/">Java反序列化漏洞之利用链分析集合(4)</a></p>
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a target="_blank" rel="noopener" href="https://y4er.com/post/java-rmi/">Java RMI原理及反序列化学习</a></p>
@@ -343,6 +364,23 @@
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="JAVA反序列化漏洞">
+                        <b>#</b> JAVA反序列化漏洞
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

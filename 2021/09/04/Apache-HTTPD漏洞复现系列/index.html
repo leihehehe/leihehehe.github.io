@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,17 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -198,16 +213,14 @@
 <h1 id="Apache-HTTPD-换行解析漏洞（CVE-2017-15715）"><a href="#Apache-HTTPD-换行解析漏洞（CVE-2017-15715）" class="headerlink" title="Apache HTTPD 换行解析漏洞（CVE-2017-15715）"></a>Apache HTTPD 换行解析漏洞（CVE-2017-15715）</h1><h2 id="漏洞简介"><a href="#漏洞简介" class="headerlink" title="漏洞简介"></a>漏洞简介</h2><p>影响版本：apache2.40~2.4.29</p>
 <p>复现靶机：<a target="_blank" rel="noopener" href="https://vulhub.org/#/environments/httpd/CVE-2017-15715/">https://vulhub.org/#/environments/httpd/CVE-2017-15715/</a></p>
 <p>漏洞环境：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker-compose</span> build 
-<span class="token function">docker-compose</span> up -d<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-
-
+<pre><code class="bash">docker-compose build 
+docker-compose up -d
+</code></pre>
 <h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="漏洞形成点一：-与FilesMatch"><a href="#漏洞形成点一：-与FilesMatch" class="headerlink" title="漏洞形成点一：$与FilesMatch"></a>漏洞形成点一：$与FilesMatch</h3><p>在该版本的apache配置中，有一段这样的代码</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>FilesMatch</span> <span class="token attr-name">\.php$</span><span class="token punctuation">></span></span>
+<pre><code class="xml">&lt;FilesMatch \.php$&gt;
     SetHandler application/x-httpd-php
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>FilesMatch</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
+&lt;/FilesMatch&gt;
+</code></pre>
 <p>我们使用<code>FilesMatch</code>来匹配<code>.php</code>结尾的文件，并将文件解析为php文件（<code>SetHandler application/x-httpd-php</code>）</p>
 <p>此处<code>$</code>就是结尾的意思。但需要注意的是<strong>dollar</strong>符号也会匹配到换行符<code>0xa</code></p>
 <p>举个例子： 如果文件名是<code>.php+换行符</code>结尾，仍然会被匹配，在这个情况下，依然会被解析为php文件。</p>
@@ -228,31 +241,31 @@
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hello-py/articles/13519017.html">Apache HTTPD 换行解析漏洞(CVE-2017-15715)与拓展</a></p>
 <h1 id="Apache-HTTPD-多后缀解析漏洞"><a href="#Apache-HTTPD-多后缀解析漏洞" class="headerlink" title="Apache HTTPD 多后缀解析漏洞"></a>Apache HTTPD 多后缀解析漏洞</h1><h2 id="漏洞简介-1"><a href="#漏洞简介-1" class="headerlink" title="漏洞简介"></a>漏洞简介</h2><p>复现靶机：<a target="_blank" rel="noopener" href="https://vulhub.org/#/environments/httpd/apache_parsing_vulnerability/">https://vulhub.org/#/environments/httpd/apache_parsing_vulnerability/</a></p>
 <p>漏洞环境：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker-compose</span> build 
-<span class="token function">docker-compose</span> up -d<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
+<pre><code class="bash">docker-compose build 
+docker-compose up -d
+</code></pre>
 <h2 id="漏洞原理-1"><a href="#漏洞原理-1" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="漏洞形成点一：AddHandler-php及Apache解析特性"><a href="#漏洞形成点一：AddHandler-php及Apache解析特性" class="headerlink" title="漏洞形成点一：AddHandler .php及Apache解析特性"></a>漏洞形成点一：AddHandler .php及Apache解析特性</h3><p>我们在配置文件下可以看到以下代码：</p>
-<pre class="line-numbers language-ini" data-language="ini"><code class="language-ini">AddHandler application/x-httpd-php .php
+<pre><code class="ini">AddHandler application/x-httpd-php .php
 
 DirectoryIndex disabled
-DirectoryIndex index.php index.html<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
+DirectoryIndex index.php index.html
+</code></pre>
 <p>此处的<code>AddHandler</code>的意思是如果后缀为<code>.php</code>，那么我们就给他加上<code>x-httpd-php</code>处理器，也就是将此文件解析为<code>php</code>文件。</p>
 <p><code>Apache</code>在处理文件时有个特性 - 从右到左解析文件。</p>
 <p>比如<code>hello.php.jpg</code>，Apache会先检测到<code>.jpg</code>这个后缀，接着他会在这个上面的配置文件中寻找，发现并没有解析<code>.jpg</code>的规则，于是他便<strong>往前寻找后缀</strong>，这时发现了<code>.php</code>后缀，再在配置文件中寻找发现<code>.php</code>可以被解析为<code>php</code>文件。由此，<code>hello.php.jpg</code>不会被解析为<code>jpg</code>，反而会被解析为<code>php</code>，即使<code>php</code>后缀不是在最后。</p>
 <h3 id="漏洞形成点二：文件上传点-1"><a href="#漏洞形成点二：文件上传点-1" class="headerlink" title="漏洞形成点二：文件上传点"></a>漏洞形成点二：文件上传点</h3><p><code>index.php:</code></p>
-<pre class="line-numbers language-php+HTML" data-language="php+HTML"><code class="language-php+HTML">&lt;?php
+<pre><code class="php+HTML">&lt;?php
 
 if (!empty($_FILES)):
 
-$ext &#x3D; pathinfo($_FILES[&#39;file_upload&#39;][&#39;name&#39;], PATHINFO_EXTENSION);&#x2F;&#x2F;获取后缀名
+$ext = pathinfo($_FILES[&#39;file_upload&#39;][&#39;name&#39;], PATHINFO_EXTENSION);//获取后缀名
 if (!in_array($ext, [&#39;gif&#39;, &#39;png&#39;, &#39;jpg&#39;, &#39;jpeg&#39;])) &#123;
-    &#x2F;&#x2F;如果后缀名不在白名单中，返回以下信息
+    //如果后缀名不在白名单中，返回以下信息
     die(&#39;Unsupported filetype uploaded.&#39;);
 &#125;
 
-&#x2F;&#x2F;如果后缀在白名单范围中，上传该文件
-$new_name &#x3D; __DIR__ . &#39;&#x2F;uploadfiles&#x2F;&#39; . $_FILES[&#39;file_upload&#39;][&#39;name&#39;];
+//如果后缀在白名单范围中，上传该文件
+$new_name = __DIR__ . &#39;/uploadfiles/&#39; . $_FILES[&#39;file_upload&#39;][&#39;name&#39;];
 if(!move_uploaded_file($_FILES[&#39;file_upload&#39;][&#39;tmp_name&#39;], $new_name))&#123;
     die(&#39;Error uploading file - check destination is writeable.&#39;);
 &#125;
@@ -261,12 +274,11 @@ die(&#39;File uploaded successfully: &#39; . $new_name);
 
 else:
 ?&gt;
-&lt;form method&#x3D;&quot;post&quot; enctype&#x3D;&quot;multipart&#x2F;form-data&quot;&gt;
-    File: &lt;input type&#x3D;&quot;file&quot; name&#x3D;&quot;file_upload&quot;&gt;
-    &lt;input type&#x3D;&quot;submit&quot;&gt;
-&lt;&#x2F;form&gt;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+&lt;form method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+    File: &lt;input type=&quot;file&quot; name=&quot;file_upload&quot;&gt;
+    &lt;input type=&quot;submit&quot;&gt;
+&lt;/form&gt;
+</code></pre>
 <p>此处图片格式的文件可以被上传，那么我们可以伪造以下文件名:<code>hello.php.jpg</code></p>
 <p>即可将文件成功上传，该文件会被解析为<code>.php</code>文件（<code>jpg</code>没有对应的解析规则，所以会往前寻找后缀）</p>
 <h2 id="漏洞复现-1"><a href="#漏洞复现-1" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>上传一个文件名为<code>leihehe.php.jpg</code>的文件</p>
@@ -291,6 +303,17 @@ else:
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

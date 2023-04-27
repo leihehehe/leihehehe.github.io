@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="JAVA反序列化漏洞">
+                    <b>#</b> JAVA反序列化漏洞
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -203,113 +224,113 @@
 <p>Serializable接口没有任何的方法或属性，它只是用来标识该Class是否可以被序列化。</p>
 <p>根据官方注解，序列化的Class会有一个<code>serialVersionUID</code>，它会在<strong>反序列化</strong>的时候，被用来验证发送者和接收者是否有一样的<code>serialVersionUID</code>。需要注意的是，我们所声明的<code>serialVersionUID</code>，必须为 <code>static final long serialVersionUID</code>。</p>
 <p>如果不声明<code>serialVersionUID</code>，Java在序列化的时候会计算默认的<code>serialVersionUID</code>值，但官方强烈建议所有Serializable Class都声明该值，避免一些不必要的错误。</p>
-<h3 id="编写Serializable-Class"><a href="#编写Serializable-Class" class="headerlink" title="编写Serializable Class"></a>编写Serializable Class</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Student</span> <span class="token keyword">implements</span> <span class="token class-name">Serializable</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">long</span> serialVersionUID <span class="token operator">=</span><span class="token number">1L</span><span class="token punctuation">;</span>
+<h3 id="编写Serializable-Class"><a href="#编写Serializable-Class" class="headerlink" title="编写Serializable Class"></a>编写Serializable Class</h3><pre><code class="java">public class Student implements Serializable &#123;
+    static final long serialVersionUID =1L;
 
-    <span class="token keyword">public</span> <span class="token class-name">String</span> name <span class="token operator">=</span> <span class="token string">"shulei"</span><span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token operator">+</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+    public String name = &quot;shulei&quot;;
+    public void hello()&#123;
+        System.out.println(&quot;hello&quot;+name);
+    &#125;
 
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+&#125;
+</code></pre>
 <p>需要被序列化的Class，都要实现<code>Serializable</code>接口。</p>
-<h3 id="编写实现序列化与反序列化Class"><a href="#编写实现序列化与反序列化Class" class="headerlink" title="编写实现序列化与反序列化Class"></a>编写实现序列化与反序列化Class</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SerializableTest</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+<h3 id="编写实现序列化与反序列化Class"><a href="#编写实现序列化与反序列化Class" class="headerlink" title="编写实现序列化与反序列化Class"></a>编写实现序列化与反序列化Class</h3><pre><code class="java">public class SerializableTest &#123;
+    public static void main(String[] args) throws Exception &#123;
 
-        <span class="token class-name">Student</span> student<span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">Student</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//create a Student instance</span>
-        <span class="token function">serializeObj</span><span class="token punctuation">(</span>student<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token function">deserializeObj</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">serializeObj</span><span class="token punctuation">(</span><span class="token class-name">Student</span> student<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span><span class="token comment">//序列化</span>
-        <span class="token class-name">FileOutputStream</span> fileOutputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FileOutputStream</span><span class="token punctuation">(</span><span class="token string">"test.cer"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建一个文件输出流，文件名为test.cer</span>
-        <span class="token class-name">ObjectOutputStream</span> objectOutputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectOutputStream</span><span class="token punctuation">(</span>fileOutputStream<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建一个对象输出流，对象数据流中的数据将输出到文件输出流中</span>
-        objectOutputStream<span class="token punctuation">.</span><span class="token function">writeObject</span><span class="token punctuation">(</span>student<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//将student这个object输入到文件输出流中</span>
-        objectOutputStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//关闭文件输出流和对象输出流，避免内存泄露</span>
-        fileOutputStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">//序列化完成</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">deserializeObj</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span><span class="token punctuation">&#123;</span>
-        <span class="token class-name">FileInputStream</span> fileInputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FileInputStream</span><span class="token punctuation">(</span><span class="token string">"test.cer"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建文件输入流，读取test.cer</span>
-        <span class="token class-name">ObjectInputStream</span> objectInputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectInputStream</span><span class="token punctuation">(</span>fileInputStream<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建对象输入流，将文件输入流里的数据输入对象输入流</span>
-        <span class="token class-name">Student</span> student <span class="token operator">=</span><span class="token punctuation">(</span><span class="token class-name">Student</span><span class="token punctuation">)</span>objectInputStream<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//读取输入流中的对象，强制转换为Student类型，重构对象</span>
-        student<span class="token punctuation">.</span><span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//call方法</span>
-        <span class="token comment">//反序列化完成</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+        Student student=new Student();//create a Student instance
+        serializeObj(student);
+        deserializeObj();
+    &#125;
+    public static void serializeObj(Student student) throws Exception &#123;//序列化
+        FileOutputStream fileOutputStream = new FileOutputStream(&quot;test.cer&quot;);//创建一个文件输出流，文件名为test.cer
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);//创建一个对象输出流，对象数据流中的数据将输出到文件输出流中
+        objectOutputStream.writeObject(student);//将student这个object输入到文件输出流中
+        objectOutputStream.close();//关闭文件输出流和对象输出流，避免内存泄露
+        fileOutputStream.close();
+        //序列化完成
+    &#125;
+    public static void deserializeObj() throws Exception&#123;
+        FileInputStream fileInputStream = new FileInputStream(&quot;test.cer&quot;);//创建文件输入流，读取test.cer
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);//创建对象输入流，将文件输入流里的数据输入对象输入流
+        Student student =(Student)objectInputStream.readObject();//读取输入流中的对象，强制转换为Student类型，重构对象
+        student.hello();//call方法
+        //反序列化完成
+    &#125;
+&#125;
+</code></pre>
 <h3 id="运行测试"><a href="#运行测试" class="headerlink" title="运行测试"></a>运行测试</h3><p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%88%86%E6%9E%90/image-20210728193330087.png" alt="image-20210728193330087"></p>
 <h2 id="Externalizable接口"><a href="#Externalizable接口" class="headerlink" title="Externalizable接口"></a>Externalizable接口</h2><h3 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h3><p>除了通过<code>implements Serializable</code>来让Class可序列化，我们同样可以使用<code>Externalizable</code>来标识Class是可序列化的。</p>
 <p>进入<code>Externalizable interface</code>可以看到以下结构：</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">Externalizable</span> <span class="token keyword">extends</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>Serializable</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">void</span> <span class="token function">writeExternal</span><span class="token punctuation">(</span><span class="token class-name">ObjectOutput</span> out<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">;</span>
-    <span class="token keyword">void</span> <span class="token function">readExternal</span><span class="token punctuation">(</span><span class="token class-name">ObjectInput</span> in<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ClassNotFoundException</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">public interface Externalizable extends java.io.Serializable &#123;
+    void writeExternal(ObjectOutput out) throws IOException;
+    void readExternal(ObjectInput in) throws IOException, ClassNotFoundException;
+&#125;
+</code></pre>
 <p>实际上，<code>Externalizable</code>是继承了<code>Serializable</code>，这也就能说明为什么它也能够用来表示Class是可序列化的了。但不同的是，这里有两个额外的method，<code>writeExternal()</code>和<code>readExternal()</code>。</p>
 <p>所以当我们实现<code>Externalizable</code>接口的时候，我们需要重写这两个method。</p>
 <p><code>writeExternal()</code>和<code>readExternal()</code>分别替代了<code>writeObject()</code>和<code>readObject()</code>两个methods,开发者需要手动对数据进行序列化和反序列化，这意味着，我们可以<strong>选择性</strong>地序列化和反序列化某些属性，相比Serializable接口就更加的灵活了。</p>
 <p>此外，实现<code>Externalizable</code>的Class必须要有默认的<strong>无参构造函数</strong>，因为Externalizable在反序列化时<strong>不使用反射机制</strong>，所以它必须要有<code>constructor</code>。采用Externalizable无需产生<code>serialVersionUID</code>，而Serializable接口需要。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%88%86%E6%9E%90/image-20210728231725366.png" alt="image-20210728231725366"></p>
-<h3 id="编写Externalizable-Class"><a href="#编写Externalizable-Class" class="headerlink" title="编写Externalizable Class"></a>编写Externalizable Class</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">XiaoXueSheng</span>  <span class="token keyword">implements</span> <span class="token class-name">Externalizable</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token keyword">int</span> age<span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token class-name">XiaoXueSheng</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//此无参数的构造方法必须存在</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">public</span> <span class="token class-name">XiaoXueSheng</span><span class="token punctuation">(</span><span class="token class-name">String</span> name<span class="token punctuation">,</span><span class="token keyword">int</span> age<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token operator">=</span>name<span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>age<span class="token operator">=</span>age<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+<h3 id="编写Externalizable-Class"><a href="#编写Externalizable-Class" class="headerlink" title="编写Externalizable Class"></a>编写Externalizable Class</h3><pre><code class="java">public class XiaoXueSheng  implements Externalizable &#123;
+    private String name;
+    private int age;
+    public XiaoXueSheng() &#123;//此无参数的构造方法必须存在
+    &#125;
+    public XiaoXueSheng(String name,int age)&#123;
+        this.name=name;
+        this.age=age;
+    &#125;
 
-    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">getAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> age<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+    public int getAge() &#123;
+        return age;
+    &#125;
 
-    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> name<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+    public String getName() &#123;
+        return name;
+    &#125;
 
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">writeExternal</span><span class="token punctuation">(</span><span class="token class-name">ObjectOutput</span> out<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-        out<span class="token punctuation">.</span><span class="token function">writeObject</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//将name写入对象输出流和文件输出流</span>
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException &#123;
+        out.writeObject(name);//将name写入对象输出流和文件输出流
 
-    <span class="token punctuation">&#125;</span>
+    &#125;
 
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">readExternal</span><span class="token punctuation">(</span><span class="token class-name">ObjectInput</span> in<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ClassNotFoundException</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">String</span> name <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">)</span>in<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//从对象输入流中获取name</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token operator">=</span>name<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException &#123;
+        String name = (String)in.readObject();//从对象输入流中获取name
+        this.name=name;
+    &#125;
+&#125;
+</code></pre>
 <p>我们在<code>writeExternal()</code>方法中写入name属性，并在<code>readExternal()</code>中取出赋值给当前Class的name属性。相反另一个属性<code>age</code>并没有被我们序列化。</p>
 <p>那么可以思考一下，当我们反序列化后，我们得到的age是什么值呢？</p>
-<h3 id="编写实现序列化和反序列化Class"><a href="#编写实现序列化和反序列化Class" class="headerlink" title="编写实现序列化和反序列化Class"></a>编写实现序列化和反序列化Class</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SerializableTest</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+<h3 id="编写实现序列化和反序列化Class"><a href="#编写实现序列化和反序列化Class" class="headerlink" title="编写实现序列化和反序列化Class"></a>编写实现序列化和反序列化Class</h3><pre><code class="java">public class SerializableTest &#123;
+    public static void main(String[] args) throws Exception &#123;
 
-        <span class="token class-name">XiaoXueSheng</span> xiaoXueSheng <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XiaoXueSheng</span><span class="token punctuation">(</span><span class="token string">"Leihehe"</span><span class="token punctuation">,</span><span class="token number">21</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">//我们创建一个有name和age的值的object</span>
-        <span class="token function">serializeObj</span><span class="token punctuation">(</span>xiaoXueSheng<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//序列化该object</span>
-        <span class="token function">deserializeObj</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//反序列化该object</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">serializeObj</span><span class="token punctuation">(</span><span class="token class-name">XiaoXueSheng</span> xiaoXueSheng<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">FileOutputStream</span> fileOutputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FileOutputStream</span><span class="token punctuation">(</span><span class="token string">"test.cer"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建一个文件输出流，文件名为test.cer</span>
-        <span class="token class-name">ObjectOutputStream</span> objectOutputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectOutputStream</span><span class="token punctuation">(</span>fileOutputStream<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建一个对象输出流，对象数据流中的数据将输出到文件输出流中</span>
-        objectOutputStream<span class="token punctuation">.</span><span class="token function">writeObject</span><span class="token punctuation">(</span>xiaoXueSheng<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//将xiaoXueSheng这个object输入到文件输出流中</span>
-        objectOutputStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//关闭文件输出流和对象输出流，避免内存泄露</span>
-        fileOutputStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+        XiaoXueSheng xiaoXueSheng = new XiaoXueSheng(&quot;Leihehe&quot;,21);
+        //我们创建一个有name和age的值的object
+        serializeObj(xiaoXueSheng);//序列化该object
+        deserializeObj();//反序列化该object
+    &#125;
+    public static void serializeObj(XiaoXueSheng xiaoXueSheng) throws Exception &#123;
+        FileOutputStream fileOutputStream = new FileOutputStream(&quot;test.cer&quot;);//创建一个文件输出流，文件名为test.cer
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);//创建一个对象输出流，对象数据流中的数据将输出到文件输出流中
+        objectOutputStream.writeObject(xiaoXueSheng);//将xiaoXueSheng这个object输入到文件输出流中
+        objectOutputStream.close();//关闭文件输出流和对象输出流，避免内存泄露
+        fileOutputStream.close();
+    &#125;
 
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">deserializeObj</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span><span class="token punctuation">&#123;</span>
-        <span class="token class-name">FileInputStream</span> fileInputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FileInputStream</span><span class="token punctuation">(</span><span class="token string">"test.cer"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建文件输入流，读取test.cer</span>
-        <span class="token class-name">ObjectInputStream</span> objectInputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectInputStream</span><span class="token punctuation">(</span>fileInputStream<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建对象输入流，将文件输入流里的数据输入对象输入流</span>
-        <span class="token class-name">XiaoXueSheng</span> xiaoXueSheng<span class="token operator">=</span><span class="token punctuation">(</span><span class="token class-name">XiaoXueSheng</span><span class="token punctuation">)</span> objectInputStream<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//重构object,将反序列化得到的数据重新赋值到新的object中</span>
-        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>xiaoXueSheng<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>xiaoXueSheng<span class="token punctuation">.</span><span class="token function">getAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
+    public static void deserializeObj() throws Exception&#123;
+        FileInputStream fileInputStream = new FileInputStream(&quot;test.cer&quot;);//创建文件输入流，读取test.cer
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);//创建对象输入流，将文件输入流里的数据输入对象输入流
+        XiaoXueSheng xiaoXueSheng=(XiaoXueSheng) objectInputStream.readObject();//重构object,将反序列化得到的数据重新赋值到新的object中
+        System.out.println(xiaoXueSheng.getName());
+        System.out.println(xiaoXueSheng.getAge());
+&#125;
 
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+&#125;
+</code></pre>
 <p>我们创建了一个name为Leihehe, age为21的object，将它进行序列化和反序列化。</p>
 <p>在反序列化操作后，我们将object中的name和age输出。</p>
 <h3 id="运行测试-1"><a href="#运行测试-1" class="headerlink" title="运行测试"></a>运行测试</h3><p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%88%86%E6%9E%90/image-20210728200635043.png" alt="image-20210728200635043"></p>
@@ -321,29 +342,29 @@
 <p>敲重点：Java<strong>反序列化</strong>了被<strong>恶意修改</strong>的<strong>序列化对象</strong>(须是服务器中存在的对象或者依赖包中的对象)。</p>
 <h3 id="案例一"><a href="#案例一" class="headerlink" title="案例一"></a>案例一</h3><p>根据Java官方说明，任何实现Serializable接口的Class都可以定义自己的<code>readObject()</code>方法，只要在重写方法的同时执行了<code>defaultReadObject()</code>方法即可。这样在反序列化的时候会自动invoke该Class下自己定义的<code>readObject()</code>方法。</p>
 <p>那么我们可以为Class重写一个它自己的<code>readObject()</code>的方法，里面带有恶意执行代码，让Java去反序列化这个我们修改后的Object，这样<code>readObject()</code>被执行的时候，恶意代码也就被执行了。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Student</span> <span class="token keyword">implements</span> <span class="token class-name">Serializable</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">long</span> serialVersionUID <span class="token operator">=</span><span class="token number">1L</span><span class="token punctuation">;</span>
+<pre><code class="java">public class Student implements Serializable &#123;
+    static final long serialVersionUID =1L;
 
-    <span class="token keyword">public</span> <span class="token class-name">String</span> name <span class="token operator">=</span> <span class="token string">"shulei"</span><span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token operator">+</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">readObject</span><span class="token punctuation">(</span><span class="token class-name">ObjectInputStream</span> in<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ClassNotFoundException</span> <span class="token punctuation">&#123;</span>
-        in<span class="token punctuation">.</span><span class="token function">defaultReadObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    public String name = &quot;shulei&quot;;
+    public void hello()&#123;
+        System.out.println(&quot;hello&quot;+name);
+    &#125;
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException &#123;
+        in.defaultReadObject();
         
-        <span class="token class-name">Process</span> p <span class="token operator">=</span><span class="token class-name">Runtime</span><span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"ipconfig"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//执行ipconfig命令</span>
+        Process p =Runtime.getRuntime().exec(&quot;ipconfig&quot;);//执行ipconfig命令
         
-        <span class="token comment">//将命令结果打出来</span>
-        <span class="token class-name">BufferedInputStream</span> bfIn <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">BufferedInputStream</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">BufferedReader</span> br <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">BufferedReader</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">InputStreamReader</span><span class="token punctuation">(</span>bfIn<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">String</span> s<span class="token operator">=</span><span class="token keyword">null</span><span class="token punctuation">;</span>
-        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>s <span class="token operator">=</span> br<span class="token punctuation">.</span><span class="token function">readLine</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
+        //将命令结果打出来
+        BufferedInputStream bfIn = new BufferedInputStream(p.getInputStream());
+        BufferedReader br = new BufferedReader(new InputStreamReader(bfIn));
+        String s=null;
+        while ((s = br.readLine()) != null) &#123;
+            System.out.println(s);
+        &#125;
 
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    &#125;
+&#125;
+</code></pre>
 <p>此处我们重写了<code>readObject()</code>，其中含有命令执行代码。</p>
 <p>重新反序列化后，发现命令被执行。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%88%86%E6%9E%90/image-20210728203543869.png" alt="image-20210728203543869"></p>
@@ -408,6 +429,23 @@
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="JAVA反序列化漏洞">
+                        <b>#</b> JAVA反序列化漏洞
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

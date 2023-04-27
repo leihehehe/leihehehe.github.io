@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/%E7%81%AF%E5%A1%94/" title="灯塔">
+                    <b>#</b> 灯塔
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -195,42 +216,42 @@
 <span id="more"></span>
 
 <h2 id="Install-Docker-on-Ubuntu"><a href="#Install-Docker-on-Ubuntu" class="headerlink" title="Install Docker on Ubuntu"></a>Install Docker on Ubuntu</h2><p>第一步：如果有安装过Docker旧版本，需要先卸载</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt-get</span> remove <span class="token function">docker</span> docker-engine docker.io containerd runc<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="bash">sudo apt-get remove docker docker-engine docker.io containerd runc
+</code></pre>
 <p>第二步：设置docker仓库</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#更新 apt package index</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> update
+<pre><code class="bash">#更新 apt package index
+sudo apt-get update
 
-<span class="token comment">#下载 package</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token punctuation">\</span>
-    apt-transport-https <span class="token punctuation">\</span>
-    ca-certificates <span class="token punctuation">\</span>
-    <span class="token function">curl</span> <span class="token punctuation">\</span>
-    gnupg <span class="token punctuation">\</span>
-    lsb-release<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#添加docker的官方gpg key</span>
-<span class="token function">curl</span> -fsSL https://download.docker.com/linux/ubuntu/gpg <span class="token operator">|</span> <span class="token function">sudo</span> gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#建立稳定的仓库</span>
-<span class="token builtin class-name">echo</span> <span class="token punctuation">\</span>
-  <span class="token string">"deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  <span class="token variable"><span class="token variable">$(</span>lsb_release -cs<span class="token variable">)</span></span> stable"</span> <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> /etc/apt/sources.list.d/docker.list <span class="token operator">></span> /dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
+#下载 package
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+</code></pre>
+<pre><code class="bash">#添加docker的官方gpg key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+</code></pre>
+<pre><code class="bash">#建立稳定的仓库
+echo \
+  &quot;deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable&quot; | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</code></pre>
 <p>第三步：安装Docker引擎</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt-get</span> update
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> docker-ce docker-ce-cli containerd.io<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
+<pre><code class="bash"> sudo apt-get update
+ sudo apt-get install docker-ce docker-ce-cli containerd.io
+</code></pre>
 <p>最后测试docker环境是否安装成功：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">docker</span> run hello-world<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="bash">sudo docker run hello-world
+</code></pre>
 <p><img src="/image/arlSetup/image-20210601225207466.png" alt="image-20210601225207466"></p>
-<h2 id="Install-Docker-Compose"><a href="#Install-Docker-Compose" class="headerlink" title="Install Docker Compose"></a>Install Docker Compose</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#先在https://github.com/docker/compose/releases 查看最新版本，当前版本为1.29.2</span>
-<span class="token function">sudo</span> <span class="token function">curl</span> -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-<span class="token variable"><span class="token variable">`</span><span class="token function">uname</span> -s<span class="token variable">`</span></span>-<span class="token variable"><span class="token variable">`</span><span class="token function">uname</span> -m<span class="token variable">`</span></span> -o /usr/local/bin/docker-compose
-<span class="token function">sudo</span> <span class="token function">chmod</span> +x /usr/local/bin/docker-compose
-<span class="token comment">#最后查看是否安装成功</span>
-<span class="token function">docker-compose</span> --version<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<h2 id="Install-Docker-Compose"><a href="#Install-Docker-Compose" class="headerlink" title="Install Docker Compose"></a>Install Docker Compose</h2><pre><code class="bash">#先在https://github.com/docker/compose/releases 查看最新版本，当前版本为1.29.2
+sudo curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+#最后查看是否安装成功
+docker-compose --version
+</code></pre>
 <p><img src="/image/arlSetup/image-20210602132156940.png" alt="image-20210602132156940"></p>
 <h2 id="Install-ARL"><a href="#Install-ARL" class="headerlink" title="Install ARL"></a>Install ARL</h2><p>手动下载ARL最新版本：<a target="_blank" rel="noopener" href="https://github.com/TophantTechnology/ARL/releases">https://github.com/TophantTechnology/ARL/releases</a></p>
 <p><img src="/image/arlSetup/image-20210602132458529.png" alt="image-20210602132458529"></p>
@@ -238,17 +259,17 @@
 <p><img src="/image/arlSetup/image-20210602133905785.png" alt="image-20210602133905785"></p>
 <p>然后用sftp传送文件到服务器上，这里我用的是==mac版的FileZilla== </p>
 <p><img src="/image/arlSetup/image-20210602134851037.png" alt="image-20210602134851037"></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 创建容器数据卷 </span>
-<span class="token function">sudo</span> <span class="token function">docker</span> volume create --name<span class="token operator">=</span>arl_db *
-<span class="token comment"># 进入上传的目录</span>
-<span class="token builtin class-name">cd</span> /home/docker_arl 
-<span class="token function">sudo</span> <span class="token function">docker-compose</span> up -d<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="bash"># 创建容器数据卷 
+sudo docker volume create --name=arl_db *
+# 进入上传的目录
+cd /home/docker_arl 
+sudo docker-compose up -d
+</code></pre>
 <p><img src="/image/arlSetup/image-20210602140011363.png" alt="image-20210602140011363"></p>
 <p><strong>补充：在使用docker和docker-compose的时候，必须要root权限，所以前面需要加上sudo，若想直接用root用户登陆 可参考 <a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1405735">腾讯云ubuntu系统改为root登录</a></strong></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#看docker-compose是否运行正常</span>
-<span class="token function">sudo</span> <span class="token function">docker-compose</span> <span class="token function">ps</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
+<pre><code class="bash">#看docker-compose是否运行正常
+sudo docker-compose ps
+</code></pre>
 <p><img src="/image/arlSetup/image-20210602140410197.png" alt="image-20210602140410197"></p>
 <h2 id="登录搭建好的ARL灯塔系统"><a href="#登录搭建好的ARL灯塔系统" class="headerlink" title="登录搭建好的ARL灯塔系统"></a>登录搭建好的ARL灯塔系统</h2><p>https://你的服务器外网ip:5003/</p>
 <p>这里我用Chrome访问，但是会提示连接不是private的<img src="/image/arlSetup/image-20210602142031252.png" alt="image-20210602142031252"></p>
@@ -273,6 +294,23 @@
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/%E7%81%AF%E5%A1%94/" title="灯塔">
+                        <b>#</b> 灯塔
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

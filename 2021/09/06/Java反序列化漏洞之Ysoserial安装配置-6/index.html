@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="JAVA反序列化漏洞">
+                    <b>#</b> JAVA反序列化漏洞
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -188,8 +209,8 @@
 
 <h1 id="YsoSerial环境搭建"><a href="#YsoSerial环境搭建" class="headerlink" title="YsoSerial环境搭建"></a>YsoSerial环境搭建</h1><p>首先下载<strong>ysoserial</strong>：<code>git clone https://github.com/frohoff/ysoserial.git</code></p>
 <p>用IDEA加载后，打开<code>pom.xml</code>文件，打开后Maven会自动下载对应的依赖，但有些依赖无法下载成功。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">mvn install:install-file -DgroupId<span class="token operator">=</span>依赖的groupId -DartifactId<span class="token operator">=</span>依赖的artifactId -Dversion<span class="token operator">=</span>依赖的版本 -Dpackaging<span class="token operator">=</span>jar -Dfile<span class="token operator">=</span>你下载的jar包的路径<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="bash">mvn install:install-file -DgroupId=依赖的groupId -DartifactId=依赖的artifactId -Dversion=依赖的版本 -Dpackaging=jar -Dfile=你下载的jar包的路径
+</code></pre>
 <p>IDEA里JDK配置成1.7</p>
 <p>运行<code>GeneratePayload.java</code>，出现以下信息表示YsoSerial环境搭建成功</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906180526562.png" alt="image-20210906180526562"></p>
@@ -202,36 +223,36 @@
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906181130800.png" alt="image-20210906181130800"></p>
 <p>但该payload无法直接复制,所以我们想办法用writeObject()将他写成二进制文件（在<a target="_blank" rel="noopener" href="https://leihehehe.github.io/2021/07/28/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%88%86%E6%9E%90-3/">Java反序列化漏洞之Java反序列化流程与分析(3)</a>中学习过）。</p>
 <p>在<code>GeneratePayload</code>中有以下代码：</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">final</span> <span class="token class-name">ObjectPayload</span> payload <span class="token operator">=</span> payloadClass<span class="token punctuation">.</span><span class="token function">newInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token keyword">final</span> <span class="token class-name">Object</span> object <span class="token operator">=</span> payload<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token class-name">PrintStream</span> out <span class="token operator">=</span> <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">;</span><span class="token comment">//system out</span>
-	<span class="token class-name">Serializer</span><span class="token punctuation">.</span><span class="token function">serialize</span><span class="token punctuation">(</span>object<span class="token punctuation">,</span> out<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//将序列化payload打出来</span>
-	<span class="token class-name">ObjectPayload<span class="token punctuation">.</span>Utils</span><span class="token punctuation">.</span><span class="token function">releasePayload</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> object<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Throwable</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Error while generating or serializing payload"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token class-name">System</span><span class="token punctuation">.</span><span class="token function">exit</span><span class="token punctuation">(</span>INTERNAL_ERROR_CODE<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">        try &#123;
+            final ObjectPayload payload = payloadClass.newInstance();
+            final Object object = payload.getObject(command);
+            PrintStream out = System.out;//system out
+            Serializer.serialize(object, out);//将序列化payload打出来
+            ObjectPayload.Utils.releasePayload(payload, object);
+        &#125; catch (Throwable e) &#123;
+            System.err.println(&quot;Error while generating or serializing payload&quot;);
+            e.printStackTrace();
+            System.exit(INTERNAL_ERROR_CODE);
+        &#125;
+</code></pre>
 <p>我们跟进<code>serialize()</code>方法，发现是在<code>Serializer</code>Class中。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">serialize</span><span class="token punctuation">(</span><span class="token keyword">final</span> <span class="token class-name">Object</span> obj<span class="token punctuation">,</span> <span class="token keyword">final</span> <span class="token class-name">OutputStream</span> out<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">final</span> <span class="token class-name">ObjectOutputStream</span> objOut <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectOutputStream</span><span class="token punctuation">(</span>out<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	objOut<span class="token punctuation">.</span><span class="token function">writeObject</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="java">    public static void serialize(final Object obj, final OutputStream out) throws IOException &#123;
+        final ObjectOutputStream objOut = new ObjectOutputStream(out);
+        objOut.writeObject(obj);
 
-	<span class="token comment">//for saving in the file.</span>
-       <span class="token comment">//将payload写到文件</span>
+        //for saving in the file.
+        //将payload写到文件
 
-       <span class="token class-name">FileOutputStream</span> fileOutputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FileOutputStream</span><span class="token punctuation">(</span><span class="token string">"payload.ser"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       <span class="token class-name">ObjectOutputStream</span> objectOutputStream<span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">ObjectOutputStream</span><span class="token punctuation">(</span>fileOutputStream<span class="token punctuation">)</span><span class="token punctuation">;</span>
-       objectOutputStream<span class="token punctuation">.</span><span class="token function">writeObject</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
-       fileOutputStream<span class="token punctuation">.</span><span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       fileOutputStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       objectOutputStream<span class="token punctuation">.</span><span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       objectOutputStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        FileOutputStream fileOutputStream = new FileOutputStream(&quot;payload.ser&quot;);
+        ObjectOutputStream objectOutputStream=new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(obj);
+        fileOutputStream.flush();
+        fileOutputStream.close();
+        objectOutputStream.flush();
+        objectOutputStream.close();
 
-   <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    &#125;
+</code></pre>
 <p>payload保存到文件成功。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906224304869.png" alt="image-20210906224304869"></p>
 <h1 id="WebServer环境搭建"><a href="#WebServer环境搭建" class="headerlink" title="WebServer环境搭建"></a>WebServer环境搭建</h1><p><strong>配置环境：java1.7，commoncollections3.1.jar</strong></p>
@@ -239,47 +260,47 @@
 <p>在Project Structure中导入Web框架</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906231359407.png" alt="image-20210906231359407"></p>
 <p>在main文件夹下创建一个Servlet</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletInputStream</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServlet</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletRequest</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletResponse</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">ObjectInputStream</span></span><span class="token punctuation">;</span>
+<pre><code class="java">import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MainServlet</span> <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doPost</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">ServletInputStream</span> servletInputStream <span class="token operator">=</span> req<span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//相当于之前的FileInputStream,不过数据现在是来源于ServletInputStream而不是从文件读取了</span>
-        <span class="token class-name">ObjectInputStream</span> objectInputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectInputStream</span><span class="token punctuation">(</span>servletInputStream<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//从ServletInputStream中读取ObjectStream</span>
-        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-            objectInputStream<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//读入object</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">ClassNotFoundException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-        objectInputStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+public class MainServlet extends HttpServlet &#123;
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+        ServletInputStream servletInputStream = req.getInputStream();//相当于之前的FileInputStream,不过数据现在是来源于ServletInputStream而不是从文件读取了
+        ObjectInputStream objectInputStream = new ObjectInputStream(servletInputStream);//从ServletInputStream中读取ObjectStream
+        try &#123;
+            objectInputStream.readObject();//读入object
+        &#125; catch (ClassNotFoundException e) &#123;
+            e.printStackTrace();
+        &#125;
+        objectInputStream.close();
+    &#125;
+&#125;
+</code></pre>
 <p>如果出现servlet找不到的情况，按提示下载即可</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906232006712.png" alt="image-20210906232006712"></p>
 <p>设置<strong>Router</strong>：访问<code>/test</code>的时候交给<code>MainServlet</code>处理</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>web-app</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://xmlns.jcp.org/xml/ns/javaee<span class="token punctuation">"</span></span>
-         <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
-         <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd<span class="token punctuation">"</span></span>
-         <span class="token attr-name">version</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>4.0<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;
+         version=&quot;4.0&quot;&gt;
 
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-name</span><span class="token punctuation">></span></span>MainServlet<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-name</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-class</span><span class="token punctuation">></span></span>MainServlet<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-class</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-mapping</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-name</span><span class="token punctuation">></span></span>MainServlet<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-name</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url-pattern</span><span class="token punctuation">></span></span>/test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url-pattern</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-mapping</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>web-app</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;MainServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;MainServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;MainServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/test&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</code></pre>
 <p>为了复现<code>commoncollections1</code>, jdk版本需要为<code>1.7</code>，且需导入<code>commons-collections-3.1.jar</code></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906233044231.png" alt="image-20210906233044231"></p>
 <p>同时在<code>artifact</code>处需要导入commons collections，否则漏洞复现时会提示找不到库。</p>
@@ -322,6 +343,23 @@
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="JAVA反序列化漏洞">
+                        <b>#</b> JAVA反序列化漏洞
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

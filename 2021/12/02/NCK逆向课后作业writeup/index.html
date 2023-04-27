@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,17 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Reverse-Engineering/" title="Reverse Engineering">
+                    <b>#</b> Reverse Engineering
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -294,101 +309,98 @@
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208132929602.png" alt="image-20211208132929602"></p>
 <p><strong>WIN10代码</strong>（我的环境）: <strong>winspool.drv</strong>，使用第四课的C语言劫持补丁代码进行改写。</p>
 <p>注意:win10在设置硬件断点的时候必须<strong>先挂起目标线程</strong>，否则无法断点，所以我们需要创建一个新的线程，再在这个线程中暂停主线程从而保存修改后的寄存器内容。</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">DWORD g_dwBreakPoint <span class="token operator">=</span> <span class="token number">0x401053</span><span class="token punctuation">;</span>
-DWORD WINAPI <span class="token function">ThreadProc</span><span class="token punctuation">(</span>_In_ LPVOID lpMainThreadId<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
+<pre><code class="cpp">DWORD g_dwBreakPoint = 0x401053;
+DWORD WINAPI ThreadProc(_In_ LPVOID lpMainThreadId)
+&#123;
 
-	HANDLE hMainThread <span class="token operator">=</span> <span class="token function">OpenThread</span><span class="token punctuation">(</span>THREAD_ALL_ACCESS<span class="token punctuation">,</span> TRUE<span class="token punctuation">,</span> <span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span>lpMainThreadId<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token function">SuspendThread</span><span class="token punctuation">(</span>hMainThread<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// 暂停这个线程，避免它检测</span>
-	CONTEXT ctx<span class="token punctuation">;</span>
-	ctx<span class="token punctuation">.</span>ContextFlags <span class="token operator">=</span> CONTEXT_ALL<span class="token punctuation">;</span>
-	<span class="token function">GetThreadContext</span><span class="token punctuation">(</span>hMainThread<span class="token punctuation">,</span> <span class="token operator">&amp;</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取该线程的context=》包含了这个线程的各种参数，其中就包含dr寄存器的内容</span>
-	ctx<span class="token punctuation">.</span>Dr7 <span class="token operator">=</span> <span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span><span class="token number">0x1</span><span class="token punctuation">;</span><span class="token comment">//将该线程的dr7设为0x1=》代表DR0是有效的(L0=1)</span>
-	ctx<span class="token punctuation">.</span>Dr0 <span class="token operator">=</span> g_dwBreakPoint<span class="token punctuation">;</span><span class="token comment">//Dr0=硬件断点的地址</span>
-	<span class="token function">SetThreadContext</span><span class="token punctuation">(</span>hMainThread<span class="token punctuation">,</span> <span class="token operator">&amp;</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//把修改的值set到context里</span>
-	<span class="token function">ResumeThread</span><span class="token punctuation">(</span>hMainThread<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//恢复线程</span>
-	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token comment">//异常捕捉</span>
-DWORD NTAPI <span class="token function">ExceptionHandler</span><span class="token punctuation">(</span>EXCEPTION_POINTERS<span class="token operator">*</span> ExceptionInfo<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span>ExceptionInfo<span class="token operator">-></span>ExceptionRecord<span class="token operator">-></span>ExceptionAddress <span class="token operator">==</span> g_dwBreakPoint<span class="token punctuation">)</span><span class="token comment">//如果发生异常的位置就是我们想要跳过的位置</span>
-	<span class="token punctuation">&#123;</span>
-		ExceptionInfo<span class="token operator">-></span>ContextRecord<span class="token operator">-></span>Eip <span class="token operator">+=</span> <span class="token number">6</span><span class="token punctuation">;</span><span class="token comment">//将该地址的EIP+6，从而我们可以跳过检测。</span>
-		<span class="token comment">//已经处理了异常，不需要再调用下一个异常处理来处理此异常</span>
-		<span class="token keyword">return</span> EXCEPTION_CONTINUE_EXECUTION<span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
-	<span class="token comment">//调用下一个处理器</span>
-	<span class="token keyword">return</span> EXCEPTION_CONTINUE_SEARCH<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
+    HANDLE hMainThread = OpenThread(THREAD_ALL_ACCESS, TRUE, (DWORD)lpMainThreadId);
+    SuspendThread(hMainThread);// 暂停这个线程，避免它检测
+    CONTEXT ctx;
+    ctx.ContextFlags = CONTEXT_ALL;
+    GetThreadContext(hMainThread, &amp;ctx);//获取该线程的context=》包含了这个线程的各种参数，其中就包含dr寄存器的内容
+    ctx.Dr7 = (DWORD)0x1;//将该线程的dr7设为0x1=》代表DR0是有效的(L0=1)
+    ctx.Dr0 = g_dwBreakPoint;//Dr0=硬件断点的地址
+    SetThreadContext(hMainThread, &amp;ctx);//把修改的值set到context里
+    ResumeThread(hMainThread);//恢复线程
+    return 0;
+&#125;
+//异常捕捉
+DWORD NTAPI ExceptionHandler(EXCEPTION_POINTERS* ExceptionInfo)
+&#123;
+    if ((DWORD)ExceptionInfo-&gt;ExceptionRecord-&gt;ExceptionAddress == g_dwBreakPoint)//如果发生异常的位置就是我们想要跳过的位置
+    &#123;
+        ExceptionInfo-&gt;ContextRecord-&gt;Eip += 6;//将该地址的EIP+6，从而我们可以跳过检测。
+        //已经处理了异常，不需要再调用下一个异常处理来处理此异常
+        return EXCEPTION_CONTINUE_EXECUTION;
+    &#125;
+    //调用下一个处理器
+    return EXCEPTION_CONTINUE_SEARCH;
+&#125;
 
 
-BOOL WINAPI <span class="token function">DllMain</span><span class="token punctuation">(</span>HMODULE hModule<span class="token punctuation">,</span> DWORD dwReason<span class="token punctuation">,</span> PVOID pvReserved<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-	<span class="token keyword">if</span> <span class="token punctuation">(</span>dwReason <span class="token operator">==</span> DLL_PROCESS_ATTACH<span class="token punctuation">)</span>
-	<span class="token punctuation">&#123;</span>
-		<span class="token double-colon punctuation">::</span><span class="token function">MessageBoxA</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"开始破解拉"</span><span class="token punctuation">,</span> <span class="token string">"能否成功呢？leihehehe.github.io"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-		<span class="token function">DisableThreadLibraryCalls</span><span class="token punctuation">(</span>hModule<span class="token punctuation">)</span><span class="token punctuation">;</span>
-		<span class="token function">AddVectoredExceptionHandler</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>PVECTORED_EXCEPTION_HANDLER<span class="token punctuation">)</span>ExceptionHandler<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//添加一个VEH异常处理的函数，如果有异常，该函数会被call</span>
-		<span class="token function">CreateThread</span><span class="token punctuation">(</span><span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> ThreadProc<span class="token punctuation">,</span> <span class="token punctuation">(</span>LPVOID<span class="token punctuation">)</span><span class="token function">GetCurrentThreadId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建线程来制造硬件断点,这里会发出异常，VEH异常处理函数能捕获它。</span>
-		<span class="token keyword">return</span> <span class="token function">Load</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
-	<span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>dwReason <span class="token operator">==</span> DLL_PROCESS_DETACH<span class="token punctuation">)</span>
-	<span class="token punctuation">&#123;</span>
-		<span class="token function">Free</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
+BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, PVOID pvReserved)
+&#123;
+    if (dwReason == DLL_PROCESS_ATTACH)
+    &#123;
+        ::MessageBoxA(0, &quot;开始破解拉&quot;, &quot;能否成功呢？leihehehe.github.io&quot;, 0);
+        DisableThreadLibraryCalls(hModule);
+        AddVectoredExceptionHandler(1, (PVECTORED_EXCEPTION_HANDLER)ExceptionHandler);//添加一个VEH异常处理的函数，如果有异常，该函数会被call
+        CreateThread(NULL, NULL, ThreadProc, (LPVOID)GetCurrentThreadId(), NULL, NULL);//创建线程来制造硬件断点,这里会发出异常，VEH异常处理函数能捕获它。
+        return Load();
+    &#125;
+    else if (dwReason == DLL_PROCESS_DETACH)
+    &#123;
+        Free();
+    &#125;
 
-	<span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    return TRUE;
+&#125;
+</code></pre>
 <p>下面是<strong>win7代码</strong>：</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">DWORD g_dwBreakpoint <span class="token operator">=</span> <span class="token number">0x401053</span><span class="token punctuation">;</span> <span class="token comment">// 关键指令，希望跳过这条指令</span>
+<pre><code class="cpp">DWORD g_dwBreakpoint = 0x401053; // 关键指令，希望跳过这条指令
 
-<span class="token comment">// 设置硬件断点函数</span>
-<span class="token keyword">void</span> <span class="token function">SetHardwareBreakPoint</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-	CONTEXT ctx<span class="token punctuation">;</span>
-	ctx<span class="token punctuation">.</span>ContextFlags <span class="token operator">=</span> CONTEXT_ALL<span class="token punctuation">;</span>
-	<span class="token function">GetThreadContext</span><span class="token punctuation">(</span><span class="token function">GetCurrentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	ctx<span class="token punctuation">.</span>Dr7 <span class="token operator">=</span> <span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span><span class="token number">0x1</span><span class="token punctuation">;</span> <span class="token comment">// 启用Dr0</span>
-	ctx<span class="token punctuation">.</span>Dr0 <span class="token operator">=</span> g_dwBreakpoint<span class="token punctuation">;</span> <span class="token comment">// 设置硬件断点	</span>
-	<span class="token function">SetThreadContext</span><span class="token punctuation">(</span><span class="token function">GetCurrentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
+// 设置硬件断点函数
+void SetHardwareBreakPoint()
+&#123;
+    CONTEXT ctx;
+    ctx.ContextFlags = CONTEXT_ALL;
+    GetThreadContext(GetCurrentThread(), &amp;ctx);
+    ctx.Dr7 = (DWORD)0x1; // 启用Dr0
+    ctx.Dr0 = g_dwBreakpoint; // 设置硬件断点    
+    SetThreadContext(GetCurrentThread(), &amp;ctx);
+&#125;
 
-<span class="token comment">// 异常处理函数</span>
-DWORD NTAPI <span class="token function">ExceptionHandler</span><span class="token punctuation">(</span>PEXCEPTION_POINTERS pExceptionInfo<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span>pExceptionInfo<span class="token operator">-></span>ExceptionRecord<span class="token operator">-></span>ExceptionAddress <span class="token operator">==</span> g_dwBreakpoint<span class="token punctuation">)</span>
-	<span class="token punctuation">&#123;</span>
-		pExceptionInfo<span class="token operator">-></span>ContextRecord<span class="token operator">-></span>Eip <span class="token operator">+=</span> <span class="token number">6</span><span class="token punctuation">;</span>
-		<span class="token comment">// 已经处理了异常，不需要调用下一个异常处理来处理该异常</span>
-		<span class="token keyword">return</span> EXCEPTION_CONTINUE_EXECUTION<span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
-	<span class="token keyword">return</span> EXCEPTION_CONTINUE_SEARCH<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-
-<span class="token comment">// 入口函数</span>
-BOOL WINAPI <span class="token function">DllMain</span><span class="token punctuation">(</span>HMODULE hModule<span class="token punctuation">,</span> DWORD dwReason<span class="token punctuation">,</span> PVOID pvReserved<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-	<span class="token keyword">if</span> <span class="token punctuation">(</span>dwReason <span class="token operator">==</span> DLL_PROCESS_ATTACH<span class="token punctuation">)</span>
-	<span class="token punctuation">&#123;</span>	
-		<span class="token function">DisableThreadLibraryCalls</span><span class="token punctuation">(</span>hModule<span class="token punctuation">)</span><span class="token punctuation">;</span>
-		<span class="token function">AddVectoredExceptionHandler</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>PVECTORED_EXCEPTION_HANDLER<span class="token punctuation">)</span> ExceptionHandler<span class="token punctuation">)</span><span class="token punctuation">;</span>
-		<span class="token function">SetHardwareBreakPoint</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//设置硬件断点,不需要创建一个线程来执行硬件断点</span>
-		<span class="token keyword">return</span> <span class="token function">Load</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
-	<span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>dwReason <span class="token operator">==</span> DLL_PROCESS_DETACH<span class="token punctuation">)</span>
-	<span class="token punctuation">&#123;</span>
-		<span class="token function">Free</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
-
-	<span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+// 异常处理函数
+DWORD NTAPI ExceptionHandler(PEXCEPTION_POINTERS pExceptionInfo)
+&#123;
+    if ((DWORD)pExceptionInfo-&gt;ExceptionRecord-&gt;ExceptionAddress == g_dwBreakpoint)
+    &#123;
+        pExceptionInfo-&gt;ContextRecord-&gt;Eip += 6;
+        // 已经处理了异常，不需要调用下一个异常处理来处理该异常
+        return EXCEPTION_CONTINUE_EXECUTION;
+    &#125;
+    return EXCEPTION_CONTINUE_SEARCH;
+&#125;
 
 
+// 入口函数
+BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, PVOID pvReserved)
+&#123;
+    if (dwReason == DLL_PROCESS_ATTACH)
+    &#123;    
+        DisableThreadLibraryCalls(hModule);
+        AddVectoredExceptionHandler(1, (PVECTORED_EXCEPTION_HANDLER) ExceptionHandler);
+        SetHardwareBreakPoint(); //设置硬件断点,不需要创建一个线程来执行硬件断点
+        return Load();
+    &#125;
+    else if (dwReason == DLL_PROCESS_DETACH)
+    &#123;
+        Free();
+    &#125;
 
+    return TRUE;
+&#125;
+</code></pre>
 <p>破解成功。</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/hw5HardBreakHook.gif" alt="hw5HardBreakHook"></p>
 <h1 id="第六课课后作业"><a href="#第六课课后作业" class="headerlink" title="第六课课后作业"></a>第六课课后作业</h1><h2 id="软件使用-4"><a href="#软件使用-4" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185701029.png" alt="image-20211209185701029"></p>
@@ -431,39 +443,39 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 <p>接下来我们对一些变量名做一些修改，方便理解</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160036921.png" alt="image-20211213160036921"></p>
 <h2 id="C语言逆算法"><a href="#C语言逆算法" class="headerlink" title="C语言逆算法"></a>C语言逆算法</h2><p>直接把代码从IDA上copy&amp;paste，然后做一些修改。</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;iostream></span></span>
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;windows.h></span></span>
-<span class="token keyword">int</span> <span class="token function">checkKey</span><span class="token punctuation">(</span><span class="token keyword">int</span> inputKey<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-	<span class="token keyword">int</span> result<span class="token punctuation">;</span> <span class="token comment">// </span>
-	<span class="token keyword">int</span> v2<span class="token punctuation">;</span> <span class="token comment">// 这个应该是用来作为BOOL，作为一个FLAG判断</span>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;windows.h&gt;
+int checkKey(int inputKey)
+&#123;
+    int result; // 
+    int v2; // 这个应该是用来作为BOOL，作为一个FLAG判断
 
-	v2 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-	<span class="token keyword">if</span> <span class="token punctuation">(</span>inputKey <span class="token operator">*</span> <span class="token punctuation">(</span>inputKey <span class="token operator">-</span> <span class="token number">23</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">102</span><span class="token punctuation">)</span>
-		v2 <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
-	result <span class="token operator">=</span> v2<span class="token punctuation">;</span>
-	<span class="token keyword">if</span> <span class="token punctuation">(</span>v2<span class="token punctuation">)</span><span class="token comment">//如果上面的条件成立了，则继续检测下面是否成立</span>
-	<span class="token punctuation">&#123;</span>
-		result <span class="token operator">=</span> inputKey <span class="token operator">*</span> inputKey <span class="token operator">*</span> inputKey<span class="token punctuation">;</span>
-		<span class="token keyword">if</span> <span class="token punctuation">(</span>result <span class="token operator">==</span> <span class="token number">4913</span><span class="token punctuation">)</span>
-			<span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-		<span class="token keyword">else</span>
-			<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
-	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
+    v2 = 0;
+    if (inputKey * (inputKey - 23) == -102)
+        v2 = 1;
+    result = v2;
+    if (v2)//如果上面的条件成立了，则继续检测下面是否成立
+    &#123;
+        result = inputKey * inputKey * inputKey;
+        if (result == 4913)
+            return 1;
+        else
+            return 0;
+    &#125;
+    return 0;
+&#125;
 
 
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-	<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">0xFFFFFFFF</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//遍历key是否正确</span>
-		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">checkKey</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-			<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
-		<span class="token punctuation">&#125;</span>
-	<span class="token punctuation">&#125;</span>
-	<span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+int main()
+&#123;
+    for (int i = 0; i &lt; 0xFFFFFFFF; i++) &#123;//遍历key是否正确
+        if (checkKey(i)) &#123;
+            printf(&quot;%d&quot;, i);
+        &#125;
+    &#125;
+    system(&quot;pause&quot;);
+&#125;
+</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160052211.png" alt="image-20211213160052211"></p>
 <p>算出来正确的注册码是17</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160126767.png" alt="image-20211213160126767"></p>
@@ -501,41 +513,41 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165804348.png" alt="image-20211213165804348"></p>
 <h2 id="C语言逆算法-1"><a href="#C语言逆算法-1" class="headerlink" title="C语言逆算法"></a>C语言逆算法</h2><p>将算法从IDA复制到C</p>
 <p>观察下面的算法,我们发现再第二个for循环中，<strong>i</strong>一直没变，不停的再给同一个数重新赋值新的<strong>aBacdaren_1[j]^xxx</strong>，所以我们可以看出来，其实这两个for循环是在干一件事，就是把最后一个字母<strong>n</strong>和(key中的每一位+13)做异或运算。</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  v4 <span class="token operator">=</span> i<span class="token punctuation">;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span> i <span class="token operator">>=</span> keyLen <span class="token punctuation">)</span>                        <span class="token comment">// 如果循环次数大于了key的长度就退出循环</span>
-    <span class="token keyword">break</span><span class="token punctuation">;</span>
-  <span class="token keyword">for</span> <span class="token punctuation">(</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token string">"bcdaren"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>j <span class="token punctuation">)</span>
-    finalResult<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> aBcdaren_1<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">^</span> <span class="token punctuation">(</span>inputKey<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">13</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="cpp">    for ( i = 0; ; ++i )
+    &#123;
+      v4 = i;
+      if ( i &gt;= keyLen )                        // 如果循环次数大于了key的长度就退出循环
+        break;
+      for ( j = 0; j &lt; strlen(&quot;bcdaren&quot;); ++j )
+        finalResult[i] = aBcdaren_1[j] ^ (inputKey[i] + 13);
+    &#125;
+</code></pre>
 <p>化简以后：</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> keyLen<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-		finalResult<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token char">'n'</span> <span class="token operator">^</span> <span class="token punctuation">(</span>inputKey<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">13</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="cpp">        for (int i = 0; i &lt; keyLen; i++) &#123;
+                finalResult[i] = &#39;n&#39; ^ (inputKey[i] + 13);
+        &#125;
+</code></pre>
 <p>于是我们可以分析出，该程序的算法如下：</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">char</span><span class="token operator">*</span> <span class="token function">algrithms</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token operator">*</span> inputKey<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span> finalResult<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> maxLen<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-	<span class="token keyword">signed</span> <span class="token keyword">int</span> v4<span class="token punctuation">;</span> 
-	<span class="token keyword">signed</span> <span class="token keyword">int</span> keyLen<span class="token punctuation">;</span> 
-	<span class="token keyword">signed</span> <span class="token keyword">int</span> i<span class="token punctuation">;</span> 
+<pre><code class="cpp">char* algrithms(char* inputKey, char* finalResult, unsigned int maxLen)
+&#123;
+    signed int v4; 
+    signed int keyLen; 
+    signed int i; 
 
-	<span class="token keyword">if</span> <span class="token punctuation">(</span>inputKey <span class="token operator">&amp;&amp;</span> finalResult <span class="token operator">&amp;&amp;</span> maxLen<span class="token punctuation">)</span>
-	<span class="token punctuation">&#123;</span>
-		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>inputKey<span class="token punctuation">)</span> <span class="token operator">&lt;=</span> maxLen<span class="token punctuation">)</span>           <span class="token comment">// 判断长度是否小于maxLen</span>
-			keyLen <span class="token operator">=</span> <span class="token function">strlen</span><span class="token punctuation">(</span>inputKey<span class="token punctuation">)</span><span class="token punctuation">;</span>                <span class="token comment">// 如果&lt;=最大长度，取key原本的长度</span>
-		<span class="token keyword">else</span>
-			keyLen <span class="token operator">=</span> maxLen<span class="token punctuation">;</span>                          <span class="token comment">// 如果大于最大长度，取最大长度</span>
+    if (inputKey &amp;&amp; finalResult &amp;&amp; maxLen)
+    &#123;
+        if (strlen(inputKey) &lt;= maxLen)           // 判断长度是否小于maxLen
+            keyLen = strlen(inputKey);                // 如果&lt;=最大长度，取key原本的长度
+        else
+            keyLen = maxLen;                          // 如果大于最大长度，取最大长度
 
-		<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> keyLen<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-				finalResult<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token char">'n'</span> <span class="token operator">^</span> <span class="token punctuation">(</span>inputKey<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">13</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-		<span class="token punctuation">&#125;</span>
-	<span class="token punctuation">&#125;</span>
-	<span class="token keyword">return</span> finalResult<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+        for (int i = 0; i &lt; keyLen; i++) &#123;
+                finalResult[i] = &#39;n&#39; ^ (inputKey[i] + 13);
+        &#125;
+    &#125;
+    return finalResult;
+&#125;
+</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213172917906.png" alt="image-20211213172917906"></p>
 <p>最后<strong>finalResult</strong>的值应该等于<code>((++**--,,//..QQPP</code></p>
 <p>我们再写个逆运算的算法，注意，<strong>异或运算中任意两个数异或可以得到第三个数</strong>，例如：</p>
@@ -543,30 +555,30 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 <p>a^c=b</p>
 <p>b^c=a</p>
 <p><strong>最终逆向算法：</strong></p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">char</span><span class="token operator">*</span> <span class="token function">getCorrectKey</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span><span class="token operator">*</span> keyToBeConverte<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span> finalResult<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> maxLen<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">signed</span> <span class="token keyword">int</span> keyLen<span class="token punctuation">;</span>
-	<span class="token keyword">if</span> <span class="token punctuation">(</span>keyToBeConverte <span class="token operator">&amp;&amp;</span> finalResult <span class="token operator">&amp;&amp;</span> maxLen<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>keyToBeConverte<span class="token punctuation">)</span> <span class="token operator">&lt;=</span> maxLen<span class="token punctuation">)</span>           <span class="token comment">// 判断长度是否小于maxLen</span>
-			keyLen <span class="token operator">=</span> <span class="token function">strlen</span><span class="token punctuation">(</span>keyToBeConverte<span class="token punctuation">)</span><span class="token punctuation">;</span>                <span class="token comment">// 如果&lt;=最大长度，取key原本的长度</span>
-		<span class="token keyword">else</span>
-			keyLen <span class="token operator">=</span> maxLen<span class="token punctuation">;</span>
-		<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> keyLen<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-			finalResult<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token char">'n'</span> <span class="token operator">^</span> keyToBeConverte<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">13</span><span class="token punctuation">;</span>
-		<span class="token punctuation">&#125;</span>
-	<span class="token punctuation">&#125;</span>
-	<span class="token keyword">return</span> finalResult<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
+<pre><code class="cpp">char* getCorrectKey(const char* keyToBeConverte, char* finalResult, unsigned int maxLen) &#123;
+    signed int keyLen;
+    if (keyToBeConverte &amp;&amp; finalResult &amp;&amp; maxLen) &#123;
+        if (strlen(keyToBeConverte) &lt;= maxLen)           // 判断长度是否小于maxLen
+            keyLen = strlen(keyToBeConverte);                // 如果&lt;=最大长度，取key原本的长度
+        else
+            keyLen = maxLen;
+        for (int i = 0; i &lt; keyLen; i++) &#123;
+            finalResult[i] = (&#39;n&#39; ^ keyToBeConverte[i])-13;
+        &#125;
+    &#125;
+    return finalResult;
+&#125;
 
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+int main()
 
 
-<span class="token punctuation">&#123;</span>
-	<span class="token keyword">char</span> finalResult<span class="token punctuation">[</span><span class="token number">128</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span> <span class="token number">0</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-	<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span> <span class="token function">getCorrectKey</span><span class="token punctuation">(</span><span class="token string">"((++**--,,//..QQPP"</span><span class="token punctuation">,</span> finalResult<span class="token punctuation">,</span> <span class="token number">128</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+&#123;
+    char finalResult[128] = &#123; 0 &#125;;
+    printf(&quot;%s\n&quot;, getCorrectKey(&quot;((++**--,,//..QQPP&quot;, finalResult, 128));
 
-	<span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+    system(&quot;pause&quot;);
+&#125;
+</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213175431347.png" alt="image-20211213175431347"></p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213175444354.png" alt="image-20211213175444354"></p>
 
@@ -587,6 +599,17 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Reverse-Engineering/" title="Reverse Engineering">
+                        <b>#</b> Reverse Engineering
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

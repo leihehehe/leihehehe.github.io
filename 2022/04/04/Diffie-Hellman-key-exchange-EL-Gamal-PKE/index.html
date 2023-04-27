@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,17 @@
           2022-06-14 13:46:20
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/cryptography/" title="cryptography">
+                    <b>#</b> cryptography
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -233,18 +248,16 @@
 <p><strong>binary 0</strong>: square</p>
 <p><strong>binary 1</strong>: square then times <code>a</code></p>
 <h1 id="RSA-crypto"><a href="#RSA-crypto" class="headerlink" title="RSA crypto"></a>RSA crypto</h1><h3 id="RSA-key-generation"><a href="#RSA-key-generation" class="headerlink" title="RSA key generation"></a>RSA key generation</h3><p>choose two primes: <code>p = 5 and q = 11</code></p>
-<pre class="line-numbers language-wolfram" data-language="wolfram"><code class="language-wolfram">n <span class="token operator">=</span> p<span class="token operator">*</span>q <span class="token operator">=</span> <span class="token number">5</span> <span class="token operator">*</span> <span class="token number">11</span> <span class="token operator">=</span> <span class="token number">55</span>
-ϕ<span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token operator">=</span><span class="token punctuation">(</span>p<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token punctuation">(</span>q<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">4</span><span class="token operator">*</span><span class="token number">10</span><span class="token operator">=</span><span class="token number">40</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
+<pre><code class="mathematica">n = p*q = 5 * 11 = 55
+ϕ(n)=(p-1)*(q-1)=4*10=40
+</code></pre>
 <p>Find two numbers e and e according to<code> (e*d) mod ϕ(n) = 1</code>, thus, <code>e = 3, d = 27</code></p>
 <p><strong>Public key:</strong> (e,n)=(3, 55)</p>
 <p><strong>Private key:</strong> (d,n)=(27, 55)</p>
-<h3 id="RSA-encryption"><a href="#RSA-encryption" class="headerlink" title="RSA encryption"></a>RSA encryption</h3><pre class="line-numbers language-wolfram" data-language="wolfram"><code class="language-wolfram">s <span class="token operator">=</span> m<span class="token operator">^</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span>mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="RSA-decryption"><a href="#RSA-decryption" class="headerlink" title="RSA decryption"></a>RSA decryption</h3><pre class="line-numbers language-wolfram" data-language="wolfram"><code class="language-wolfram">m <span class="token operator">=</span> s<span class="token operator">^</span><span class="token punctuation">(</span>d<span class="token punctuation">)</span>mod n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
+<h3 id="RSA-encryption"><a href="#RSA-encryption" class="headerlink" title="RSA encryption"></a>RSA encryption</h3><pre><code class="mathematica">s = m^(e)mod n
+</code></pre>
+<h3 id="RSA-decryption"><a href="#RSA-decryption" class="headerlink" title="RSA decryption"></a>RSA decryption</h3><pre><code class="mathematica">m = s^(d)mod n
+</code></pre>
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
 
       </div>
@@ -264,6 +277,17 @@
               2022-06-14 13:46:20
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/cryptography/" title="cryptography">
+                        <b>#</b> cryptography
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     

