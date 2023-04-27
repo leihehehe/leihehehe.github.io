@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -262,54 +258,32 @@
 </li>
 </ul>
 <p>其中，<code>Class.forName(&quot;Class的名字&quot;);</code>是最为常用的一种方式。</p>
-<pre><code class="java">Class&lt;?&gt; person = Class.forName(&quot;Person&quot;);
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; person = Class.forName(<span class="string">&quot;Person&quot;</span>);</span><br><span class="line"></span><br><span class="line">System.out.println(person);</span><br></pre></td></tr></table></figure>
 
-System.out.println(person);
-</code></pre>
 <h2 id="利用反射机制获取method"><a href="#利用反射机制获取method" class="headerlink" title="利用反射机制获取method"></a>利用反射机制获取method</h2><p>我们在通过上面的代码获取到<code>class</code>后，可以获取到该<code>Class</code>的<code>method</code>。</p>
 <p>需要注意的是，我们依然有两种不同的方法来获取到<code>method</code>。</p>
-<pre><code class="java">//第一种方式：
-person.getDeclaredMethods();//获取所有Method，除了继承类的方法
-person.getDeclaredMethod(&quot;methodName&quot;,parameterTypes);//获取指定的method
-//第二种方式：
-person.getMethods();//获取类方法，但不包含private属性的方法
-person.getMethod(&quot;methodName&quot;,parameterTypes);//获取指定名字的方法
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//第一种方式：</span></span><br><span class="line">person.getDeclaredMethods();<span class="comment">//获取所有Method，除了继承类的方法</span></span><br><span class="line">person.getDeclaredMethod(<span class="string">&quot;methodName&quot;</span>,parameterTypes);<span class="comment">//获取指定的method</span></span><br><span class="line"><span class="comment">//第二种方式：</span></span><br><span class="line">person.getMethods();<span class="comment">//获取类方法，但不包含private属性的方法</span></span><br><span class="line">person.getMethod(<span class="string">&quot;methodName&quot;</span>,parameterTypes);<span class="comment">//获取指定名字的方法</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="构造instance"><a href="#构造instance" class="headerlink" title="构造instance"></a>构造instance</h2><p> 获取到了<code>Class</code>,我们又该如何获取到一个新的object呢？</p>
 <p>假设在Person Class中，我们有三个构造函数：</p>
-<pre><code class="java">public Person()&#123;//无参构造
-    System.out.println(&quot;NoArgConstructor&quot;);
-&#125;
-public Person(String name,String age)&#123;//两个参数构造
-    System.out.println(&quot;TwoArgsConstructor&quot;);
-&#125;
-public Person(String name,String age,boolean flag)&#123;
-    //三个参数构造
-    System.out.println(&quot;ThreeArgsConstructor&quot;);
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">Person</span><span class="params">()</span>&#123;<span class="comment">//无参构造</span></span><br><span class="line">    System.out.println(<span class="string">&quot;NoArgConstructor&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="title function_">Person</span><span class="params">(String name,String age)</span>&#123;<span class="comment">//两个参数构造</span></span><br><span class="line">    System.out.println(<span class="string">&quot;TwoArgsConstructor&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="title function_">Person</span><span class="params">(String name,String age,<span class="type">boolean</span> flag)</span>&#123;</span><br><span class="line">    <span class="comment">//三个参数构造</span></span><br><span class="line">    System.out.println(<span class="string">&quot;ThreeArgsConstructor&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>当我们依次获取时</p>
-<pre><code class="java">person.newInstance();//在创建新的instance时，class的constructor会被执行，而此处默认执行无参数constructor
-       person.getConstructor(String.class,String.class).newInstance(&quot;leihehe&quot;,&quot;21&quot;);//此处执行两个参数的constructor
-       person.getConstructor(String.class,String.class,boolean.class).newInstance(&quot;leiheee&quot;,&quot;20&quot;,true);//此处执行三个参数的constructor
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">person.newInstance();<span class="comment">//在创建新的instance时，class的constructor会被执行，而此处默认执行无参数constructor</span></span><br><span class="line">       person.getConstructor(String.class,String.class).newInstance(<span class="string">&quot;leihehe&quot;</span>,<span class="string">&quot;21&quot;</span>);<span class="comment">//此处执行两个参数的constructor</span></span><br><span class="line">       person.getConstructor(String.class,String.class,<span class="type">boolean</span>.class).newInstance(<span class="string">&quot;leiheee&quot;</span>,<span class="string">&quot;20&quot;</span>,<span class="literal">true</span>);<span class="comment">//此处执行三个参数的constructor</span></span><br></pre></td></tr></table></figure>
+
 <p>可得如下结果</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721212917832.png" alt="image-20210721212917832"></p>
 <h2 id="invoke方法"><a href="#invoke方法" class="headerlink" title="invoke方法"></a>invoke方法</h2><p>当我们构造出来了一个新的<code>instance（Object）</code>且得到需要的<code>method</code>后，我们该如何<code>call</code>这个<code>Class</code>的方法呢？</p>
-<pre><code class="java">Object o = person.newInstance();//得到object
-person.getDeclaredMethod(&quot;setAge&quot;, String.class).invoke(o,&quot;11&quot;);//call setAge()方法
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> person.newInstance();<span class="comment">//得到object</span></span><br><span class="line">person.getDeclaredMethod(<span class="string">&quot;setAge&quot;</span>, String.class).invoke(o,<span class="string">&quot;11&quot;</span>);<span class="comment">//call setAge()方法</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="java-lang-Runtime命令执行及访问private的方法"><a href="#java-lang-Runtime命令执行及访问private的方法" class="headerlink" title="java.lang.Runtime命令执行及访问private的方法"></a>java.lang.Runtime命令执行及访问private的方法</h2><p>我们在反序列化漏洞中会遇到的<code>java.lang.Runtime</code>是执行命令的最常见的方式。</p>
 <p>以下是java执行命令的语句</p>
-<pre><code class="java">Runtime.getRuntime().exec(&quot;ipconfig&quot;);
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Runtime.getRuntime().exec(<span class="string">&quot;ipconfig&quot;</span>);</span><br></pre></td></tr></table></figure>
+
 <p>那如果我们要用<code>java</code>的反射机制来执行这段代码应该如何操作呢？</p>
 <p>于是我写下了这段代码：</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class的Class类
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Object o1 = runTimeClass.newInstance();//创建一个新的Runtime的实例
-exec.invoke(o1,&quot;ipconfig&quot;);//在实例中call exec()这个method
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; runTimeClass = Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>);<span class="comment">//先找到Runtime这个Class的Class类</span></span><br><span class="line"><span class="type">Method</span> <span class="variable">exec</span> <span class="operator">=</span> runTimeClass.getDeclaredMethod(<span class="string">&quot;exec&quot;</span>, String.class);<span class="comment">//找到exec这个method</span></span><br><span class="line"><span class="type">Object</span> <span class="variable">o1</span> <span class="operator">=</span> runTimeClass.newInstance();<span class="comment">//创建一个新的Runtime的实例</span></span><br><span class="line">exec.invoke(o1,<span class="string">&quot;ipconfig&quot;</span>);<span class="comment">//在实例中call exec()这个method</span></span><br></pre></td></tr></table></figure>
+
 <p>但是奇怪的事情发生了：</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214436241.png" alt="image-20210721214436241"></p>
 <p>代码提示19行出错 - 我们不能访问<code>private</code>属性的成员。难道是<code>constructor</code>有问题吗？</p>
@@ -320,23 +294,10 @@ exec.invoke(o1,&quot;ipconfig&quot;);//在实例中call exec()这个method
 <li><p><strong>getRuntime()</strong></p>
 <p>其实之前我们就有写到执行语句是<code>Runtime.getRuntime().exec(&quot;ipconfig&quot;);</code>此处我们就没有new一个新的<code>instance</code>，反而是直接用<code>getter</code>来获取到<code>Runtime</code>。</p>
 <p>所以我们在此处可以这样写：</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Method getRuntime = runTimeClass.getDeclaredMethod(&quot;getRuntime&quot;);//找到getRuntime()这个method
-Object o1=getRuntime.invoke(null);//call getRuntime()来获取到Runtime实例
-exec.invoke(o1,&quot;ipconfig&quot;);//执行方法
-</code></pre>
-</li>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; runTimeClass = Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>);<span class="comment">//先找到Runtime这个Class</span></span><br><span class="line"><span class="type">Method</span> <span class="variable">exec</span> <span class="operator">=</span> runTimeClass.getDeclaredMethod(<span class="string">&quot;exec&quot;</span>, String.class);<span class="comment">//找到exec这个method</span></span><br><span class="line"><span class="type">Method</span> <span class="variable">getRuntime</span> <span class="operator">=</span> runTimeClass.getDeclaredMethod(<span class="string">&quot;getRuntime&quot;</span>);<span class="comment">//找到getRuntime()这个method</span></span><br><span class="line">Object o1=getRuntime.invoke(<span class="literal">null</span>);<span class="comment">//call getRuntime()来获取到Runtime实例</span></span><br><span class="line">exec.invoke(o1,<span class="string">&quot;ipconfig&quot;</span>);<span class="comment">//执行方法</span></span><br></pre></td></tr></table></figure></li>
 <li><p><strong>setAccessible() - 访问private方法</strong> </p>
 <p><code>Java</code>会对<code>private</code>的方法进行禁止访问的操作，而<code>setAccessible</code>可以让我们禁止或允许<code>Java</code>语言的访问检查，当我们设置<code>setAccessible(true)</code>时，我们便可以访问<code>private</code>方法。</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Constructor&lt;?&gt; declaredConstructor = runTimeClass.getDeclaredConstructor();//不带参数的getConstructor是会获取到无参构造方法的，但因为Runtime的Constructor是private的，所以我们需要使用Declared
-declaredConstructor.setAccessible(true);//禁止java语言访问检查，让我们可以访问这个私有的constructor
-Object o1 = declaredConstructor.newInstance();//通过该constructor来创建新的instance
-exec.invoke(o1,&quot;ipconfig&quot;);//完成命令执行
-</code></pre>
-</li>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; runTimeClass = Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>);<span class="comment">//先找到Runtime这个Class</span></span><br><span class="line"><span class="type">Method</span> <span class="variable">exec</span> <span class="operator">=</span> runTimeClass.getDeclaredMethod(<span class="string">&quot;exec&quot;</span>, String.class);<span class="comment">//找到exec这个method</span></span><br><span class="line">Constructor&lt;?&gt; declaredConstructor = runTimeClass.getDeclaredConstructor();<span class="comment">//不带参数的getConstructor是会获取到无参构造方法的，但因为Runtime的Constructor是private的，所以我们需要使用Declared</span></span><br><span class="line">declaredConstructor.setAccessible(<span class="literal">true</span>);<span class="comment">//禁止java语言访问检查，让我们可以访问这个私有的constructor</span></span><br><span class="line"><span class="type">Object</span> <span class="variable">o1</span> <span class="operator">=</span> declaredConstructor.newInstance();<span class="comment">//通过该constructor来创建新的instance</span></span><br><span class="line">exec.invoke(o1,<span class="string">&quot;ipconfig&quot;</span>);<span class="comment">//完成命令执行</span></span><br></pre></td></tr></table></figure></li>
 </ol>
 <h2 id="java-lang-ProcessBuilder命令执行"><a href="#java-lang-ProcessBuilder命令执行" class="headerlink" title="java.lang.ProcessBuilder命令执行"></a>java.lang.ProcessBuilder命令执行</h2><p>知道我们是通过<code>exec()</code>执行代码后，我们接下来想要弄清楚，<code>exec()</code>是怎么工作的。在尝试跟随exec()方法后，我们最终来到了如下地方：</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221330679.png" alt="image-20210721221330679"></p>
@@ -348,29 +309,8 @@ exec.invoke(o1,&quot;ipconfig&quot;);//完成命令执行
 <p>传入的<code>command</code>又会被转化为<code>Array</code>，最后开始创建子程序执行等等（就不深入探究了）</p>
 <p>综上所述，我们只需要执行<code>new ProcessBuilder.start()</code>即可完成命令执行</p>
 <p>于是我们写出如下代码：</p>
-<pre><code class="java">        Class&lt;?&gt; processBuilderClass = Class.forName(&quot;java.lang.ProcessBuilder&quot;);//获取到ProcessBuilder这个class
-        Method start = processBuilderClass.getDeclaredMethod(&quot;start&quot;);//获取到start()这个方法
-        //因为两个constructor都是public的，所以我们可以只用用getConstructor而不用getDeclaredConstructor
-        Object oWithArg = processBuilderClass.getConstructor(List.class).newInstance(Arrays.asList(&quot;ipconfig&quot;,&quot;/all&quot;));//获取带参数的命令的instance
-        Object oNoArg = processBuilderClass.getConstructor(String[].class).newInstance((Object) new String[]&#123;&quot;ipconfig&quot;&#125;);//获取不带参数的命令的instance
-        Process argStart=(Process) start.invoke(oWithArg);
-        Process noArgStart=(Process) start.invoke(oNoArg);
-        InputStream argIn = argStart.getInputStream();//获取Process的输出流来作为输入字节流
-        InputStream noArgIn = noArgStart.getInputStream();//获取Process的输出流来作为输入字节流
-        InputStreamReader argReader=new InputStreamReader(argIn);//把字节流转化为字符流
-        InputStreamReader noArgReader=new InputStreamReader(noArgIn);//把字节流转化为字符流
-        BufferedReader argBr=new BufferedReader(argReader);//为字符流提供缓冲区，以便一次性读取整块数据
-        BufferedReader noArgBr=new BufferedReader(noArgReader);//为字符流提供缓冲区，以便一次性读取整块数据
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; processBuilderClass = Class.forName(<span class="string">&quot;java.lang.ProcessBuilder&quot;</span>);<span class="comment">//获取到ProcessBuilder这个class</span></span><br><span class="line"><span class="type">Method</span> <span class="variable">start</span> <span class="operator">=</span> processBuilderClass.getDeclaredMethod(<span class="string">&quot;start&quot;</span>);<span class="comment">//获取到start()这个方法</span></span><br><span class="line"><span class="comment">//因为两个constructor都是public的，所以我们可以只用用getConstructor而不用getDeclaredConstructor</span></span><br><span class="line"><span class="type">Object</span> <span class="variable">oWithArg</span> <span class="operator">=</span> processBuilderClass.getConstructor(List.class).newInstance(Arrays.asList(<span class="string">&quot;ipconfig&quot;</span>,<span class="string">&quot;/all&quot;</span>));<span class="comment">//获取带参数的命令的instance</span></span><br><span class="line"><span class="type">Object</span> <span class="variable">oNoArg</span> <span class="operator">=</span> processBuilderClass.getConstructor(String[].class).newInstance((Object) <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;ipconfig&quot;</span>&#125;);<span class="comment">//获取不带参数的命令的instance</span></span><br><span class="line">Process argStart=(Process) start.invoke(oWithArg);</span><br><span class="line">Process noArgStart=(Process) start.invoke(oNoArg);</span><br><span class="line"><span class="type">InputStream</span> <span class="variable">argIn</span> <span class="operator">=</span> argStart.getInputStream();<span class="comment">//获取Process的输出流来作为输入字节流</span></span><br><span class="line"><span class="type">InputStream</span> <span class="variable">noArgIn</span> <span class="operator">=</span> noArgStart.getInputStream();<span class="comment">//获取Process的输出流来作为输入字节流</span></span><br><span class="line">InputStreamReader argReader=<span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(argIn);<span class="comment">//把字节流转化为字符流</span></span><br><span class="line">InputStreamReader noArgReader=<span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(noArgIn);<span class="comment">//把字节流转化为字符流</span></span><br><span class="line">BufferedReader argBr=<span class="keyword">new</span> <span class="title class_">BufferedReader</span>(argReader);<span class="comment">//为字符流提供缓冲区，以便一次性读取整块数据</span></span><br><span class="line">BufferedReader noArgBr=<span class="keyword">new</span> <span class="title class_">BufferedReader</span>(noArgReader);<span class="comment">//为字符流提供缓冲区，以便一次性读取整块数据</span></span><br><span class="line"></span><br><span class="line">String line=<span class="literal">null</span>;</span><br><span class="line"><span class="keyword">while</span>((line=argBr.readLine())!=<span class="literal">null</span>)&#123;<span class="comment">//一行行读取</span></span><br><span class="line">    System.out.println(line);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>((line=noArgBr.readLine())!=<span class="literal">null</span>)&#123;<span class="comment">//一行行读取</span></span><br><span class="line">    System.out.println(line);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        String line=null;
-        while((line=argBr.readLine())!=null)&#123;//一行行读取
-            System.out.println(line);
-        &#125;
-
-        while((line=noArgBr.readLine())!=null)&#123;//一行行读取
-            System.out.println(line);
-        &#125;
-</code></pre>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721232833104.png" alt="image-20210721232833104"></p>
 <h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><ul>
 <li><p>Java反射机制是Java这个静态语言中的动态特性，它让我们能够获取到、执行任意类的方法、变量，也能创建任意类的对象。</p>

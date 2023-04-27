@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -263,59 +259,23 @@
 <p>请求发送后再次断在刚才的地方</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220209164014482.png" alt="image-20220209164014482"></p>
 <p>继续跟进</p>
-<pre><code class="java">    public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException &#123;
-        try &#123;
-            //在此处F7跟进，看他是如何read Remote Invocation的
-            RemoteInvocation invocation = this.readRemoteInvocation(request);
-            RemoteInvocationResult result = this.invokeAndCreateResult(invocation, this.getProxy());
-            this.writeRemoteInvocationResult(request, response, result);
-        &#125; catch (ClassNotFoundException var5) &#123;
-            throw new NestedServletException(&quot;Class not found during deserialization&quot;, var5);
-        &#125;
-    &#125;
-</code></pre>
-<pre><code class="java">    protected RemoteInvocation readRemoteInvocation(HttpServletRequest request) throws IOException, ClassNotFoundException &#123;
-        return this.readRemoteInvocation(request, request.getInputStream());
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handleRequest</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//在此处F7跟进，看他是如何read Remote Invocation的</span></span><br><span class="line">        <span class="type">RemoteInvocation</span> <span class="variable">invocation</span> <span class="operator">=</span> <span class="built_in">this</span>.readRemoteInvocation(request);</span><br><span class="line">        <span class="type">RemoteInvocationResult</span> <span class="variable">result</span> <span class="operator">=</span> <span class="built_in">this</span>.invokeAndCreateResult(invocation, <span class="built_in">this</span>.getProxy());</span><br><span class="line">        <span class="built_in">this</span>.writeRemoteInvocationResult(request, response, result);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException var5) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NestedServletException</span>(<span class="string">&quot;Class not found during deserialization&quot;</span>, var5);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> RemoteInvocation <span class="title function_">readRemoteInvocation</span><span class="params">(HttpServletRequest request)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.readRemoteInvocation(request, request.getInputStream());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>继续跟进</p>
-<pre><code class="java">    protected RemoteInvocation readRemoteInvocation(HttpServletRequest request, InputStream is) throws IOException, ClassNotFoundException &#123;
-        //此处会获取输入流，往下跟后发现抛出了异常
-        ObjectInputStream ois = this.createObjectInputStream(this.decorateInputStream(request, is));
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> RemoteInvocation <span class="title function_">readRemoteInvocation</span><span class="params">(HttpServletRequest request, InputStream is)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">    <span class="comment">//此处会获取输入流，往下跟后发现抛出了异常</span></span><br><span class="line">    <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="built_in">this</span>.createObjectInputStream(<span class="built_in">this</span>.decorateInputStream(request, is));</span><br><span class="line"></span><br><span class="line">    RemoteInvocation var4;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//此处read Remote Invocation</span></span><br><span class="line">        var4 = <span class="built_in">this</span>.doReadRemoteInvocation(ois);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        ois.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> var4;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        RemoteInvocation var4;
-        try &#123;
-            //此处read Remote Invocation
-            var4 = this.doReadRemoteInvocation(ois);
-        &#125; finally &#123;
-            ois.close();
-        &#125;
-
-        return var4;
-    &#125;
-</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220209164418884.png" alt="image-20220209164418884"></p>
 <p>下面的<code>this.doReadRemoteInvocation(ois);</code>并未被执行，为什么呢？</p>
 <p>因为我们并未在post请求体中放入数据，无法获取到输入流</p>
 <p>看看doReadRemoteInvocation方法</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20220209165553503.png" alt="image-20220209165553503"></p>
-<pre><code class="java">    protected RemoteInvocation doReadRemoteInvocation(ObjectInputStream ois) throws IOException, ClassNotFoundException &#123;
-        //反序列化触发
-        Object obj = ois.readObject();
-        if (!(obj instanceof RemoteInvocation)) &#123;
-            throw new RemoteException(&quot;Deserialized object needs to be assignable to type [&quot; + RemoteInvocation.class.getName() + &quot;]: &quot; + ClassUtils.getDescriptiveType(obj));
-        &#125; else &#123;
-            return (RemoteInvocation)obj;
-        &#125;
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> RemoteInvocation <span class="title function_">doReadRemoteInvocation</span><span class="params">(ObjectInputStream ois)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">    <span class="comment">//反序列化触发</span></span><br><span class="line">    <span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> ois.readObject();</span><br><span class="line">    <span class="keyword">if</span> (!(obj <span class="keyword">instanceof</span> RemoteInvocation)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RemoteException</span>(<span class="string">&quot;Deserialized object needs to be assignable to type [&quot;</span> + RemoteInvocation.class.getName() + <span class="string">&quot;]: &quot;</span> + ClassUtils.getDescriptiveType(obj));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (RemoteInvocation)obj;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>在pom.xml中添加</p>
-<pre><code class="xml">        &lt;dependency&gt;
-            &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
-            &lt;artifactId&gt;commons-collections4&lt;/artifactId&gt;
-            &lt;version&gt;4.0&lt;/version&gt;
-        &lt;/dependency&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-collections4<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>重新运行HttpProvider</p>
 <p>使用ysoserial生成cc4 payload</p>
 <p>使用postman：</p>

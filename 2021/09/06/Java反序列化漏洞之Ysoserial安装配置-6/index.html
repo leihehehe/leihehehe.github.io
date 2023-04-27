@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -209,8 +205,8 @@
 
 <h1 id="YsoSerial环境搭建"><a href="#YsoSerial环境搭建" class="headerlink" title="YsoSerial环境搭建"></a>YsoSerial环境搭建</h1><p>首先下载<strong>ysoserial</strong>：<code>git clone https://github.com/frohoff/ysoserial.git</code></p>
 <p>用IDEA加载后，打开<code>pom.xml</code>文件，打开后Maven会自动下载对应的依赖，但有些依赖无法下载成功。</p>
-<pre><code class="bash">mvn install:install-file -DgroupId=依赖的groupId -DartifactId=依赖的artifactId -Dversion=依赖的版本 -Dpackaging=jar -Dfile=你下载的jar包的路径
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn install:install-file -DgroupId=依赖的groupId -DartifactId=依赖的artifactId -Dversion=依赖的版本 -Dpackaging=jar -Dfile=你下载的jar包的路径</span><br></pre></td></tr></table></figure>
+
 <p>IDEA里JDK配置成1.7</p>
 <p>运行<code>GeneratePayload.java</code>，出现以下信息表示YsoSerial环境搭建成功</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906180526562.png" alt="image-20210906180526562"></p>
@@ -223,36 +219,11 @@
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906181130800.png" alt="image-20210906181130800"></p>
 <p>但该payload无法直接复制,所以我们想办法用writeObject()将他写成二进制文件（在<a target="_blank" rel="noopener" href="https://leihehehe.github.io/2021/07/28/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%88%86%E6%9E%90-3/">Java反序列化漏洞之Java反序列化流程与分析(3)</a>中学习过）。</p>
 <p>在<code>GeneratePayload</code>中有以下代码：</p>
-<pre><code class="java">        try &#123;
-            final ObjectPayload payload = payloadClass.newInstance();
-            final Object object = payload.getObject(command);
-            PrintStream out = System.out;//system out
-            Serializer.serialize(object, out);//将序列化payload打出来
-            ObjectPayload.Utils.releasePayload(payload, object);
-        &#125; catch (Throwable e) &#123;
-            System.err.println(&quot;Error while generating or serializing payload&quot;);
-            e.printStackTrace();
-            System.exit(INTERNAL_ERROR_CODE);
-        &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	<span class="keyword">final</span> <span class="type">ObjectPayload</span> <span class="variable">payload</span> <span class="operator">=</span> payloadClass.newInstance();</span><br><span class="line">	<span class="keyword">final</span> <span class="type">Object</span> <span class="variable">object</span> <span class="operator">=</span> payload.getObject(command);</span><br><span class="line">	<span class="type">PrintStream</span> <span class="variable">out</span> <span class="operator">=</span> System.out;<span class="comment">//system out</span></span><br><span class="line">	Serializer.serialize(object, out);<span class="comment">//将序列化payload打出来</span></span><br><span class="line">	ObjectPayload.Utils.releasePayload(payload, object);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">	System.err.println(<span class="string">&quot;Error while generating or serializing payload&quot;</span>);</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">	System.exit(INTERNAL_ERROR_CODE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>我们跟进<code>serialize()</code>方法，发现是在<code>Serializer</code>Class中。</p>
-<pre><code class="java">    public static void serialize(final Object obj, final OutputStream out) throws IOException &#123;
-        final ObjectOutputStream objOut = new ObjectOutputStream(out);
-        objOut.writeObject(obj);
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(<span class="keyword">final</span> Object obj, <span class="keyword">final</span> OutputStream out)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">	<span class="keyword">final</span> <span class="type">ObjectOutputStream</span> <span class="variable">objOut</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(out);</span><br><span class="line">	objOut.writeObject(obj);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//for saving in the file.</span></span><br><span class="line">       <span class="comment">//将payload写到文件</span></span><br><span class="line"></span><br><span class="line">       <span class="type">FileOutputStream</span> <span class="variable">fileOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;payload.ser&quot;</span>);</span><br><span class="line">       ObjectOutputStream objectOutputStream=<span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fileOutputStream);</span><br><span class="line">       objectOutputStream.writeObject(obj);</span><br><span class="line">       fileOutputStream.flush();</span><br><span class="line">       fileOutputStream.close();</span><br><span class="line">       objectOutputStream.flush();</span><br><span class="line">       objectOutputStream.close();</span><br><span class="line"></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
 
-        //for saving in the file.
-        //将payload写到文件
-
-        FileOutputStream fileOutputStream = new FileOutputStream(&quot;payload.ser&quot;);
-        ObjectOutputStream objectOutputStream=new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(obj);
-        fileOutputStream.flush();
-        fileOutputStream.close();
-        objectOutputStream.flush();
-        objectOutputStream.close();
-
-    &#125;
-</code></pre>
 <p>payload保存到文件成功。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906224304869.png" alt="image-20210906224304869"></p>
 <h1 id="WebServer环境搭建"><a href="#WebServer环境搭建" class="headerlink" title="WebServer环境搭建"></a>WebServer环境搭建</h1><p><strong>配置环境：java1.7，commoncollections3.1.jar</strong></p>
@@ -260,47 +231,13 @@
 <p>在Project Structure中导入Web框架</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906231359407.png" alt="image-20210906231359407"></p>
 <p>在main文件夹下创建一个Servlet</p>
-<pre><code class="java">import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletInputStream;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectInputStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainServlet</span> <span class="keyword">extends</span> <span class="title class_">HttpServlet</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">        <span class="type">ServletInputStream</span> <span class="variable">servletInputStream</span> <span class="operator">=</span> req.getInputStream();<span class="comment">//相当于之前的FileInputStream,不过数据现在是来源于ServletInputStream而不是从文件读取了</span></span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">objectInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(servletInputStream);<span class="comment">//从ServletInputStream中读取ObjectStream</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            objectInputStream.readObject();<span class="comment">//读入object</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        objectInputStream.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-public class MainServlet extends HttpServlet &#123;
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-        ServletInputStream servletInputStream = req.getInputStream();//相当于之前的FileInputStream,不过数据现在是来源于ServletInputStream而不是从文件读取了
-        ObjectInputStream objectInputStream = new ObjectInputStream(servletInputStream);//从ServletInputStream中读取ObjectStream
-        try &#123;
-            objectInputStream.readObject();//读入object
-        &#125; catch (ClassNotFoundException e) &#123;
-            e.printStackTrace();
-        &#125;
-        objectInputStream.close();
-    &#125;
-&#125;
-</code></pre>
 <p>如果出现servlet找不到的情况，按提示下载即可</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906232006712.png" alt="image-20210906232006712"></p>
 <p>设置<strong>Router</strong>：访问<code>/test</code>的时候交给<code>MainServlet</code>处理</p>
-<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;web-app xmlns=&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;
-         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-         xsi:schemaLocation=&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;
-         version=&quot;4.0&quot;&gt;
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">web-app</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">version</span>=<span class="string">&quot;4.0&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>MainServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>MainServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>MainServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/test<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;MainServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;MainServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;MainServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/test&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-&lt;/web-app&gt;
-</code></pre>
 <p>为了复现<code>commoncollections1</code>, jdk版本需要为<code>1.7</code>，且需导入<code>commons-collections-3.1.jar</code></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BYsoserial%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-6/image-20210906233044231.png" alt="image-20210906233044231"></p>
 <p>同时在<code>artifact</code>处需要导入commons collections，否则漏洞复现时会提示找不到库。</p>

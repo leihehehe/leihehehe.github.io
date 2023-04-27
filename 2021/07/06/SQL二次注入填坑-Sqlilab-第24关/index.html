@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -215,18 +211,18 @@
 <p><code>username</code> 和 <code>password</code>都被<strong>mysql_real_escape_string</strong>做了处理，所以登录POST处的注入就不再想了</p>
 <h2 id="尝试二次注入（成功）"><a href="#尝试二次注入（成功）" class="headerlink" title="尝试二次注入（成功）"></a>尝试二次注入（成功）</h2><h3 id="修改其他用户密码"><a href="#修改其他用户密码" class="headerlink" title="修改其他用户密码"></a>修改其他用户密码</h3><p>在post注入行不通后，我发现可以创建新用户和登录</p>
 <p>随便创建了一个用户：<code>username:123,密码123456</code>，登录后发现有需改密码选项，所以猜测修改密码选项的语句是</p>
-<pre><code class="php">Update users set password = &#39;111&#39; where username = &#39;admin&#39; and password = &#39;123&#39;;
-</code></pre>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Update users set password = <span class="string">&#x27;111&#x27;</span> where username = <span class="string">&#x27;admin&#x27;</span> <span class="keyword">and</span> password = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
 <p>这里的<code>username</code>可能是存在注入的，但因为创建用户的时候，我们的<code>username</code>和<code>password</code>都被转义过了，该怎么办呢？</p>
 <p>实际上，因为这个创建用户时的转移函数<code>mysql_real_escape_string()</code>会在引号前加入反斜杠<code>\</code>, 比如<code>admin&#39;#</code> 会变成<code>admin\&#39;#</code>， 但存入数据库的时候,数据库会自动移除<code>\</code>,所以存进数据库的还是<code>admin&#39;#</code></p>
 <p>那么回到刚才<strong>修改密码</strong>的语句，当我们进行修改密码的时候，语句会变为：</p>
-<pre><code class="php">Update users set password = &#39;123&#39; where username = &#39;admin&#39;#&#39; and password = &#39;123&#39;;
-</code></pre>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Update users set password = <span class="string">&#x27;123&#x27;</span> where username = <span class="string">&#x27;admin&#x27;</span><span class="comment">#&#x27; and password = &#x27;123&#x27;;</span></span><br></pre></td></tr></table></figure>
+
 <p>所以虽然我们登录的是<code>admin&#39;#</code>这个账号，但却修改了<code>admin</code>的密码</p>
 <h3 id="扩散思维"><a href="#扩散思维" class="headerlink" title="扩散思维"></a>扩散思维</h3><p>既然二次注入可以利用，那么我们可以利用这个干点别的事</p>
 <p>假设：如果我们现在php页面上有一个打印所有user信息的user表，我们甚至可以直接用</p>
-<pre><code class="mysql">1&#39; union select 1,user(),database()#
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#x27; union select 1,user(),database()#</span><br></pre></td></tr></table></figure>
+
 <p>把信息union到打出来的这张表上。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>遇到<strong>转义</strong>的函数如<code>mysql_real_escape_string()</code>，考虑数据进入数据库后会被还原的情况，再找取出这个数据的地方，即可完成二次注入。</p>
 

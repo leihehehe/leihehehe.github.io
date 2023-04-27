@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -248,16 +244,17 @@
 <p><strong>binary 0</strong>: square</p>
 <p><strong>binary 1</strong>: square then times <code>a</code></p>
 <h1 id="RSA-crypto"><a href="#RSA-crypto" class="headerlink" title="RSA crypto"></a>RSA crypto</h1><h3 id="RSA-key-generation"><a href="#RSA-key-generation" class="headerlink" title="RSA key generation"></a>RSA key generation</h3><p>choose two primes: <code>p = 5 and q = 11</code></p>
-<pre><code class="mathematica">n = p*q = 5 * 11 = 55
-ϕ(n)=(p-1)*(q-1)=4*10=40
-</code></pre>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">n</span> <span class="operator">=</span> <span class="variable">p</span><span class="operator">*</span><span class="variable">q</span> <span class="operator">=</span> <span class="number">5</span> <span class="operator">*</span> <span class="number">11</span> <span class="operator">=</span> <span class="number">55</span></span><br><span class="line">ϕ<span class="punctuation">(</span><span class="variable">n</span><span class="punctuation">)</span><span class="operator">=</span><span class="punctuation">(</span><span class="variable">p</span><span class="operator">-</span><span class="number">1</span><span class="punctuation">)</span><span class="operator">*</span><span class="punctuation">(</span><span class="variable">q</span><span class="operator">-</span><span class="number">1</span><span class="punctuation">)</span><span class="operator">=</span><span class="number">4</span><span class="operator">*</span><span class="number">10</span><span class="operator">=</span><span class="number">40</span></span><br></pre></td></tr></table></figure>
+
 <p>Find two numbers e and e according to<code> (e*d) mod ϕ(n) = 1</code>, thus, <code>e = 3, d = 27</code></p>
 <p><strong>Public key:</strong> (e,n)=(3, 55)</p>
 <p><strong>Private key:</strong> (d,n)=(27, 55)</p>
-<h3 id="RSA-encryption"><a href="#RSA-encryption" class="headerlink" title="RSA encryption"></a>RSA encryption</h3><pre><code class="mathematica">s = m^(e)mod n
-</code></pre>
-<h3 id="RSA-decryption"><a href="#RSA-decryption" class="headerlink" title="RSA decryption"></a>RSA decryption</h3><pre><code class="mathematica">m = s^(d)mod n
-</code></pre>
+<h3 id="RSA-encryption"><a href="#RSA-encryption" class="headerlink" title="RSA encryption"></a>RSA encryption</h3><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">s</span> <span class="operator">=</span> <span class="variable">m</span><span class="operator">^</span><span class="punctuation">(</span><span class="variable">e</span><span class="punctuation">)</span><span class="variable">mod</span> <span class="variable">n</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="RSA-decryption"><a href="#RSA-decryption" class="headerlink" title="RSA decryption"></a>RSA decryption</h3><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">m</span> <span class="operator">=</span> <span class="variable">s</span><span class="operator">^</span><span class="punctuation">(</span><span class="variable">d</span><span class="punctuation">)</span><span class="variable">mod</span> <span class="variable">n</span></span><br></pre></td></tr></table></figure>
+
+
+
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
 
       </div>

@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -226,102 +222,18 @@
 <p>客户端调用<code>stub</code>的方法后，<code>stub</code>会将客户端想要调用的方法名及其参数<strong>序列化</strong>，利用<strong>远程引用层</strong>和<strong>传输层</strong>（<strong>Socket通信</strong>）发给<code>Server</code>，<code>Server</code>那边的<strong>远程引用层</strong>接收到数据后发给<code>Skeleton</code>，<strong>反序列化</strong>后在<code>Server</code>执行被调用的方法，然后将方法的返回值或异常打包（序列化后）返回给客户端，客户端再以同样的方法<strong>反序列化</strong>解析返回数据。</p>
 <p>这里需要注意的是，远程方法的调用最后都是在<strong>Server</strong>执行的，最后只是返回序列化后的结果而已。</p>
 <h1 id="案例讲解"><a href="#案例讲解" class="headerlink" title="案例讲解"></a>案例讲解</h1><h2 id="定义远程接口"><a href="#定义远程接口" class="headerlink" title="定义远程接口"></a>定义远程接口</h2><p><code>Server</code>想要提供服务，那么就需要为这些提供的服务定义一个接口，让<code>Client</code>可以访问到它。该接口必须继承<code>Remote</code>，这样该接口才能成为一个远程对象，才可以被JAVA虚拟机所调用。</p>
-<pre><code class="java">import java.rmi.Remote;
-import java.rmi.RemoteException;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.rmi.Remote;</span><br><span class="line"><span class="keyword">import</span> java.rmi.RemoteException;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这个接口不仅要给server用，还要给client用，client中通常是把服务端接口打包成jar包使用。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">HelloService</span> <span class="keyword">extends</span> <span class="title class_">Remote</span> &#123;</span><br><span class="line">    <span class="comment">//继承Remote接口以后，该Class成为Server的一个远程对象，供Client访问并提供一定服务</span></span><br><span class="line">    <span class="comment">//Remote只是一个标识接口，不含任何方法，继承该接口的类可以被远程的JAVA虚拟机调用</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//因为远程调用会涉及到网络通信，容易出现网络异常，所以需要抛出RemoteException</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException;<span class="comment">//事实上，RemoteException也是继承于IOException的</span></span><br><span class="line">    <span class="comment">//修饰符必须为public 否则会报错</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-//这个接口不仅要给server用，还要给client用，client中通常是把服务端接口打包成jar包使用。
-public interface HelloService extends Remote &#123;
-    //继承Remote接口以后，该Class成为Server的一个远程对象，供Client访问并提供一定服务
-    //Remote只是一个标识接口，不含任何方法，继承该接口的类可以被远程的JAVA虚拟机调用
-
-    //因为远程调用会涉及到网络通信，容易出现网络异常，所以需要抛出RemoteException
-    public String hello() throws RemoteException;//事实上，RemoteException也是继承于IOException的
-    //修饰符必须为public 否则会报错
-&#125;
-</code></pre>
 <h2 id="定义Service-Implementation-Class"><a href="#定义Service-Implementation-Class" class="headerlink" title="定义Service Implementation Class"></a>定义Service Implementation Class</h2><p>定义好了远程接口后，需要写出具体的方法内容即实现类。该类需要继承<code>UnicastRemoteObject</code>，而这个父类会生成<code>stub</code>和<code>skeleton</code>。</p>
-<pre><code class="java">import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-//用来调用远程接口， 这样客户端访问远程对象的时候，远程对才会把自身的一个拷贝(stub存根)以socket的形式传输给客户端
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.rmi.RemoteException;</span><br><span class="line"><span class="keyword">import</span> java.rmi.server.UnicastRemoteObject;</span><br><span class="line"><span class="comment">//用来调用远程接口， 这样客户端访问远程对象的时候，远程对才会把自身的一个拷贝(stub存根)以socket的形式传输给客户端</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//UnicastRemoteObject 将生成stub（远程对象在本地的代理）和skeleton（服务端的一个代理，用来处理stub发来的请求）</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloServiceImp</span> <span class="keyword">extends</span> <span class="title class_">UnicastRemoteObject</span> <span class="keyword">implements</span> <span class="title class_">HelloService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">HelloServiceImp</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException &#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line"> <span class="comment">//如果父类的无参构造函数抛出了异常，则子类的无参构造函数不能省略不写，并且必须抛出父类的异常或父类异常的父类</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;这是远程服务器发来的消息&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-//UnicastRemoteObject 将生成stub（远程对象在本地的代理）和skeleton（服务端的一个代理，用来处理stub发来的请求）
-public class HelloServiceImp extends UnicastRemoteObject implements HelloService &#123;
-
-    public HelloServiceImp() throws RemoteException &#123;
-        super();
- //如果父类的无参构造函数抛出了异常，则子类的无参构造函数不能省略不写，并且必须抛出父类的异常或父类异常的父类
-    &#125;
-
-    @Override
-    public String hello() throws RemoteException &#123;
-        return &quot;这是远程服务器发来的消息&quot;;
-    &#125;
-&#125;
-</code></pre>
 <h2 id="Registry-Class"><a href="#Registry-Class" class="headerlink" title="Registry Class"></a>Registry Class</h2><p>写好了服务接口，那么我们就需要一个中间代理人 - Registry。</p>
 <p>我们需要创建并启动RMIService，并把我们提供的实现类绑定在上面。</p>
-<pre><code class="java">import server.HelloService;
-import server.HelloServiceImp;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> server.HelloService;</span><br><span class="line"><span class="keyword">import</span> server.HelloServiceImp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.rmi.AlreadyBoundException;</span><br><span class="line"><span class="keyword">import</span> java.rmi.Naming;</span><br><span class="line"><span class="keyword">import</span> java.rmi.RemoteException;</span><br><span class="line"><span class="keyword">import</span> java.rmi.registry.LocateRegistry;</span><br><span class="line"></span><br><span class="line"><span class="comment">//中间代理人</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RMIRegister</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> RemoteException &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">HelloService</span> <span class="variable">helloService</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HelloServiceImp</span>();<span class="comment">//imp会自动调用父类的构造方法来生成返回stub</span></span><br><span class="line">            LocateRegistry.createRegistry(<span class="number">1099</span>);<span class="comment">//在本地创建并启动RMIService，被创建的RMIService服务将会在指定的端口上监听请求。</span></span><br><span class="line">            Naming.bind(<span class="string">&quot;rmi://localhost:1099/helloService&quot;</span>, helloService);</span><br><span class="line">            <span class="comment">//执行这个方法后相当于发布了RMI服务，把远程服务的实现类绑定到指定的RMI地址上</span></span><br><span class="line">            System.out.println(<span class="string">&quot;远程对象绑定成功！&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (AlreadyBoundException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;发生重复绑定对象异常&quot;</span>);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (MalformedURLException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;发生URL协议异常&quot;</span>);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">catch</span> (RemoteException e)&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;创建远程对象异常&quot;</span>);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-import java.net.MalformedURLException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-
-//中间代理人
-public class RMIRegister &#123;
-    public static void main(String[] args) throws RemoteException &#123;
-        try &#123;
-            HelloService helloService = new HelloServiceImp();//imp会自动调用父类的构造方法来生成返回stub
-            LocateRegistry.createRegistry(1099);//在本地创建并启动RMIService，被创建的RMIService服务将会在指定的端口上监听请求。
-            Naming.bind(&quot;rmi://localhost:1099/helloService&quot;, helloService);
-            //执行这个方法后相当于发布了RMI服务，把远程服务的实现类绑定到指定的RMI地址上
-            System.out.println(&quot;远程对象绑定成功！&quot;);
-        &#125; catch (AlreadyBoundException e) &#123;
-            System.out.println(&quot;发生重复绑定对象异常&quot;);
-            e.printStackTrace();
-        &#125; catch (MalformedURLException e) &#123;
-            System.out.println(&quot;发生URL协议异常&quot;);
-            e.printStackTrace();
-        &#125;catch (RemoteException e)&#123;
-            System.out.println(&quot;创建远程对象异常&quot;);
-            e.printStackTrace();
-        &#125;
-    &#125;
-&#125;
-</code></pre>
 <h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p>直接使用<code>Naming.lookup()</code>可以找到我们想要的<strong>stub</strong>。</p>
-<pre><code class="java">import server.HelloService;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> server.HelloService;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.rmi.Naming;</span><br><span class="line"><span class="keyword">import</span> java.rmi.NotBoundException;</span><br><span class="line"><span class="keyword">import</span> java.rmi.RemoteException;</span><br><span class="line"><span class="keyword">import</span> java.rmi.registry.LocateRegistry;</span><br><span class="line"><span class="keyword">import</span> java.rmi.registry.Registry;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloClient</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">//在远程对象注册表registry中寻找指定name的对象，并返回reference</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//获取register</span></span><br><span class="line">            <span class="type">Registry</span> <span class="variable">registry</span> <span class="operator">=</span> LocateRegistry.getRegistry(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">1099</span>);</span><br><span class="line">            <span class="keyword">for</span>(String i : registry.list())&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;注册的服务：&quot;</span>+i);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="type">HelloService</span> <span class="variable">helloService</span> <span class="operator">=</span> (HelloService) Naming.lookup(<span class="string">&quot;rmi://localhost:1099/helloService&quot;</span>);<span class="comment">//返回的就是stub</span></span><br><span class="line">            System.out.println(helloService.hello());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NotBoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (MalformedURLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
-public class HelloClient &#123;
-    public static void main(String[] args) &#123;
-        //在远程对象注册表registry中寻找指定name的对象，并返回reference
-        try &#123;
-            //获取register
-            Registry registry = LocateRegistry.getRegistry(&quot;127.0.0.1&quot;, 1099);
-            for(String i : registry.list())&#123;
-                System.out.println(&quot;注册的服务：&quot;+i);
-            &#125;
-            HelloService helloService = (HelloService) Naming.lookup(&quot;rmi://localhost:1099/helloService&quot;);//返回的就是stub
-            System.out.println(helloService.hello());
-        &#125; catch (NotBoundException e) &#123;
-            e.printStackTrace();
-        &#125; catch (MalformedURLException e) &#123;
-            e.printStackTrace();
-        &#125; catch (RemoteException e) &#123;
-            e.printStackTrace();
-        &#125;
-    &#125;
-&#125;
-</code></pre>
 <h2 id="Client上的接口"><a href="#Client上的接口" class="headerlink" title="Client上的接口"></a>Client上的接口</h2><p>即使我们在服务端上设计了一套接口<code>HelloService</code>，但是Client是不知道的，所以我们需要在Client端设定一模一样的接口，这样Client才知道哪些方法能够被他们所调用。</p>
 <h2 id="运行测试"><a href="#运行测试" class="headerlink" title="运行测试"></a>运行测试</h2><p>先运行<code>RMIRegister</code></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJAVA-RMI%E5%8E%9F%E7%90%86%E3%80%81%E6%B5%81%E7%A8%8B/image-20210725220714621.png" alt="image-20210725220714621"></p>
@@ -332,12 +244,8 @@ public class HelloClient &#123;
 <h1 id="RMI的安全问题"><a href="#RMI的安全问题" class="headerlink" title="RMI的安全问题"></a>RMI的安全问题</h1><h2 id="根本原因"><a href="#根本原因" class="headerlink" title="根本原因"></a>根本原因</h2><p>RMI在数据传输过程中，涉及到序列化和反序列化，这就有构造恶意对象的风险。</p>
 <h2 id="伪造LocateRegister攻击client"><a href="#伪造LocateRegister攻击client" class="headerlink" title="伪造LocateRegister攻击client"></a>伪造LocateRegister攻击client</h2><p>我们客户端获取<strong>stub</strong>的方式是通过**Naming.lookup()**来查找指定url</p>
 <p>例如</p>
-<pre><code class="java">/*Client.java*/
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*Client.java*/</span></span><br><span class="line"></span><br><span class="line"><span class="type">HelloService</span> <span class="variable">helloService</span> <span class="operator">=</span> (HelloService) Naming.lookup(<span class="string">&quot;rmi://localhost:1099/helloService&quot;</span>);<span class="comment">//返回的就是stub</span></span><br><span class="line">System.out.println(helloService.hello());</span><br><span class="line"><span class="comment">//此处我们是通过查找RMI服务地址localhost:1099中的helloService对象</span></span><br></pre></td></tr></table></figure>
 
-HelloService helloService = (HelloService) Naming.lookup(&quot;rmi://localhost:1099/helloService&quot;);//返回的就是stub
-System.out.println(helloService.hello());
-//此处我们是通过查找RMI服务地址localhost:1099中的helloService对象
-</code></pre>
 <p>如果该<strong>lookup()<strong>方法中的</strong>rmi</strong>地址(也就是LocateRegister)是可控的，让Client获取到的service是我们构造的恶意service(攻击者搭建的RMI server和实现的恶意对象)，<strong>我们就能执行恶意helloService中的hello()了</strong></p>
 <p>RMI的利用方法远远不止如此，更多相关内容可见<a target="_blank" rel="noopener" href="https://leihehehe.github.io/2021/07/31/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8B%E5%88%A9%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90%E9%9B%86%E5%90%88-4/">Java反序列化漏洞之利用链分析集合(4)</a></p>
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a target="_blank" rel="noopener" href="https://y4er.com/post/java-rmi/">Java RMI原理及反序列化学习</a></p>

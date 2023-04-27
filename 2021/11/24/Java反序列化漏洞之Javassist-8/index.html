@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -209,55 +205,12 @@
 <p><strong>CtMethod</strong> - Java中的method</p>
 <span id="more"></span>
 
-<h1 id="简单演示"><a href="#简单演示" class="headerlink" title="简单演示"></a>简单演示</h1><h2 id="导入依赖"><a href="#导入依赖" class="headerlink" title="导入依赖"></a>导入依赖</h2><h3 id="方法一：pom-xml"><a href="#方法一：pom-xml" class="headerlink" title="方法一：pom.xml"></a>方法一：pom.xml</h3><pre><code class="xml">&lt;dependency&gt;
-    &lt;groupId&gt;javassist&lt;/groupId&gt;
-    &lt;artifactId&gt;javassist&lt;/artifactId&gt;
-    &lt;version&gt;3.12.1.GA&lt;/version&gt;
-&lt;/dependency&gt;
-</code></pre>
+<h1 id="简单演示"><a href="#简单演示" class="headerlink" title="简单演示"></a>简单演示</h1><h2 id="导入依赖"><a href="#导入依赖" class="headerlink" title="导入依赖"></a>导入依赖</h2><h3 id="方法一：pom-xml"><a href="#方法一：pom-xml" class="headerlink" title="方法一：pom.xml"></a>方法一：pom.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javassist<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javassist<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.12.1.GA<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>方法二：导入jar包</strong></p>
 <p>可在网上下载jar包，导入module，library</p>
-<h2 id="创建Class"><a href="#创建Class" class="headerlink" title="创建Class"></a>创建Class</h2><pre><code class="java">import javassist.*;
+<h2 id="创建Class"><a href="#创建Class" class="headerlink" title="创建Class"></a>创建Class</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javassist.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">javassistTest</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> NotFoundException, CannotCompileException, IOException &#123;</span><br><span class="line">        </span><br><span class="line">		<span class="comment">/*创建Class*/</span></span><br><span class="line">        <span class="comment">//需要创建的class对应一个CtClass, ClassPool是一个容器，包含了各种CtClass</span></span><br><span class="line">        <span class="type">ClassPool</span> <span class="variable">cp</span> <span class="operator">=</span> ClassPool.getDefault();<span class="comment">//获取一个默认的ClassPool</span></span><br><span class="line">        <span class="type">CtClass</span> <span class="variable">test</span> <span class="operator">=</span> cp.makeClass(<span class="string">&quot;Evil&quot;</span>);<span class="comment">//用这个ClassPool来创建一个CtClass，名字为Evil</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">/*添加Field*/</span></span><br><span class="line">        <span class="type">CtField</span> <span class="variable">name</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CtField</span>(cp.get(<span class="string">&quot;java.lang.String&quot;</span>),<span class="string">&quot;name&quot;</span>,test);<span class="comment">//create a String-type field called name for the class test</span></span><br><span class="line">        name.setModifiers(Modifier.PRIVATE);<span class="comment">//private attribute</span></span><br><span class="line">        test.addField(name,CtField.Initializer.constant(<span class="string">&quot;Mark&quot;</span>));<span class="comment">//给test class里的name字段初始化为Mark</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">/*添加constructor*/</span></span><br><span class="line">        <span class="type">CtConstructor</span> <span class="variable">ctConstructor</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CtConstructor</span>(<span class="keyword">new</span> <span class="title class_">CtClass</span>[]&#123;&#125;,test);<span class="comment">//给Test Class创建一个无参constructor</span></span><br><span class="line">        ctConstructor.setBody(<span class="string">&quot;&#123;name=\&quot;Jack\&quot;;&#125;&quot;</span>);</span><br><span class="line">        test.addConstructor(ctConstructor);</span><br><span class="line">        <span class="comment">//有参构造函数</span></span><br><span class="line">        <span class="type">CtConstructor</span> <span class="variable">ctConstructor1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CtConstructor</span>(<span class="keyword">new</span> <span class="title class_">CtClass</span>[]&#123;cp.get(<span class="string">&quot;java.lang.String&quot;</span>)&#125;,test);</span><br><span class="line">        ctConstructor1.setBody(<span class="string">&quot;&#123;$0.name=$1;&#125;&quot;</span>);<span class="comment">//this.name = name(第一个parameter)</span></span><br><span class="line">        test.addConstructor(ctConstructor1);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*添加method*/</span></span><br><span class="line">        <span class="type">CtMethod</span> <span class="variable">printName</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CtMethod</span>(CtClass.voidType,<span class="string">&quot;printName&quot;</span>,<span class="keyword">new</span> <span class="title class_">CtClass</span>[]&#123;&#125;,test);</span><br><span class="line">        printName.setModifiers(Modifier.PUBLIC);</span><br><span class="line">        printName.setBody(<span class="string">&quot;&#123;System.out.println($0.name);&#125;&quot;</span>);</span><br><span class="line">        printName.insertBefore(<span class="string">&quot;System.out.println(\&quot;before:\&quot;);&quot;</span>);<span class="comment">//在方法体前面加入（注意必须有了方法体才能插入）</span></span><br><span class="line">        printName.insertAfter(<span class="string">&quot;System.out.println(\&quot;after:\&quot;);&quot;</span>);<span class="comment">//在方法体后面加入</span></span><br><span class="line">        test.addMethod(printName);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*写出Class到本地*/</span></span><br><span class="line">        test.writeFile();</span><br><span class="line">        test.detach();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-import java.io.IOException;
-
-public class javassistTest &#123;
-    public static void main(String[] args) throws NotFoundException, CannotCompileException, IOException &#123;
-        
-        /*创建Class*/
-        //需要创建的class对应一个CtClass, ClassPool是一个容器，包含了各种CtClass
-        ClassPool cp = ClassPool.getDefault();//获取一个默认的ClassPool
-        CtClass test = cp.makeClass(&quot;Evil&quot;);//用这个ClassPool来创建一个CtClass，名字为Evil
-
-        /*添加Field*/
-        CtField name = new CtField(cp.get(&quot;java.lang.String&quot;),&quot;name&quot;,test);//create a String-type field called name for the class test
-        name.setModifiers(Modifier.PRIVATE);//private attribute
-        test.addField(name,CtField.Initializer.constant(&quot;Mark&quot;));//给test class里的name字段初始化为Mark
-
-        /*添加constructor*/
-        CtConstructor ctConstructor = new CtConstructor(new CtClass[]&#123;&#125;,test);//给Test Class创建一个无参constructor
-        ctConstructor.setBody(&quot;&#123;name=\&quot;Jack\&quot;;&#125;&quot;);
-        test.addConstructor(ctConstructor);
-        //有参构造函数
-        CtConstructor ctConstructor1 = new CtConstructor(new CtClass[]&#123;cp.get(&quot;java.lang.String&quot;)&#125;,test);
-        ctConstructor1.setBody(&quot;&#123;$0.name=$1;&#125;&quot;);//this.name = name(第一个parameter)
-        test.addConstructor(ctConstructor1);
-
-        /*添加method*/
-        CtMethod printName = new CtMethod(CtClass.voidType,&quot;printName&quot;,new CtClass[]&#123;&#125;,test);
-        printName.setModifiers(Modifier.PUBLIC);
-        printName.setBody(&quot;&#123;System.out.println($0.name);&#125;&quot;);
-        printName.insertBefore(&quot;System.out.println(\&quot;before:\&quot;);&quot;);//在方法体前面加入（注意必须有了方法体才能插入）
-        printName.insertAfter(&quot;System.out.println(\&quot;after:\&quot;);&quot;);//在方法体后面加入
-        test.addMethod(printName);
-
-        /*写出Class到本地*/
-        test.writeFile();
-        test.detach();
-
-    &#125;
-&#125;
-</code></pre>
 <h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/image-20211124203629163.png" alt="image-20211124203629163"></p>
 <h1 id="一些特殊参数"><a href="#一些特殊参数" class="headerlink" title="一些特殊参数"></a>一些特殊参数</h1><table>
 <thead>

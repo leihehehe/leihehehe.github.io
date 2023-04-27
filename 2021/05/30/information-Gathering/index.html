@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -205,46 +201,22 @@
         <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Information Gathering is to gather different kinds of information against the targeted victim or system - Websites, servers, etc.</p>
 <h2 id="Identify-Operation-System"><a href="#Identify-Operation-System" class="headerlink" title="Identify Operation System"></a>Identify Operation System</h2><span id="more"></span>
 
-<h3 id="通过网站文件大小写来识别"><a href="#通过网站文件大小写来识别" class="headerlink" title="通过网站文件大小写来识别"></a>通过网站文件大小写来识别</h3><pre><code class="bash">Linux对大小写敏感，windows不敏感 - 比如index.html -&gt; index.Html
-若网页不能正常显示，则为Linux系统；若能正常显示，则为windows系统
-</code></pre>
+<h3 id="通过网站文件大小写来识别"><a href="#通过网站文件大小写来识别" class="headerlink" title="通过网站文件大小写来识别"></a>通过网站文件大小写来识别</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Linux对大小写敏感，windows不敏感 - 比如index.html -&gt; index.Html</span><br><span class="line">若网页不能正常显示，则为Linux系统；若能正常显示，则为windows系统</span><br></pre></td></tr></table></figure>
+
 <h3 id="通过ping的TTL值来识别"><a href="#通过ping的TTL值来识别" class="headerlink" title="通过ping的TTL值来识别"></a>通过ping的TTL值来识别</h3><p><br />TTL值可作为参考，其依然有可能被修改 </p>
-<pre><code>```
-WINDOWS 98 TTL:32
-
-LINUX 2.2X/2.4X TTL:64
-
-WINDOWS NT/2000/XP TTL:128
-
-UNIX/BSD TTL:255
-```
+<pre><code><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">WINDOWS</span> <span class="number">98</span> TTL:<span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">LINUX</span> <span class="number">2</span>.<span class="number">2</span>X/<span class="number">2</span>.<span class="number">4</span>X TTL:<span class="number">64</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">WINDOWS</span> NT/<span class="number">2000</span>/XP TTL:<span class="number">128</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">UNIX</span>/BSD TTL:<span class="number">255</span></span><br></pre></td></tr></table></figure>
 </code></pre>
 <p><strong>例如以我本地电脑MAC(Linux)为例，ttl为64，所以可判断为linux</strong></p>
 <p><img src="/image/information-Gathering/1-2530916.png" alt="1"></p>
-<h3 id="通过组合对应来识别"><a href="#通过组合对应来识别" class="headerlink" title="通过组合对应来识别"></a>通过组合对应来识别</h3><pre><code class="bash">ASP和ASP.NET(aspx) -&gt; windows
-aspx mssql windows iis
-php mysql windows/linux apache
-jsp mssql/oracle windows/linux tomcat
-javaee mysql/oracle/ windows/linux weblogic/jboos/tomcat
-</code></pre>
-<h3 id="通过抓包来识别"><a href="#通过抓包来识别" class="headerlink" title="通过抓包来识别"></a>通过抓包来识别</h3><pre><code class="bash">在==header==中可看到server信息
-</code></pre>
+<h3 id="通过组合对应来识别"><a href="#通过组合对应来识别" class="headerlink" title="通过组合对应来识别"></a>通过组合对应来识别</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ASP和ASP.NET(aspx) -&gt; windows</span><br><span class="line">aspx mssql windows iis</span><br><span class="line">php mysql windows/linux apache</span><br><span class="line">jsp mssql/oracle windows/linux tomcat</span><br><span class="line">javaee mysql/oracle/ windows/linux weblogic/jboos/tomcat</span><br></pre></td></tr></table></figure>
+<h3 id="通过抓包来识别"><a href="#通过抓包来识别" class="headerlink" title="通过抓包来识别"></a>通过抓包来识别</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在==header==中可看到server信息</span><br></pre></td></tr></table></figure>
+
 <p>例如：某游戏网站，可判断其为windows, aspx类</p>
 <p><img src="/image/information-Gathering/image-20210601160243421.png" alt="image-20210601160243421"></p>
-<h3 id="通过端口扫描来识别（包括nmap绕过防火墙）"><a href="#通过端口扫描来识别（包括nmap绕过防火墙）" class="headerlink" title="通过端口扫描来识别（包括nmap绕过防火墙）"></a>通过端口扫描来识别（包括nmap绕过防火墙）</h3><pre><code class="bash">可以通过扫描端口来判断数据库类型 - 可使用masscan或nmap来扫描
-nmap中文手册：http://www.nmap.com.cn/doc/manual.shtm
-nmap www.example.com
-nmap -O -A www.example.com
-nmap -Pn -O -A www.example.com
-扫网段： nmap 47.94.236.0/24
-如果开了防火墙:用nmap会提示Host seems down
-绕过防火墙：nmap -Pn 127.0.0.1
-</code></pre>
-<h3 id="通过网站文件类型来识别"><a href="#通过网站文件类型来识别" class="headerlink" title="通过网站文件类型来识别"></a>通过网站文件类型来识别</h3><pre><code class="bash">如 index.jsp, index.aspx, index.php, index.action, index.asp
-另外，压缩包文件：
-Windows -&gt; zip, rar
-linux -&gt; tar.gz
-</code></pre>
+<h3 id="通过端口扫描来识别（包括nmap绕过防火墙）"><a href="#通过端口扫描来识别（包括nmap绕过防火墙）" class="headerlink" title="通过端口扫描来识别（包括nmap绕过防火墙）"></a>通过端口扫描来识别（包括nmap绕过防火墙）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">可以通过扫描端口来判断数据库类型 - 可使用masscan或nmap来扫描</span><br><span class="line">nmap中文手册：http://www.nmap.com.cn/doc/manual.shtm</span><br><span class="line">nmap www.example.com</span><br><span class="line">nmap -O -A www.example.com</span><br><span class="line">nmap -Pn -O -A www.example.com</span><br><span class="line">扫网段： nmap 47.94.236.0/24</span><br><span class="line">如果开了防火墙:用nmap会提示Host seems down</span><br><span class="line">绕过防火墙：nmap -Pn 127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<h3 id="通过网站文件类型来识别"><a href="#通过网站文件类型来识别" class="headerlink" title="通过网站文件类型来识别"></a>通过网站文件类型来识别</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">如 index.jsp, index.aspx, index.php, index.action, index.asp</span><br><span class="line">另外，压缩包文件：</span><br><span class="line">Windows -&gt; zip, rar</span><br><span class="line">linux -&gt; tar.gz</span><br></pre></td></tr></table></figure>
+
 <h2 id="Get-Relative-Sites-Information"><a href="#Get-Relative-Sites-Information" class="headerlink" title="Get Relative Sites Information"></a>Get Relative Sites Information</h2><h3 id="获取子域名网站"><a href="#获取子域名网站" class="headerlink" title="获取子域名网站"></a>获取子域名网站</h3><p>可利用子域名查询平台或者工具进行获取</p>
 <p>推荐： oneforall  下载地址：<a target="_blank" rel="noopener" href="https://github.com/shmilylty/OneForAll">https://github.com/shmilylty/OneForAll</a></p>
 <h3 id="获取不同端口"><a href="#获取不同端口" class="headerlink" title="获取不同端口"></a>获取不同端口</h3><p>不同端口可能有不同的网站，增加attack的几率</p>
@@ -265,12 +237,10 @@ linux -&gt; tar.gz
 </ul>
 <h3 id="获取网站源码"><a href="#获取网站源码" class="headerlink" title="获取网站源码"></a>获取网站源码</h3><p><strong>一般来说获取某些小型站点（套用模版或者第三方程序）的网站源码是有可能的。</strong></p>
 <p><a target="_blank" rel="noopener" href="https://www.secpulse.com/archives/124398.html">More Information About Source Code leakage</a></p>
-<h4 id="git源码泄漏"><a href="#git源码泄漏" class="headerlink" title="git源码泄漏"></a>git源码泄漏</h4><pre><code class="bash">www.example.com/.git/
-存在即可用==githack==利用漏洞
-</code></pre>
-<h4 id="svn源码泄漏"><a href="#svn源码泄漏" class="headerlink" title="svn源码泄漏"></a>svn源码泄漏</h4><pre><code class="bash">www.example.com/.svn/
-存在即可用==svn工具==利用漏洞
-</code></pre>
+<h4 id="git源码泄漏"><a href="#git源码泄漏" class="headerlink" title="git源码泄漏"></a>git源码泄漏</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">www.example.com/.git/</span><br><span class="line">存在即可用==githack==利用漏洞</span><br></pre></td></tr></table></figure>
+
+<h4 id="svn源码泄漏"><a href="#svn源码泄漏" class="headerlink" title="svn源码泄漏"></a>svn源码泄漏</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">www.example.com/.svn/</span><br><span class="line">存在即可用==svn工具==利用漏洞</span><br></pre></td></tr></table></figure>
+
 <h4 id="WEB-INF泄露"><a href="#WEB-INF泄露" class="headerlink" title="WEB-INF泄露"></a>WEB-INF泄露</h4><blockquote>
 <p>WEB-INF 主要包含一下文件或目录：</p>
 <p>WEB-INF/web.xml : Web应用程序配置文件, 描述了servlet和其他的应用组件配置及命名规则.</p>
@@ -279,13 +249,8 @@ linux -&gt; tar.gz
 <p>WEB-INF/lib/ : 用来存放打包好的库(.jar)</p>
 <p>WEB-INF/src/ : 用来放源代码(.asp和.php等)</p>
 </blockquote>
-<pre><code class="bash">若存在WEB-INF/web.xml文件，且有file access权限，可以在web-inf/web.xml中看到暴露的java class路径。
-比如在web.xml中有cn.abc.servlet.DownloadServlet.class,如果有下载漏洞，你可以直接下载web inf/classes/cn/abc/servlet/DownloadServlet.class
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">若存在WEB-INF/web.xml文件，且有file access权限，可以在web-inf/web.xml中看到暴露的java class路径。</span><br><span class="line">比如在web.xml中有cn.abc.servlet.DownloadServlet.class,如果有下载漏洞，你可以直接下载web inf/classes/cn/abc/servlet/DownloadServlet.class</span><br><span class="line"></span><br><span class="line">如 upload_file = ../../xxx.png</span><br><span class="line">即可访问 upload_file = web inf/classes/cn/abc/servlet/DownloadServlet.class</span><br><span class="line">并得到class文件 -&gt; 拖入idea查看即可</span><br></pre></td></tr></table></figure>
 
-如 upload_file = ../../xxx.png
-即可访问 upload_file = web inf/classes/cn/abc/servlet/DownloadServlet.class
-并得到class文件 -&gt; 拖入idea查看即可
-</code></pre>
 <h4 id="cvs泄露"><a href="#cvs泄露" class="headerlink" title="cvs泄露"></a>cvs泄露</h4><p>网站中存在.cvsignore</p>
 <h4 id="GitHub源码泄漏"><a href="#GitHub源码泄漏" class="headerlink" title="GitHub源码泄漏"></a>GitHub源码泄漏</h4><p>一个利用思路是，可以在网站中寻找一些联系方式的信息，比如qq,wx,phone或者email，然后在github中搜索，可能能找到源码</p>
 <h2 id="WAF-amp-CDN-amp-Real-IP-Address"><a href="#WAF-amp-CDN-amp-Real-IP-Address" class="headerlink" title="WAF &amp; CDN &amp; Real IP Address"></a>WAF &amp; CDN &amp; Real IP Address</h2><h3 id="判断WAF类型"><a href="#判断WAF类型" class="headerlink" title="判断WAF类型"></a>判断WAF类型</h3><p>Web Application Firewall简称WAF，WAF经常会拦截到我们的渗透攻击，所以需要判断WAF类型以便之后绕过它</p>
@@ -301,14 +266,8 @@ linux -&gt; tar.gz
 <p><strong>判断是否有CDN:</strong></p>
 <p>通过网站在线ping，看全国（全球）各地得到的ip是否相同，若不同则说明有CDN</p>
 <p>推荐查询平台：</p>
-<pre><code class="tex">https://www.17ce.com/ 
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">https://www.17ce.com/ </span><br><span class="line"></span><br><span class="line">http://ping.chinaz.com</span><br><span class="line"></span><br><span class="line">https://www.wepcc.com/</span><br><span class="line"></span><br><span class="line">https://get-site-ip.com/</span><br></pre></td></tr></table></figure>
 
-http://ping.chinaz.com
-
-https://www.wepcc.com/
-
-https://get-site-ip.com/
-</code></pre>
 <p><strong>获取真实IP地址</strong></p>
 <p>Ps： 如果不确定哪个是真实IP 可以查询IP地址 如果是cdn节点会显示 或者根据公司在的地址判断机房位置</p>
 <ol>
@@ -338,14 +297,8 @@ https://get-site-ip.com/
 </li>
 </ol>
 <h2 id="Black-amp-White-Search-Engines"><a href="#Black-amp-White-Search-Engines" class="headerlink" title="Black&amp;White Search Engines"></a>Black&amp;White Search Engines</h2><p>推荐网站：</p>
-<pre><code class="tex">https://fofa.so/
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">https://fofa.so/</span><br><span class="line"></span><br><span class="line">https://www.shodan.io/</span><br><span class="line"></span><br><span class="line">https://www.zoomeye.org/</span><br><span class="line"></span><br><span class="line">https://quake.360.cn/quake/<span class="params">#</span>/index</span><br></pre></td></tr></table></figure>
 
-https://www.shodan.io/
-
-https://www.zoomeye.org/
-
-https://quake.360.cn/quake/#/index
-</code></pre>
 <h2 id="ARL-Asset-Reconnaissance-Lighthouse"><a href="#ARL-Asset-Reconnaissance-Lighthouse" class="headerlink" title="ARL(Asset Reconnaissance Lighthouse)"></a>ARL(Asset Reconnaissance Lighthouse)</h2><p>配合fofa可以有效完成信息收集，详见<a target="_blank" rel="noopener" href="https://leihehehe.github.io/2021/06/01/arlSetup/">Web安全之ARL灯塔搭建与使用</a></p>
 
       </div>

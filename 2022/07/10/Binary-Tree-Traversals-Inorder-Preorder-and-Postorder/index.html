@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -188,70 +184,11 @@
 
 <h2 id="Perfect-Binary-Tree"><a href="#Perfect-Binary-Tree" class="headerlink" title="Perfect Binary Tree"></a>Perfect Binary Tree</h2><p>A binary tree of height <strong>h</strong> having the maximum number of nodes is a <strong>perfect</strong> binary tree. </p>
 <h2 id="Full-Binary-Tree"><a href="#Full-Binary-Tree" class="headerlink" title="Full Binary Tree"></a>Full Binary Tree</h2><p>A full Binary tree is a special type of binary tree in which every parent node/internal node <strong>has either two or no children</strong>. It is also known as a proper binary tree.</p>
-<h1 id="Tree-Traversal"><a href="#Tree-Traversal" class="headerlink" title="Tree Traversal"></a>Tree Traversal</h1><h2 id="Iterative-Preorder-Traversal"><a href="#Iterative-Preorder-Traversal" class="headerlink" title="Iterative Preorder Traversal"></a>Iterative Preorder Traversal</h2><pre><code class="java">public static List&lt;Integer&gt; preorderTraversal(TreeNode root) &#123;
-        List&lt;Integer&gt; results = new ArrayList&lt;&gt;();
-        if(root==null) return results;
-        Stack&lt;TreeNode&gt; stack = new Stack&lt;&gt;();
-        stack.push(root);
-        //when it comes to the last node, stack will be empty
-        while(!stack.empty())&#123;
-            TreeNode cur = stack.pop();
-            results.add(cur.val);
-            if(cur.right!=null)
-                stack.push(cur.right);
-            if(cur.left!=null)
-                stack.push(cur.left);
-        &#125;
+<h1 id="Tree-Traversal"><a href="#Tree-Traversal" class="headerlink" title="Tree Traversal"></a>Tree Traversal</h1><h2 id="Iterative-Preorder-Traversal"><a href="#Iterative-Preorder-Traversal" class="headerlink" title="Iterative Preorder Traversal"></a>Iterative Preorder Traversal</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Integer&gt; <span class="title function_">preorderTraversal</span><span class="params">(TreeNode root)</span> &#123;</span><br><span class="line">        List&lt;Integer&gt; results = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">if</span>(root==<span class="literal">null</span>) <span class="keyword">return</span> results;</span><br><span class="line">        Stack&lt;TreeNode&gt; stack = <span class="keyword">new</span> <span class="title class_">Stack</span>&lt;&gt;();</span><br><span class="line">        stack.push(root);</span><br><span class="line">        <span class="comment">//when it comes to the last node, stack will be empty</span></span><br><span class="line">        <span class="keyword">while</span>(!stack.empty())&#123;</span><br><span class="line">            <span class="type">TreeNode</span> <span class="variable">cur</span> <span class="operator">=</span> stack.pop();</span><br><span class="line">            results.add(cur.val);</span><br><span class="line">            <span class="keyword">if</span>(cur.right!=<span class="literal">null</span>)</span><br><span class="line">                stack.push(cur.right);</span><br><span class="line">            <span class="keyword">if</span>(cur.left!=<span class="literal">null</span>)</span><br><span class="line">                stack.push(cur.left);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> results;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-        return results;
-    &#125;
-</code></pre>
-<h2 id="Iterative-Inorder-Traversal"><a href="#Iterative-Inorder-Traversal" class="headerlink" title="Iterative Inorder Traversal"></a>Iterative Inorder Traversal</h2><pre><code class="java">public static List&lt;Integer&gt; inorderTraversal(TreeNode root) &#123;
-    List&lt;Integer&gt; res = new ArrayList&lt;&gt;();
-    TreeNode cur = root;
-    Stack&lt;TreeNode&gt; stack = new Stack&lt;&gt;();
-    while(cur!=null || !stack.empty())&#123;
-        //left
-        while(cur!=null)&#123;
-            stack.push(cur);
-            cur = cur.left;
-        &#125;
-        //root and right
-        if(!stack.empty())&#123;
-            cur = stack.pop();
-            res.add(cur.val);
-            cur = cur.right;
-        &#125;
-    &#125;
-    return res;
-&#125;
-</code></pre>
-<h2 id="Iterative-Postorder-Traversal"><a href="#Iterative-Postorder-Traversal" class="headerlink" title="Iterative Postorder Traversal"></a>Iterative Postorder Traversal</h2><pre><code class="java">//postorder traversal:-&gt; right, left, root
-public List&lt;Integer&gt; postorderTraversal(TreeNode root) &#123;
-    Stack&lt;TreeNode&gt; stack = new Stack&lt;&gt;();
-    List&lt;Integer&gt; res = new ArrayList&lt;&gt;();
-    TreeNode cur = root;
-    TreeNode prev = null;
-    while(cur!=null || !stack.empty())&#123;
-        while(cur!=null)&#123;
-            stack.push(cur);
-            cur=cur.left;
-        &#125;
-        if(!stack.empty())&#123;
-            cur = stack.pop();
-            if(cur.right!=null &amp;&amp; prev!=cur.right)&#123;
-                stack.push(cur);
-                cur=cur.right;
-            &#125;else&#123;
-                res.add(cur.val);
-                prev=cur;
-                cur=null;
-            &#125;
-        &#125;
-    &#125;
-    return res;
-&#125;
-</code></pre>
+<h2 id="Iterative-Inorder-Traversal"><a href="#Iterative-Inorder-Traversal" class="headerlink" title="Iterative Inorder Traversal"></a>Iterative Inorder Traversal</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Integer&gt; <span class="title function_">inorderTraversal</span><span class="params">(TreeNode root)</span> &#123;</span><br><span class="line">    List&lt;Integer&gt; res = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="type">TreeNode</span> <span class="variable">cur</span> <span class="operator">=</span> root;</span><br><span class="line">    Stack&lt;TreeNode&gt; stack = <span class="keyword">new</span> <span class="title class_">Stack</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">while</span>(cur!=<span class="literal">null</span> || !stack.empty())&#123;</span><br><span class="line">        <span class="comment">//left</span></span><br><span class="line">        <span class="keyword">while</span>(cur!=<span class="literal">null</span>)&#123;</span><br><span class="line">            stack.push(cur);</span><br><span class="line">            cur = cur.left;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//root and right</span></span><br><span class="line">        <span class="keyword">if</span>(!stack.empty())&#123;</span><br><span class="line">            cur = stack.pop();</span><br><span class="line">            res.add(cur.val);</span><br><span class="line">            cur = cur.right;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Iterative-Postorder-Traversal"><a href="#Iterative-Postorder-Traversal" class="headerlink" title="Iterative Postorder Traversal"></a>Iterative Postorder Traversal</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//postorder traversal:-&gt; right, left, root</span></span><br><span class="line"><span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">postorderTraversal</span><span class="params">(TreeNode root)</span> &#123;</span><br><span class="line">    Stack&lt;TreeNode&gt; stack = <span class="keyword">new</span> <span class="title class_">Stack</span>&lt;&gt;();</span><br><span class="line">    List&lt;Integer&gt; res = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="type">TreeNode</span> <span class="variable">cur</span> <span class="operator">=</span> root;</span><br><span class="line">    <span class="type">TreeNode</span> <span class="variable">prev</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">while</span>(cur!=<span class="literal">null</span> || !stack.empty())&#123;</span><br><span class="line">        <span class="keyword">while</span>(cur!=<span class="literal">null</span>)&#123;</span><br><span class="line">            stack.push(cur);</span><br><span class="line">            cur=cur.left;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(!stack.empty())&#123;</span><br><span class="line">            cur = stack.pop();</span><br><span class="line">            <span class="keyword">if</span>(cur.right!=<span class="literal">null</span> &amp;&amp; prev!=cur.right)&#123;</span><br><span class="line">                stack.push(cur);</span><br><span class="line">                cur=cur.right;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                res.add(cur.val);</span><br><span class="line">                prev=cur;</span><br><span class="line">                cur=<span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       </div>
       

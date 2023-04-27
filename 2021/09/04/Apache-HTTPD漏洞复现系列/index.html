@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -213,14 +209,13 @@
 <h1 id="Apache-HTTPD-换行解析漏洞（CVE-2017-15715）"><a href="#Apache-HTTPD-换行解析漏洞（CVE-2017-15715）" class="headerlink" title="Apache HTTPD 换行解析漏洞（CVE-2017-15715）"></a>Apache HTTPD 换行解析漏洞（CVE-2017-15715）</h1><h2 id="漏洞简介"><a href="#漏洞简介" class="headerlink" title="漏洞简介"></a>漏洞简介</h2><p>影响版本：apache2.40~2.4.29</p>
 <p>复现靶机：<a target="_blank" rel="noopener" href="https://vulhub.org/#/environments/httpd/CVE-2017-15715/">https://vulhub.org/#/environments/httpd/CVE-2017-15715/</a></p>
 <p>漏洞环境：</p>
-<pre><code class="bash">docker-compose build 
-docker-compose up -d
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker-compose build </span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+
+
 <h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="漏洞形成点一：-与FilesMatch"><a href="#漏洞形成点一：-与FilesMatch" class="headerlink" title="漏洞形成点一：$与FilesMatch"></a>漏洞形成点一：$与FilesMatch</h3><p>在该版本的apache配置中，有一段这样的代码</p>
-<pre><code class="xml">&lt;FilesMatch \.php$&gt;
-    SetHandler application/x-httpd-php
-&lt;/FilesMatch&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">FilesMatch</span> \<span class="attr">.php</span>$&gt;</span></span><br><span class="line">    SetHandler application/x-httpd-php</span><br><span class="line"><span class="tag">&lt;/<span class="name">FilesMatch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>我们使用<code>FilesMatch</code>来匹配<code>.php</code>结尾的文件，并将文件解析为php文件（<code>SetHandler application/x-httpd-php</code>）</p>
 <p>此处<code>$</code>就是结尾的意思。但需要注意的是<strong>dollar</strong>符号也会匹配到换行符<code>0xa</code></p>
 <p>举个例子： 如果文件名是<code>.php+换行符</code>结尾，仍然会被匹配，在这个情况下，依然会被解析为php文件。</p>
@@ -241,44 +236,17 @@ docker-compose up -d
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hello-py/articles/13519017.html">Apache HTTPD 换行解析漏洞(CVE-2017-15715)与拓展</a></p>
 <h1 id="Apache-HTTPD-多后缀解析漏洞"><a href="#Apache-HTTPD-多后缀解析漏洞" class="headerlink" title="Apache HTTPD 多后缀解析漏洞"></a>Apache HTTPD 多后缀解析漏洞</h1><h2 id="漏洞简介-1"><a href="#漏洞简介-1" class="headerlink" title="漏洞简介"></a>漏洞简介</h2><p>复现靶机：<a target="_blank" rel="noopener" href="https://vulhub.org/#/environments/httpd/apache_parsing_vulnerability/">https://vulhub.org/#/environments/httpd/apache_parsing_vulnerability/</a></p>
 <p>漏洞环境：</p>
-<pre><code class="bash">docker-compose build 
-docker-compose up -d
-</code></pre>
-<h2 id="漏洞原理-1"><a href="#漏洞原理-1" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="漏洞形成点一：AddHandler-php及Apache解析特性"><a href="#漏洞形成点一：AddHandler-php及Apache解析特性" class="headerlink" title="漏洞形成点一：AddHandler .php及Apache解析特性"></a>漏洞形成点一：AddHandler .php及Apache解析特性</h3><p>我们在配置文件下可以看到以下代码：</p>
-<pre><code class="ini">AddHandler application/x-httpd-php .php
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker-compose build </span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
 
-DirectoryIndex disabled
-DirectoryIndex index.php index.html
-</code></pre>
+<h2 id="漏洞原理-1"><a href="#漏洞原理-1" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="漏洞形成点一：AddHandler-php及Apache解析特性"><a href="#漏洞形成点一：AddHandler-php及Apache解析特性" class="headerlink" title="漏洞形成点一：AddHandler .php及Apache解析特性"></a>漏洞形成点一：AddHandler .php及Apache解析特性</h3><p>我们在配置文件下可以看到以下代码：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">AddHandler application/x-httpd-php .php</span><br><span class="line"></span><br><span class="line">DirectoryIndex disabled</span><br><span class="line">DirectoryIndex index.php index.html</span><br></pre></td></tr></table></figure>
+
 <p>此处的<code>AddHandler</code>的意思是如果后缀为<code>.php</code>，那么我们就给他加上<code>x-httpd-php</code>处理器，也就是将此文件解析为<code>php</code>文件。</p>
 <p><code>Apache</code>在处理文件时有个特性 - 从右到左解析文件。</p>
 <p>比如<code>hello.php.jpg</code>，Apache会先检测到<code>.jpg</code>这个后缀，接着他会在这个上面的配置文件中寻找，发现并没有解析<code>.jpg</code>的规则，于是他便<strong>往前寻找后缀</strong>，这时发现了<code>.php</code>后缀，再在配置文件中寻找发现<code>.php</code>可以被解析为<code>php</code>文件。由此，<code>hello.php.jpg</code>不会被解析为<code>jpg</code>，反而会被解析为<code>php</code>，即使<code>php</code>后缀不是在最后。</p>
 <h3 id="漏洞形成点二：文件上传点-1"><a href="#漏洞形成点二：文件上传点-1" class="headerlink" title="漏洞形成点二：文件上传点"></a>漏洞形成点二：文件上传点</h3><p><code>index.php:</code></p>
-<pre><code class="php+HTML">&lt;?php
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">if (!empty($_FILES)):</span><br><span class="line"></span><br><span class="line">$ext = pathinfo($_FILES[&#x27;file_upload&#x27;][&#x27;name&#x27;], PATHINFO_EXTENSION);//获取后缀名</span><br><span class="line">if (!in_array($ext, [&#x27;gif&#x27;, &#x27;png&#x27;, &#x27;jpg&#x27;, &#x27;jpeg&#x27;])) &#123;</span><br><span class="line">    //如果后缀名不在白名单中，返回以下信息</span><br><span class="line">    die(&#x27;Unsupported filetype uploaded.&#x27;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//如果后缀在白名单范围中，上传该文件</span><br><span class="line">$new_name = __DIR__ . &#x27;/uploadfiles/&#x27; . $_FILES[&#x27;file_upload&#x27;][&#x27;name&#x27;];</span><br><span class="line">if(!move_uploaded_file($_FILES[&#x27;file_upload&#x27;][&#x27;tmp_name&#x27;], $new_name))&#123;</span><br><span class="line">    die(&#x27;Error uploading file - check destination is writeable.&#x27;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">die(&#x27;File uploaded successfully: &#x27; . $new_name);</span><br><span class="line"></span><br><span class="line">else:</span><br><span class="line">?&gt;</span><br><span class="line">&lt;form method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;</span><br><span class="line">    File: &lt;input type=&quot;file&quot; name=&quot;file_upload&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;submit&quot;&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-if (!empty($_FILES)):
-
-$ext = pathinfo($_FILES[&#39;file_upload&#39;][&#39;name&#39;], PATHINFO_EXTENSION);//获取后缀名
-if (!in_array($ext, [&#39;gif&#39;, &#39;png&#39;, &#39;jpg&#39;, &#39;jpeg&#39;])) &#123;
-    //如果后缀名不在白名单中，返回以下信息
-    die(&#39;Unsupported filetype uploaded.&#39;);
-&#125;
-
-//如果后缀在白名单范围中，上传该文件
-$new_name = __DIR__ . &#39;/uploadfiles/&#39; . $_FILES[&#39;file_upload&#39;][&#39;name&#39;];
-if(!move_uploaded_file($_FILES[&#39;file_upload&#39;][&#39;tmp_name&#39;], $new_name))&#123;
-    die(&#39;Error uploading file - check destination is writeable.&#39;);
-&#125;
-
-die(&#39;File uploaded successfully: &#39; . $new_name);
-
-else:
-?&gt;
-&lt;form method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
-    File: &lt;input type=&quot;file&quot; name=&quot;file_upload&quot;&gt;
-    &lt;input type=&quot;submit&quot;&gt;
-&lt;/form&gt;
-</code></pre>
 <p>此处图片格式的文件可以被上传，那么我们可以伪造以下文件名:<code>hello.php.jpg</code></p>
 <p>即可将文件成功上传，该文件会被解析为<code>.php</code>文件（<code>jpg</code>没有对应的解析规则，所以会往前寻找后缀）</p>
 <h2 id="漏洞复现-1"><a href="#漏洞复现-1" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>上传一个文件名为<code>leihehe.php.jpg</code>的文件</p>

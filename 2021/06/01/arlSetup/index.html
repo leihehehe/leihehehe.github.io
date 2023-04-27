@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -216,42 +212,24 @@
 <span id="more"></span>
 
 <h2 id="Install-Docker-on-Ubuntu"><a href="#Install-Docker-on-Ubuntu" class="headerlink" title="Install Docker on Ubuntu"></a>Install Docker on Ubuntu</h2><p>第一步：如果有安装过Docker旧版本，需要先卸载</p>
-<pre><code class="bash">sudo apt-get remove docker docker-engine docker.io containerd runc
-</code></pre>
-<p>第二步：设置docker仓库</p>
-<pre><code class="bash">#更新 apt package index
-sudo apt-get update
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
 
-#下载 package
-sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-</code></pre>
-<pre><code class="bash">#添加docker的官方gpg key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-</code></pre>
-<pre><code class="bash">#建立稳定的仓库
-echo \
-  &quot;deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable&quot; | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
-</code></pre>
+<p>第二步：设置docker仓库</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#更新 apt package index</span></span><br><span class="line">sudo apt-get update</span><br><span class="line"></span><br><span class="line"><span class="comment">#下载 package</span></span><br><span class="line">sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg \</span><br><span class="line">    lsb-release</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#添加docker的官方gpg key</span></span><br><span class="line">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#建立稳定的仓库</span></span><br><span class="line"><span class="built_in">echo</span> \</span><br><span class="line">  <span class="string">&quot;deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="string">  <span class="subst">$(lsb_release -cs)</span> stable&quot;</span> | sudo <span class="built_in">tee</span> /etc/apt/sources.list.d/docker.list &gt; /dev/null</span><br></pre></td></tr></table></figure>
+
 <p>第三步：安装Docker引擎</p>
-<pre><code class="bash"> sudo apt-get update
- sudo apt-get install docker-ce docker-ce-cli containerd.io
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+
 <p>最后测试docker环境是否安装成功：</p>
-<pre><code class="bash">sudo docker run hello-world
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+
 <p><img src="/image/arlSetup/image-20210601225207466.png" alt="image-20210601225207466"></p>
-<h2 id="Install-Docker-Compose"><a href="#Install-Docker-Compose" class="headerlink" title="Install Docker Compose"></a>Install Docker Compose</h2><pre><code class="bash">#先在https://github.com/docker/compose/releases 查看最新版本，当前版本为1.29.2
-sudo curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-#最后查看是否安装成功
-docker-compose --version
-</code></pre>
+<h2 id="Install-Docker-Compose"><a href="#Install-Docker-Compose" class="headerlink" title="Install Docker Compose"></a>Install Docker Compose</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#先在https://github.com/docker/compose/releases 查看最新版本，当前版本为1.29.2</span></span><br><span class="line">sudo curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-`<span class="built_in">uname</span> -s`-`<span class="built_in">uname</span> -m` -o /usr/local/bin/docker-compose</span><br><span class="line">sudo <span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span><br><span class="line"><span class="comment">#最后查看是否安装成功</span></span><br><span class="line">docker-compose --version</span><br></pre></td></tr></table></figure>
+
 <p><img src="/image/arlSetup/image-20210602132156940.png" alt="image-20210602132156940"></p>
 <h2 id="Install-ARL"><a href="#Install-ARL" class="headerlink" title="Install ARL"></a>Install ARL</h2><p>手动下载ARL最新版本：<a target="_blank" rel="noopener" href="https://github.com/TophantTechnology/ARL/releases">https://github.com/TophantTechnology/ARL/releases</a></p>
 <p><img src="/image/arlSetup/image-20210602132458529.png" alt="image-20210602132458529"></p>
@@ -259,17 +237,12 @@ docker-compose --version
 <p><img src="/image/arlSetup/image-20210602133905785.png" alt="image-20210602133905785"></p>
 <p>然后用sftp传送文件到服务器上，这里我用的是==mac版的FileZilla== </p>
 <p><img src="/image/arlSetup/image-20210602134851037.png" alt="image-20210602134851037"></p>
-<pre><code class="bash"># 创建容器数据卷 
-sudo docker volume create --name=arl_db *
-# 进入上传的目录
-cd /home/docker_arl 
-sudo docker-compose up -d
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建容器数据卷 </span></span><br><span class="line">sudo docker volume create --name=arl_db *</span><br><span class="line"><span class="comment"># 进入上传的目录</span></span><br><span class="line"><span class="built_in">cd</span> /home/docker_arl </span><br><span class="line">sudo docker-compose up -d</span><br></pre></td></tr></table></figure>
+
 <p><img src="/image/arlSetup/image-20210602140011363.png" alt="image-20210602140011363"></p>
 <p><strong>补充：在使用docker和docker-compose的时候，必须要root权限，所以前面需要加上sudo，若想直接用root用户登陆 可参考 <a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1405735">腾讯云ubuntu系统改为root登录</a></strong></p>
-<pre><code class="bash">#看docker-compose是否运行正常
-sudo docker-compose ps
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#看docker-compose是否运行正常</span></span><br><span class="line">sudo docker-compose ps</span><br></pre></td></tr></table></figure>
+
 <p><img src="/image/arlSetup/image-20210602140410197.png" alt="image-20210602140410197"></p>
 <h2 id="登录搭建好的ARL灯塔系统"><a href="#登录搭建好的ARL灯塔系统" class="headerlink" title="登录搭建好的ARL灯塔系统"></a>登录搭建好的ARL灯塔系统</h2><p>https://你的服务器外网ip:5003/</p>
 <p>这里我用Chrome访问，但是会提示连接不是private的<img src="/image/arlSetup/image-20210602142031252.png" alt="image-20210602142031252"></p>

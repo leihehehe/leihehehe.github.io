@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -238,30 +234,8 @@
 <h2 id="控制总线"><a href="#控制总线" class="headerlink" title="控制总线"></a>控制总线</h2><p>CPU对外部器件的控制是通过控制总线来进行的。此处控制总线是一个总称，它有多少根控制总线，意味着CPU提供了对外部器件的多少种控制。所以控制总线的宽度决定了CPU对外部器件的控制能力。</p>
 <p>比如读和写就分别为两条控制总线。</p>
 <h2 id="课后习题-1-1"><a href="#课后习题-1-1" class="headerlink" title="课后习题 1.1"></a>课后习题 1.1</h2><p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210906140647234.png" alt="image-20210906140647234"></p>
-<pre><code class="mathematica">(1) 该CPU的寻址能力为8Kb，换算成Byte为8*1024Byte。 我们知道一个内存单元可以储存1个Byte，那么意味着该CPU可以寻址8*1024=2^13个内存单元。
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">(</span><span class="number">1</span><span class="punctuation">)</span> 该<span class="variable">CPU</span>的寻址能力为<span class="number">8</span><span class="variable">Kb</span>，换算成<span class="built_in">Byte</span>为<span class="number">8</span><span class="operator">*</span><span class="number">1024</span><span class="built_in">Byte</span>。 我们知道一个内存单元可以储存<span class="number">1</span>个<span class="built_in">Byte</span>，那么意味着该<span class="variable">CPU</span>可以寻址<span class="number">8</span><span class="operator">*</span><span class="number">1024</span><span class="operator">=</span><span class="number">2</span><span class="operator">^</span><span class="number">13</span>个内存单元。</span><br><span class="line"></span><br><span class="line">所以我们可以得出他有<span class="number">13</span>个地址总线，则宽度为<span class="number">13</span>。</span><br><span class="line"></span><br><span class="line"><span class="punctuation">(</span><span class="number">2</span><span class="punctuation">)</span> <span class="number">1</span><span class="variable">KB</span>的存储器有<span class="number">1024</span>个存储单元，因为一个存储单元存储<span class="number">1</span><span class="built_in">Byte</span>信息。存储单元的编号从<span class="number">0</span>到<span class="number">1023</span></span><br><span class="line"></span><br><span class="line"><span class="punctuation">(</span><span class="number">3</span><span class="punctuation">)</span> <span class="number">1</span><span class="variable">KB</span>的存储器可以存储<span class="number">10248</span><span class="operator">=</span><span class="number">2</span><span class="operator">^</span><span class="number">13</span> <span class="variable">bit</span><span class="operator">,</span> 和<span class="number">1024</span>个<span class="built_in">Byte</span></span><br><span class="line"></span><br><span class="line"><span class="punctuation">(</span><span class="number">4</span><span class="punctuation">)</span> <span class="number">1</span><span class="variable">GB</span><span class="operator">=</span><span class="number">2</span><span class="operator">^</span><span class="number">30</span> <span class="built_in">Byte</span><span class="operator">,</span> <span class="number">1</span><span class="variable">MB</span> <span class="operator">=</span> <span class="number">2</span><span class="operator">^</span><span class="number">20</span> <span class="built_in">Byte</span><span class="operator">,</span> <span class="number">1</span><span class="variable">KB</span><span class="operator">=</span> <span class="number">2</span><span class="operator">^</span><span class="number">10</span> <span class="built_in">Byte</span><span class="operator">.</span></span><br><span class="line"></span><br><span class="line"><span class="punctuation">(</span><span class="number">5</span><span class="punctuation">)</span> <span class="number">2</span><span class="operator">^</span><span class="number">16</span><span class="operator">*</span><span class="number">2</span><span class="operator">^</span><span class="punctuation">(</span><span class="operator">-</span><span class="number">10</span><span class="punctuation">)</span><span class="operator">=</span><span class="number">2</span><span class="operator">^</span><span class="number">6</span><span class="operator">,</span> <span class="number">2</span><span class="operator">^</span><span class="number">20</span><span class="operator">*</span><span class="number">2</span><span class="operator">^</span><span class="punctuation">(</span><span class="operator">-</span><span class="number">20</span><span class="punctuation">)</span><span class="operator">=</span><span class="number">1</span><span class="operator">,</span> <span class="number">2</span><span class="operator">^</span><span class="number">24</span><span class="operator">*</span><span class="number">2</span><span class="operator">^</span><span class="punctuation">(</span><span class="operator">-</span><span class="number">20</span><span class="punctuation">)</span><span class="operator">=</span><span class="number">2</span><span class="operator">^</span><span class="number">4</span><span class="operator">,</span><span class="number">2</span><span class="operator">^</span><span class="number">32</span><span class="operator">*</span><span class="number">2</span><span class="operator">^</span><span class="punctuation">(</span><span class="operator">-</span><span class="number">30</span><span class="punctuation">)</span><span class="operator">=</span><span class="number">2</span><span class="operator">^</span><span class="number">2</span><span class="operator">=</span><span class="number">4</span></span><br><span class="line"></span><br><span class="line"><span class="punctuation">(</span><span class="number">6</span><span class="punctuation">)</span> <span class="number">1</span><span class="variable">B</span><span class="operator">,</span><span class="number">1</span><span class="variable">B</span><span class="operator">,</span><span class="number">2</span><span class="variable">B</span><span class="operator">,</span><span class="number">2</span><span class="variable">B</span><span class="operator">,</span><span class="number">4</span><span class="variable">B</span></span><br><span class="line"></span><br><span class="line"><span class="punctuation">(</span><span class="number">7</span><span class="punctuation">)</span> </span><br><span class="line"></span><br><span class="line">要读的数据：<span class="number">1024</span><span class="operator">=</span><span class="number">2</span><span class="operator">^</span><span class="number">10</span> <span class="variable">byte</span><span class="operator">,</span> </span><br><span class="line"></span><br><span class="line">根据上面的问题，<span class="number">8086</span>一次可以读<span class="number">2</span> <span class="built_in">Byte</span>，那么要读<span class="number">2</span><span class="operator">^</span><span class="number">9</span><span class="operator">=</span><span class="number">512</span>次</span><br><span class="line"></span><br><span class="line"><span class="number">80386</span>一次可以读<span class="number">4</span> <span class="built_in">Byte</span><span class="operator">,</span>那么要读<span class="number">2</span><span class="operator">^</span><span class="number">8</span><span class="operator">=</span><span class="number">256</span>次</span><br><span class="line"></span><br><span class="line"><span class="punctuation">(</span><span class="number">8</span><span class="punctuation">)</span> 在存储器中，数据和程序以二进制形式存放</span><br></pre></td></tr></table></figure>
 
-所以我们可以得出他有13个地址总线，则宽度为13。
-
-(2) 1KB的存储器有1024个存储单元，因为一个存储单元存储1Byte信息。存储单元的编号从0到1023
-
-(3) 1KB的存储器可以存储10248=2^13 bit, 和1024个Byte
-
-(4) 1GB=2^30 Byte, 1MB = 2^20 Byte, 1KB= 2^10 Byte.
-
-(5) 2^16*2^(-10)=2^6, 2^20*2^(-20)=1, 2^24*2^(-20)=2^4,2^32*2^(-30)=2^2=4
-
-(6) 1B,1B,2B,2B,4B
-
-(7) 
-
-要读的数据：1024=2^10 byte, 
-
-根据上面的问题，8086一次可以读2 Byte，那么要读2^9=512次
-
-80386一次可以读4 Byte,那么要读2^8=256次
-
-(8) 在存储器中，数据和程序以二进制形式存放
-</code></pre>
 <h1 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h1><h2 id="通用寄存器"><a href="#通用寄存器" class="headerlink" title="通用寄存器"></a>通用寄存器</h2><p>CPU由运算器、控制器、寄存器构成。</p>
 <ul>
 <li><strong>运算器</strong>进行<strong>信息处理</strong></li>
@@ -291,27 +265,11 @@
 <p>mov 段寄存器，寄存器    <code>mov ds,ax</code></p>
 <p>mov 寄存器，段寄存器    <code>mov ax,ds</code></p>
 <h2 id="课后习题2-1"><a href="#课后习题2-1" class="headerlink" title="课后习题2.1"></a>课后习题2.1</h2><p>（1）</p>
-<pre><code class="assembly">mov ax,62627    AX=F4A3H
-mov ah,31H        AX=31A3H
-mov al,23H        AX=3123H
-add ax,ax        AX=6246H
-mov bx,826CH    BX=826CH
-mov cx,ax        CX=6246H
-mov ax,bx        AX=826CH
-add ax,bx        AX=04D8H
-mov al,bh        AX=0482H
-mov ah,bl        AX=6C82H
-add ah,ah        AX=D882H
-add al,6        AX=D888H
-add al,al        AX=D810H
-mov ax,cx        AX=6246H
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mov ax,62627	AX=F4A3H</span><br><span class="line">mov ah,31H		AX=31A3H</span><br><span class="line">mov al,23H		AX=3123H</span><br><span class="line">add ax,ax		AX=6246H</span><br><span class="line">mov bx,826CH	BX=826CH</span><br><span class="line">mov cx,ax		CX=6246H</span><br><span class="line">mov ax,bx		AX=826CH</span><br><span class="line">add ax,bx		AX=04D8H</span><br><span class="line">mov al,bh		AX=0482H</span><br><span class="line">mov ah,bl		AX=6C82H</span><br><span class="line">add ah,ah		AX=D882H</span><br><span class="line">add al,6		AX=D888H</span><br><span class="line">add al,al		AX=D810H</span><br><span class="line">mov ax,cx		AX=6246H</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>（2）用目前学过的汇编指令，最多使用四条指令，计算2的4次方</p>
-<pre><code class="assembly">mov ax,0002
-add ax,ax
-add ax,ax
-add ax,ax
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mov ax,0002</span><br><span class="line">add ax,ax</span><br><span class="line">add ax,ax</span><br><span class="line">add ax,ax</span><br></pre></td></tr></table></figure>
+
 <h2 id="物理地址、段和偏移地址"><a href="#物理地址、段和偏移地址" class="headerlink" title="物理地址、段和偏移地址"></a>物理地址、段和偏移地址</h2><p><strong>8086中，地址总线有20根，但是数据总线只有16根。所以需要用两个16进制表示20进制的地址。段地址（16位）×16＋偏移地址（16位）=地址（20位）</strong></p>
 <p>地址加法器处理后可以得到物理地址</p>
 <p><code>物理地址=段地址*16+偏移地址</code></p>
@@ -324,32 +282,8 @@ add ax,ax
 </blockquote>
 <p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210907170044257.png" alt="image-20210907170044257"></p>
 <p>偏移地址16位，最多可以寻址64KB(2^16bit个内存单元，一个内存单元8bit，所以2^16*2^3=2^19bit=2^6KB=64KB)</p>
-<h2 id="课后习题2-2"><a href="#课后习题2-2" class="headerlink" title="课后习题2.2"></a>课后习题2.2</h2><pre><code class="mathematica">（1）给定段地址位0001H，仅通过变化偏移地址寻址，CPU的寻址范围为？
+<h2 id="课后习题2-2"><a href="#课后习题2-2" class="headerlink" title="课后习题2.2"></a>课后习题2.2</h2><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>）给定段地址位<span class="number">0001</span><span class="variable">H</span>，仅通过变化偏移地址寻址，<span class="variable">CPU</span>的寻址范围为？</span><br><span class="line"></span><br><span class="line">最小：<span class="number">0001</span><span class="variable">H</span><span class="operator">*</span><span class="number">16</span><span class="operator">+</span><span class="number">0000</span><span class="variable">H</span><span class="operator">=</span><span class="number">0010</span><span class="variable">H</span></span><br><span class="line"></span><br><span class="line">最大：<span class="number">0001</span><span class="variable">H</span><span class="operator">*</span><span class="number">16</span><span class="operator">+</span><span class="variable">FFFFH</span><span class="operator">=</span><span class="number">1</span> <span class="number">000</span><span class="variable">FH</span></span><br><span class="line"></span><br><span class="line"><span class="operator">**</span>所以寻址范围为<span class="number">0001</span><span class="variable">H</span><span class="operator">~</span><span class="number">1000</span><span class="variable">FH</span><span class="operator">**</span></span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>）有一段数据存放在内存 <span class="number">20000</span><span class="variable">H</span>单元中，先给定段地址为<span class="variable">SA</span>，想用偏移地址寻到此单元，则<span class="variable">SA</span>应该满足的条件是：</span><br><span class="line"></span><br><span class="line">最小为<span class="operator">:</span></span><br><span class="line"></span><br><span class="line">当偏移地址为最大<span class="variable">FFFFH</span>时，<span class="number">20000</span><span class="variable">H</span><span class="operator">-</span><span class="variable">FFFFH</span><span class="operator">=</span><span class="number">1</span> <span class="number">0001</span><span class="variable">H</span></span><br><span class="line"></span><br><span class="line"><span class="variable">SA</span>必须为<span class="number">16</span>的倍数<span class="operator">,</span>所以<span class="variable">SA</span>左移后的最后一位必须是<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="number">1</span> <span class="number">0010</span><span class="variable">H</span><span class="operator">-</span>》<span class="number">1001</span><span class="variable">H</span></span><br><span class="line"></span><br><span class="line"><span class="operator">**</span>所以最小为<span class="number">1001</span><span class="variable">H</span><span class="operator">**</span></span><br><span class="line"></span><br><span class="line">最大为<span class="operator">:</span></span><br><span class="line"></span><br><span class="line"><span class="number">20000</span><span class="variable">H</span><span class="operator">-&gt;</span><span class="number">2000</span><span class="variable">H</span></span><br><span class="line"></span><br><span class="line"><span class="operator">**</span>所以最大为<span class="number">2000</span><span class="variable">H</span><span class="operator">**</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-最小：0001H*16+0000H=0010H
-
-最大：0001H*16+FFFFH=1 000FH
-
-**所以寻址范围为0001H~1000FH**
-
-（2）有一段数据存放在内存 20000H单元中，先给定段地址为SA，想用偏移地址寻到此单元，则SA应该满足的条件是：
-
-最小为:
-
-当偏移地址为最大FFFFH时，20000H-FFFFH=1 0001H
-
-SA必须为16的倍数,所以SA左移后的最后一位必须是0
-
-1 0010H-》1001H
-
-**所以最小为1001H**
-
-最大为:
-
-20000H-&gt;2000H
-
-**所以最大为2000H**
-</code></pre>
 <h2 id="段寄存器"><a href="#段寄存器" class="headerlink" title="段寄存器"></a>段寄存器</h2><p>8086CPU有四个段寄存器：</p>
 <p><strong>CS（code segment）, DS(data segment), SS(stack segment), ES(extra segment)</strong></p>
 <p>CS和IP（instructor pointer指令指针寄存器）是最关键寄存器 -》指向了CPU当前要读的地址</p>
@@ -379,19 +313,11 @@ SA必须为16的倍数,所以SA左移后的最后一位必须是0
 </li>
 </ul>
 <h2 id="课后习题-2-3"><a href="#课后习题-2-3" class="headerlink" title="课后习题 2.3"></a>课后习题 2.3</h2><p>下列3条指令执行后，CPU几次修改IP？都是在什么时候？最后IP中的值是多少？</p>
-<pre><code class="assembly">mov ax,bx#读取指令后IP被修改
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mov ax,bx#读取指令后IP被修改</span><br><span class="line"></span><br><span class="line">sub ax,ax#读取指令后IP被修改</span><br><span class="line"></span><br><span class="line">jmp ax #读取指令后IP被修改，然后IP又被修改为ax</span><br><span class="line"></span><br><span class="line"># cpu修改了4次IP，因为每执行完一个指令，IP都会递增1， -》 在jmp ax处，最后IP被修改为了0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-sub ax,ax#读取指令后IP被修改
-
-jmp ax #读取指令后IP被修改，然后IP又被修改为ax
-
-# cpu修改了4次IP，因为每执行完一个指令，IP都会递增1， -》 在jmp ax处，最后IP被修改为了0
-</code></pre>
 <p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210909145406877.png" alt="image-20210909145406877"></p>
-<pre><code class="bash">mount c: d:\asm
-c:\
-debug
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mount c: d:\asm</span><br><span class="line">c:\</span><br><span class="line">debug</span><br></pre></td></tr></table></figure>
+
 <h1 id="寄存器（内存访问）"><a href="#寄存器（内存访问）" class="headerlink" title="寄存器（内存访问）"></a>寄存器（内存访问）</h1><h2 id="内存中字的存储"><a href="#内存中字的存储" class="headerlink" title="内存中字的存储"></a>内存中字的存储</h2><p>一个内存单元是一个byte（字节）</p>
 <p>一个字单元由两个内存单元组成，也就是两个字节（bytes）=1个word</p>
 <p>0地址: 2E</p>
@@ -401,15 +327,13 @@ debug
 <h2 id="DS和-address"><a href="#DS和-address" class="headerlink" title="DS和[address]"></a>DS和[address]</h2><p>要给ds寄存器赋值，必须要先把值赋给通用寄存器，然后通用寄存器再赋值给ds寄存器。数据不能直接送进段寄存器。</p>
 <p><code>[]</code>是对数据段操作</p>
 <p><strong>例如：从10000H中读取数据</strong></p>
-<pre><code class="assembly">mov bx,1000H#为什么是1000H，因为1000H段地址*16=左移一位，然后加上偏移地址就可以得到最后的真实地址
-mov ds, bx
-mov al,[0]#10000+0=10000H
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov bx,1000H#为什么是1000H，因为1000H段地址*16=左移一位，然后加上偏移地址就可以得到最后的真实地址</span><br><span class="line">mov ds, bx</span><br><span class="line">mov al,[0]#10000+0=10000H</span><br></pre></td></tr></table></figure>
+
 <h2 id="字的传送"><a href="#字的传送" class="headerlink" title="字的传送"></a>字的传送</h2><p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210909155520090.png" alt="image-20210909155520090"></p>
 <p>ax是一个<strong>word的长度</strong>，所以这里mov ax,[0]其实取的是1123而不是23</p>
 <p>11是高位，22是低位，我们取了连续的<strong>两个内存单元而不是一个内存单元</strong></p>
-<pre><code class="assembly">sub ax,1CH#ax=ax-1CH
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sub ax,1CH#ax=ax-1CH</span><br></pre></td></tr></table></figure>
+
 <h2 id="mov-add-sub指令"><a href="#mov-add-sub指令" class="headerlink" title="mov, add, sub指令"></a>mov, add, sub指令</h2><p>mov ds, ax和mov ax,ds都可以实现。</p>
 <p>段寄存器也可以给通用寄存器传数据</p>
 <h2 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h2><p>我们用123B0H~123B9H这段空间来存放数据：</p>
@@ -452,12 +376,8 @@ mov al,[0]#10000+0=10000H
 <li>当前要执行的指令是哪一条</li>
 </ul>
 <p>要防止push和pop导致栈顶超界，根据可能用到的最大栈空间，来安排栈的大小 - 防止push的数据太多而导致超界、栈空的时候继续pop导致超界。</p>
-<h2 id="push、pop指令"><a href="#push、pop指令" class="headerlink" title="push、pop指令"></a>push、pop指令</h2><pre><code class="assembly">push 寄存器
-push 段寄存器
-push 内存单元#push [0] -&gt; ds:ip
-pop 寄存器
-pop 段寄存器
-</code></pre>
+<h2 id="push、pop指令"><a href="#push、pop指令" class="headerlink" title="push、pop指令"></a>push、pop指令</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">push 寄存器</span><br><span class="line">push 段寄存器</span><br><span class="line">push 内存单元#push [0] -&gt; ds:ip</span><br><span class="line">pop 寄存器</span><br><span class="line">pop 段寄存器</span><br></pre></td></tr></table></figure>
+
 <p><img src="/image/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20211202103533130.png" alt="image-20211202103533130"></p>
 <p>上图演示了将2266H放入10000H的位置。因为push会先减去sp，所以我们要先把sp+2</p>
 <h2 id="栈段"><a href="#栈段" class="headerlink" title="栈段"></a>栈段</h2><p><strong>再次强调：</strong></p>
@@ -467,25 +387,11 @@ pop 段寄存器
 </ul>
 <h1 id="第一个程序"><a href="#第一个程序" class="headerlink" title="第一个程序"></a>第一个程序</h1><p>伪指令是让编译器去处理</p>
 <p>汇编指令是</p>
-<pre><code class="assembly">assume cs:codesg #假设代码代码段叫做codesg
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">assume cs:codesg #假设代码代码段叫做codesg</span><br><span class="line"></span><br><span class="line">codesg segement</span><br><span class="line"></span><br><span class="line">start:	mov ax,0123H</span><br><span class="line">		mov bx,056H</span><br><span class="line">		add ax,bx</span><br><span class="line">		add ax,ax</span><br><span class="line">	</span><br><span class="line">	mov ax,4c00H</span><br><span class="line">	int 21H</span><br><span class="line">codesg ends #段的结束</span><br><span class="line"></span><br><span class="line">end start#结束 这里的start可以随便什么名字，程序只会查找end后面的东西</span><br></pre></td></tr></table></figure>
 
-codesg segement
-
-start:    mov ax,0123H
-        mov bx,056H
-        add ax,bx
-        add ax,ax
-    
-    mov ax,4c00H
-    int 21H
-codesg ends #段的结束
-
-end start#结束 这里的start可以随便什么名字，程序只会查找end后面的东西
-</code></pre>
 <p><strong>程序返回：</strong></p>
-<pre><code class="assembly">mov ax,4c00H
-int 21H
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mov ax,4c00H</span><br><span class="line">int 21H</span><br></pre></td></tr></table></figure>
+
 <p>CMD将程序载入内存，将CPU的CS:IP指向程序，程序运行结束后回到command，CPU继续运行command</p>
 
       </div>

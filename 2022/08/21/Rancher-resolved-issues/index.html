@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -180,8 +176,8 @@
       </div>
       <div class="markdown-body">
         <h1 id="Rancher-Problems-and-Solutions"><a href="#Rancher-Problems-and-Solutions" class="headerlink" title="Rancher Problems and Solutions"></a>Rancher Problems and Solutions</h1><h2 id="Quickly-Clean-a-Node"><a href="#Quickly-Clean-a-Node" class="headerlink" title="Quickly Clean a Node"></a>Quickly Clean a Node</h2><p>Nodes need to be cleaned completely, use the following script.</p>
-<pre><code class="bash">curl https://gist.githubusercontent.com/Ileriayo/1bef407602208911e86f42d5d208c1fb/raw/af8fa882add9c0a7ccd72b92f1cfab5c95c355ba/nuke_rancher_kube_node.sh | sh
-</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://gist.githubusercontent.com/Ileriayo/1bef407602208911e86f42d5d208c1fb/raw/af8fa882add9c0a7ccd72b92f1cfab5c95c355ba/nuke_rancher_kube_node.sh | sh</span><br></pre></td></tr></table></figure>
+
 <span id="more"></span>
 
 <h2 id="Waiting-for-API-Readey-False-xxx-mins-ago-Disconnected-Cluster-agent-is-not-connected"><a href="#Waiting-for-API-Readey-False-xxx-mins-ago-Disconnected-Cluster-agent-is-not-connected" class="headerlink" title="Waiting for API [Readey False xxx mins ago [Disconnected] Cluster agent is not connected]"></a>Waiting for API [Readey False xxx mins ago [Disconnected] Cluster agent is not connected]</h2><p>The newest version of rancher brought this error to me, I’m not sure about the cause.</p>
@@ -200,19 +196,7 @@
 <ul>
 <li><p>Setting up hosts for all nodes.</p>
 <ul>
-<li><pre><code class="bash">hostnamectl set-hostname node1
-</code></pre>
-</li>
-</ul>
-</li>
-<li><p>Writing to the <code>hosts</code> file  for all nodes</p>
-<ul>
-<li><pre><code class="bash">vi /etc/hosts
-#192.168.2.121 node1
-#192.168.2.122 node2
-#192.168.2.123 node3
-</code></pre>
-</li>
+<li>```bash<br>hostnamectl set-hostname node1<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- Writing <span class="built_in">to</span> <span class="keyword">the</span> `hosts` <span class="built_in">file</span>  <span class="keyword">for</span> all nodes</span><br><span class="line"></span><br><span class="line">  - ```bash</span><br><span class="line">    vi /etc/hosts</span><br><span class="line">    <span class="comment">#192.168.2.121 node1</span></span><br><span class="line">    <span class="comment">#192.168.2.122 node2</span></span><br><span class="line">    <span class="comment">#192.168.2.123 node3</span></span><br></pre></td></tr></table></figure></li>
 </ul>
 </li>
 <li><p>Shut down <strong>firewall</strong>, <strong>selinux</strong>, and <strong>swap</strong></p>

