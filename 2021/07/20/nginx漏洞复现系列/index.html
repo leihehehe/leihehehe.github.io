@@ -1,56 +1,189 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 6.0.0"><meta name="theme" content="hexo-theme-yun"><title>Nginx漏洞复现系列 | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
-  [".post-card",".post-content img"].forEach((target)=> {
-    ScrollReveal().reveal(target);
-  })
-}
-document.addEventListener("DOMContentLoaded", initScrollReveal);
-document.addEventListener("pjax:success", initScrollReveal);
-</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
-    const Yun = window.Yun || {};
-    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
-  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
-  var bp = document.createElement('script');
-  var curProtocol = window.location.protocol.split(':')[0];
-  if (curProtocol === 'https') {
-    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
-  }
-  else {
-    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-  }
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(bp, s);
-})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="前言在漏洞复现的过程中，我并不想单纯地复现漏洞，而是想要找出漏洞成因和原理，不想当一个脚本小子。 我在了解这些漏洞的过程中，发现国内的很多文章中漏洞原理和成因都解释得不清不楚，想要完全搞清楚一个漏洞的成因十分困难，有时甚至花上一天去研究一个漏洞的成因，于是我决定将我所理解的知识点详细记录下来。 Nginx介绍 Nginx(engine X)是一款轻量级的Web服务器、反向代理服务器，由于它的内存占">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Nginx漏洞复现系列">
-<meta property="og:url" content="https://leihehe.top/2021/07/20/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/index.html">
-<meta property="og:site_name" content="LeiH - Blog">
-<meta property="og:description" content="前言在漏洞复现的过程中，我并不想单纯地复现漏洞，而是想要找出漏洞成因和原理，不想当一个脚本小子。 我在了解这些漏洞的过程中，发现国内的很多文章中漏洞原理和成因都解释得不清不楚，想要完全搞清楚一个漏洞的成因十分困难，有时甚至花上一天去研究一个漏洞的成因，于是我决定将我所理解的知识点详细记录下来。 Nginx介绍 Nginx(engine X)是一款轻量级的Web服务器、反向代理服务器，由于它的内存占">
-<meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722142211210.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722150828954.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151008554.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151106496.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151134510.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151207147.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151257093.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722230026675.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722232400410.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000546878.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000742595.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234129588.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234425902.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234823479.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000838302.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210725140009372.png">
-<meta property="og:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210725140308072.png">
-<meta property="article:published_time" content="2021-07-20T06:29:02.000Z">
-<meta property="article:modified_time" content="2022-06-08T23:43:07.130Z">
-<meta property="article:author" content="Leihehe">
-<meta property="article:tag" content="Web Security">
-<meta property="article:tag" content="漏洞复现">
-<meta property="article:tag" content="中间件">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://leihehe.top/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722142211210.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="Table of Contents"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="Overview"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info mickey-mouse"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"><span class="site-author-status" title="学习学习再学习努力努力再努力">😊</span></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="My Home"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="Archives"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">49</span></a></div><div class="site-state-item"><a href="/categories/" title="Categories"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">21</span></a></div><div class="site-state-item"><a href="/tags/" title="Tags"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">30</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.</span> <span class="toc-text">Nginx介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="toc-number">3.</span> <span class="toc-text">Nginx解析漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.1.</span> <span class="toc-text">漏洞介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="toc-number">3.2.</span> <span class="toc-text">漏洞原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFCGI"><span class="toc-number">3.2.1.</span> <span class="toc-text">什么是CGI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastcgi%E3%80%81Nginx%E5%92%8CPHP%E8%A7%A3%E6%9E%90%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.2.2.</span> <span class="toc-text">Fastcgi、Nginx和PHP解析器的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PATH-INFO%E5%92%8CSCRIPT-FILENAME"><span class="toc-number">3.2.3.</span> <span class="toc-text">PATH_INFO和SCRIPT_FILENAME</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="toc-number">3.3.</span> <span class="toc-text">漏洞复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">3.4.</span> <span class="toc-text">Reference</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx-%E6%96%87%E4%BB%B6%E5%90%8D%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2013-4547%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">Nginx 文件名逻辑漏洞（CVE-2013-4547）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D-1"><span class="toc-number">4.1.</span> <span class="toc-text">漏洞介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86-1"><span class="toc-number">4.2.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-1"><span class="toc-number">4.3.</span> <span class="toc-text">漏洞复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference-1"><span class="toc-number">4.4.</span> <span class="toc-text">Reference</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A%E6%BC%8F%E6%B4%9E"><span class="toc-number">5.</span> <span class="toc-text">Nginx 目录穿越漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D-2"><span class="toc-number">5.1.</span> <span class="toc-text">漏洞介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86-2"><span class="toc-number">5.2.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-2"><span class="toc-number">5.3.</span> <span class="toc-text">漏洞复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference-2"><span class="toc-number">5.4.</span> <span class="toc-text">Reference</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/07/20/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Nginx漏洞复现系列</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="Created: 2021-07-20 16:29:02" itemprop="dateCreated datePublished" datetime="2021-07-20T16:29:02+10:00">2021-07-20</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="Modified: 2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="Word count in article"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="Word count in article">2.3k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="Reading time"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="Reading time">8m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/" style="--text-color:#F4645F" itemprop="url" rel="index"><span itemprop="text">Web Security</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/Nginx%E6%BC%8F%E6%B4%9E/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Nginx漏洞</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Web-Security/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Web Security</span></a><a class="tag-item" href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">漏洞复现</span></a><a class="tag-item" href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">中间件</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在漏洞复现的过程中，我并不想单纯地复现漏洞，而是想要找出漏洞成因和原理，不想当一个脚本小子。</p>
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Leihehe" />
+  <meta name="description" content="我该说些什么呢？" />
+  
+  
+  <title>
+    
+      Nginx漏洞复现系列 
+      
+      
+      |
+    
+     LeiH - Blog
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Nginx漏洞复现系列</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2022-06-09 09:43:07
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Web-Security/" title="Web Security">
+                    #Web Security
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" title="漏洞复现">
+                    #漏洞复现
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                    #中间件
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在漏洞复现的过程中，我并不想单纯地复现漏洞，而是想要找出漏洞成因和原理，不想当一个脚本小子。</p>
 <p>我在了解这些漏洞的过程中，发现国内的很多文章中漏洞原理和成因都解释得不清不楚，想要完全搞清楚一个漏洞的成因十分困难，有时甚至花上一天去研究一个漏洞的成因，于是我决定将我所理解的知识点详细记录下来。</p>
 <h1 id="Nginx介绍"><a href="#Nginx介绍" class="headerlink" title="Nginx介绍"></a>Nginx介绍</h1><blockquote>
 <p>Nginx(engine X)是一款轻量级的Web服务器、反向代理服务器，由于它的内存占用少，启动极快，高并发能力强，在互联网项目中广泛应用。</p>
@@ -78,28 +211,28 @@ document.addEventListener("pjax:success", initScrollReveal);
 </blockquote>
 <p><strong>漏洞成因</strong></p>
 <p>在<code>nginx/default.conf</code>的配置文件中<code>.php</code>后缀名的路径会交由<code>fastcgi</code>协议的<code>php</code>解析器处理。</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722142211210.png" alt="image-20210722142211210" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722142211210.png" alt="image-20210722142211210"></p>
 <p>当我们访问<code>/shell.png/aaa.php</code>时，<strong>nginx</strong>不会对<code>aaa.php</code>是否存在进行检查，而是直接将路径提交给<code>fastcgi</code>，并将<code>fastcgi</code>的<code>SCRIPT_FILENAME</code>设为<code>/shell.png/aaa.php</code>（上面有讲过该参数怎么得来的）</p>
 <p>接着<code>fastcgi</code>将这个参数<code>SCRIPT_FILENAME</code>传给<code>php</code>解析器<code>(php-fpm)</code></p>
 <p>这时候，<code>PHP</code>解析器收到了这个<code>SCRIPT_FILENAME</code>，但它发现<code>aaa.php</code>并不存在，怎么办呢？</p>
 <p>因为我们配置了<code>cgi.fix_pathinfo=1</code>，所以<code>php</code>会修正传过来的这个<code>SCRIPT_FILENAME</code>，认为<strong>脚本执行的绝对路径</strong>不应该是<code>/shell.png/aaa.php</code>而是存在的文件<code>/shell.png</code>（他会根据提供的路径一直往上级目录找，直到找到存在的文件，但寻找到后他也不会判断找到的文件的后缀格式），同时<code>PATH_INFO</code>应该是<code>/aaa.php</code></p>
 <p>所以我们所提交的<code>/shell.png/aaa.php</code>请求，会被错误解析，从而引发安全漏洞 -&gt; <code>PHP</code>解析器会去解析非<code>PHP</code>格式的<code>shell.png</code>，而把<code>/aaa.php</code>当作<code>PATH_INFO</code></p>
 <p>换句话说，<code>PHP</code>解析器认为该执行的脚本是<code>shell.png</code>，而后面的路径只是<code>PATH_INFO</code>而已。</p>
-<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>准备一个冰蝎的PHP马，后缀改为<code>jpg</code>格式，然后直接上传，发现提示<img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722150828954.png" alt="image-20210722150828954" loading="lazy"></p>
+<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>准备一个冰蝎的PHP马，后缀改为<code>jpg</code>格式，然后直接上传，发现提示<img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722150828954.png" alt="image-20210722150828954"></p>
 <p>猜测是因为要检测文件头（具体没有研究），于是我重新上传一张正常的<code>png</code>图，用<code>burp suite</code>抓包修改</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151008554.png" alt="image-20210722151008554" loading="lazy"></p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151106496.png" alt="image-20210722151106496" loading="lazy"></p>
-<p>发送后得到地址<img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151134510.png" alt="image-20210722151134510" loading="lazy"></p>
-<p>访问：<img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151207147.png" alt="image-20210722151207147" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151008554.png" alt="image-20210722151008554"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151106496.png" alt="image-20210722151106496"></p>
+<p>发送后得到地址<img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151134510.png" alt="image-20210722151134510"></p>
+<p>访问：<img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151207147.png" alt="image-20210722151207147"></p>
 <p>已被解析为<code>php</code>文件，上冰蝎，成功：</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151257093.png" alt="image-20210722151257093" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722151257093.png" alt="image-20210722151257093"></p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://serverfault.com/questions/627903/is-the-php-option-cgi-fix-pathinfo-really-dangerous-with-nginx-php-fpm">Is the PHP option cgi-fix-pathinfo really dangerous with Nginx+PHP-FPM</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.laruence.com/2009/11/13/1138.html">Nginx(PHP/fastcgi)的PATH_INFO问题</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.laruence.com/2010/05/20/1495.html">Nginx + PHP CGI的一个可能的安全漏洞</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.vvave.net/archives/in-depth-understand-of-php-projects-about-pathinfo-usage.html">深入理解 PHP 项目关于 PATHINFO 使用问题</a></p>
 <h1 id="Nginx-文件名逻辑漏洞（CVE-2013-4547）"><a href="#Nginx-文件名逻辑漏洞（CVE-2013-4547）" class="headerlink" title="Nginx 文件名逻辑漏洞（CVE-2013-4547）"></a>Nginx 文件名逻辑漏洞（CVE-2013-4547）</h1><h2 id="漏洞介绍-1"><a href="#漏洞介绍-1" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h2><p>影响版本：Nginx 0.8.41 ~ 1.4.3 / 1.5.0 ~ 1.5.7</p>
 <p>错误地解析了用户请求，检测URI时的逻辑错误导致用户可以绕过对截断符<code>%00</code>的检测，从而形成漏洞。</p>
-<h2 id="漏洞原理-1"><a href="#漏洞原理-1" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722230026675.png" alt="image-20210722230026675" loading="lazy"></p>
+<h2 id="漏洞原理-1"><a href="#漏洞原理-1" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722230026675.png" alt="image-20210722230026675"></p>
 <p>从Nginx的配置文件中，我们可以看到，<code>php</code>后缀的文件被交给了<code>fastcgi</code>处理。<a name="Fastcgi、Nginx和PHP解析器的关系">fastcgi、Nginx和PHP解析器的关系</a> 在之前的解析漏洞有提到。</p>
 <p>假设我们尝试访问一个图片，访问的网址是<code>/test.png \0.php</code>, nginx收到访问请求，开始判断这个是什么文件。<code>nginx</code>会先检测<code>URI</code>，发现在检测<code>uri</code>的时候，<code>nginx</code>会做如下检测：开始一个字节一个字节的检测，检测到<code>\0</code>的时候会判断其为非法字符。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">case</span> sw_check_uri<span class="token operator">:</span>      
@@ -113,20 +246,20 @@ document.addEventListener("pjax:success", initScrollReveal);
            <span class="token keyword">return</span> NGX_HTTP_PARSE_INVALID_REQUEST<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>但代码中还有一层逻辑，就是当检测到有空格的时候，会执行到另一部分代码 <code>sw_check_uri_http_09</code>中：这时候的<code>ch</code>变成了我们的截断符<code>%00</code>，这里没有满足它的<code>case</code>，所以他将执行最后一段<code>default</code>代码，即返回到<code>sw_check_uri</code>中，这样<code>\0</code>就并未检测到，也不会被判断为<strong>非法字符</strong>。</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722232400410.png" alt="image-20210722232400410" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722232400410.png" alt="image-20210722232400410"></p>
 <p>此时<code>ch</code>又变成了下一个字符<code>.</code>，之后被判断为<code>PHP</code>文件，该请求被交给了<code>fastcgi</code>处理，<code>fastcgi</code>被<code>\0</code>截断字符截断，所以最终交给<code>PHP</code>解析器解析的地址是<code>/test.png[空格]</code>，因此<code>test[空格].png</code>将被解析为<code>PHP</code>类。</p>
 <h2 id="漏洞复现-1"><a href="#漏洞复现-1" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>为了让截断符号不被检测到，我们需要用空格绕过检测，而空格应该在截断符号之前。需要注意的是，在windows环境下，空格是会被自动去掉的，而Linux是不可以去掉的。而我们的目标环境是<code>Linux</code>，所以我们必须上传带有空格的图片，这样<code>PHP解析器</code>才能找到这个文件，如果是<code>Windows</code>，就不用带空格。</p>
 <p>先用<code>burp suite</code>抓包修改上传一个含木马的图片<code>test.png[空格] </code>，</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000546878.png" alt="image-20210723000546878" loading="lazy"></p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000742595.png" alt="image-20210723000742595" loading="lazy">这里我以<code>phpinfo()</code>作为检测。</p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000546878.png" alt="image-20210723000546878"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000742595.png" alt="image-20210723000742595">这里我以<code>phpinfo()</code>作为检测。</p>
 <p>上传后得到地址</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234129588.png" alt="image-20210722234129588" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234129588.png" alt="image-20210722234129588"></p>
 <p>访问文件<code>test.png1</code>, 再次用<code>burp suite</code>抓包修改。这里说下为什么要访问<code>png1</code> - 我尝试过，直接访问<code>test.png</code>的话，<code>burp suite</code>是抓不到包的。</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234425902.png" alt="image-20210722234425902" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234425902.png" alt="image-20210722234425902"></p>
 <p>修改GET路径为<code>/uploadfiles/test.png[空格][空格].png</code>，然后选中第二个空格修改hex值为<strong>00</strong>（截断符的意思）</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234823479.png" alt="image-20210722234823479" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210722234823479.png" alt="image-20210722234823479"></p>
 <p>修改完毕后再发送请求。</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000838302.png" alt="image-20210723000838302" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210723000838302.png" alt="image-20210723000838302"></p>
 <p>漏洞利用成功。</p>
 <h2 id="Reference-1"><a href="#Reference-1" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/cj_Allen/article/details/109473363">【漏洞复现】Nginx 文件名逻辑漏洞（CVE-2013-4547）</a></p>
 <p><a target="_blank" rel="noopener" href="http://www.91ri.org/9064.html">CVE-2013-4547 Nginx解析漏洞深入利用及分析</a></p>
@@ -148,36 +281,377 @@ document.addEventListener("pjax:success", initScrollReveal);
 
 <p>这个漏洞我们主要针对<strong>alias</strong>来说。</p>
 <p>打开靶场的配置文件，我们可以看到<code>location /files</code>后面没有以<code>/</code>结尾</p>
-<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210725140009372.png" alt="image-20210725140009372" loading="lazy"></p>
+<p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210725140009372.png" alt="image-20210725140009372"></p>
 <p>这意味着我们可以跨越到其他目录。</p>
 <p>当我们访问<code>/files..</code>的时候，<code>/files</code>会变为<code>/home/</code>,而我们访问的地址将是<code>/home/..</code>，实际便跨越了目录。</p>
-<h2 id="漏洞复现-2"><a href="#漏洞复现-2" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210725140308072.png" alt="image-20210725140308072" loading="lazy"></p>
+<h2 id="漏洞复现-2"><a href="#漏洞复现-2" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p><img src="/image/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/image-20210725140308072.png" alt="image-20210725140308072"></p>
 <p>成功访问了上级目录</p>
 <h2 id="Reference-2"><a href="#Reference-2" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/leslie1943/p/13764482.html">Nginx: nginx配置文件中的 alias 和 root</a></p>
-</div><ul class="post-copyright"><li class="post-copyright-author"><strong>Post author: </strong>Leihehe</li><li class="post-copyright-link"><strong>Post link: </strong><a href="https://leihehe.top/2021/07/20/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/" title="Nginx漏洞复现系列">https://leihehe.top/2021/07/20/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/</a></li><li class="post-copyright-license"><strong>Copyright Notice: </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> unless otherwise stated.</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/07/21/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/" rel="prev" title="Java反序列化漏洞之Java反射机制(1)"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">Java反序列化漏洞之Java反射机制(1)</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/07/17/SpringBoot-%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF-2-%E6%9B%B4%E6%96%B0%E4%B8%AD/" rel="next" title="SpringBoot-常见场景(2)"><span class="post-nav-text">SpringBoot-常见场景(2)</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
-  max-width: 100%;
-}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2023 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="Search"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
-  // Handle and trigger popup window
-  document.querySelector(".popup-trigger").addEventListener("click", () => {
-    document.querySelector(".popup").classList.add("show");
-    setTimeout(() => {
-      document.querySelector(".search-input").focus();
-    }, 100);
-  });
 
-  // Monitor main search box
-  const onPopupClose = () => {
-    document.querySelector(".popup").classList.remove("show");
-  };
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2021/07/17/SpringBoot-%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF-2-%E6%9B%B4%E6%96%B0%E4%B8%AD/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2022-06-09 09:43:07
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Web-Security/" title="Web Security">
+                        #Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" title="漏洞复现">
+                        #漏洞复现
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                        #中间件
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2021/07/21/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx%E4%BB%8B%E7%BB%8D"><span class="toc-text">Nginx介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="toc-text">Nginx解析漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D"><span class="toc-text">漏洞介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="toc-text">漏洞原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFCGI"><span class="toc-text">什么是CGI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastcgi%E3%80%81Nginx%E5%92%8CPHP%E8%A7%A3%E6%9E%90%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">Fastcgi、Nginx和PHP解析器的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PATH-INFO%E5%92%8CSCRIPT-FILENAME"><span class="toc-text">PATH_INFO和SCRIPT_FILENAME</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="toc-text">漏洞复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-text">Reference</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx-%E6%96%87%E4%BB%B6%E5%90%8D%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2013-4547%EF%BC%89"><span class="toc-text">Nginx 文件名逻辑漏洞（CVE-2013-4547）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D-1"><span class="toc-text">漏洞介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86-1"><span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-1"><span class="toc-text">漏洞复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference-1"><span class="toc-text">Reference</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A%E6%BC%8F%E6%B4%9E"><span class="toc-text">Nginx 目录穿越漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D-2"><span class="toc-text">漏洞介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86-2"><span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-2"><span class="toc-text">漏洞复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference-2"><span class="toc-text">Reference</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
 
-  document.querySelector(".popup-btn-close").addEventListener("click", () => {
-    onPopupClose();
-  });
+  
+<script src="/js/catalog.js"></script>
 
-  window.addEventListener("keyup", event => {
-    if (event.key === "Escape") {
-      onPopupClose();
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
     }
-  });
-});
-</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="Searching..." value=""></div><div id="local-search-result"></div></div></div></body></html>
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97 + '&url=' + https%3A%2F%2Fleihehe.top%2F2021%2F07%2F20%2Fnginx%25E6%25BC%258F%25E6%25B4%259E%25E5%25A4%258D%25E7%258E%25B0%25E7%25B3%25BB%25E5%2588%2597%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2021/07/20/nginx%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%B3%BB%E5%88%97/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

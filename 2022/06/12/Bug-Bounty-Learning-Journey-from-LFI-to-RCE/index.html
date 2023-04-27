@@ -1,37 +1,178 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 6.0.0"><meta name="theme" content="hexo-theme-yun"><title>Bug Bounty Learning - Journey from LFI to RCE | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
-  [".post-card",".post-content img"].forEach((target)=> {
-    ScrollReveal().reveal(target);
-  })
-}
-document.addEventListener("DOMContentLoaded", initScrollReveal);
-document.addEventListener("pjax:success", initScrollReveal);
-</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
-    const Yun = window.Yun || {};
-    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
-  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
-  var bp = document.createElement('script');
-  var curProtocol = window.location.protocol.split(':')[0];
-  if (curProtocol === 'https') {
-    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
-  }
-  else {
-    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-  }
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(bp, s);
-})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="Here&#39;s something encrypted, password is required to continue reading.">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Bug Bounty Learning - Journey from LFI to RCE">
-<meta property="og:url" content="https://leihehe.top/2022/06/12/Bug-Bounty-Learning-Journey-from-LFI-to-RCE/index.html">
-<meta property="og:site_name" content="LeiH - Blog">
-<meta property="og:description" content="Here&#39;s something encrypted, password is required to continue reading.">
-<meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2022-06-12T12:11:20.000Z">
-<meta property="article:modified_time" content="2022-06-12T12:30:24.325Z">
-<meta property="article:author" content="Leihehe">
-<meta property="article:tag" content="Bug bounty learning">
-<meta name="twitter:card" content="summary"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button" data-target="post-toc-wrap" title="Table of Contents"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button sidebar-nav-active" data-target="site-overview-wrap" title="Overview"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel sidebar-panel-active" id="site-overview-wrap"><div class="site-info mickey-mouse"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"><span class="site-author-status" title="学习学习再学习努力努力再努力">😊</span></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="My Home"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="Archives"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">49</span></a></div><div class="site-state-item"><a href="/categories/" title="Categories"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">21</span></a></div><div class="site-state-item"><a href="/tags/" title="Tags"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">30</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content">This post does not have a Table of Contents</div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2022/06/12/Bug-Bounty-Learning-Journey-from-LFI-to-RCE/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Bug Bounty Learning - Journey from LFI to RCE</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="Created: 2022-06-12 22:11:20" itemprop="dateCreated datePublished" datetime="2022-06-12T22:11:20+10:00">2022-06-12</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="Word count in article"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="Word count in article">6</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="Reading time"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="Reading time">1m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Bug-Bounty/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Bug Bounty</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Bug-bounty-learning/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Bug bounty learning</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="Oh, these decrypted content cannot be verified, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="80f61f7e55d51f6ea71860e8702cca7ac42d0b155ad6fdd524abdc91b15f3017">b60e26754db75fa005b995163af0d5a1ec8bbd33d365b1eadf7044f4ac4eb25e1f8d703834b10e832769189d33c4333e4a6c446b1a1b24c0a4a762e275c5b56303e7a6271428e9533bd5418f1e92716a8594277c6189e2c20a5bac9bf580e841c744478c42fb3e54f8c63c9a5a31b75692a38a8da8abe572bfec09842aa3c2cb4a6cf86c983afd2c9a9484060dca82af904af7fa83a4d6b633a3da8f53e04b40991654921349ebbe9401c90612b4697c80bfecbfee0c5456441201278d82fda2eb5c646eb70e80adf37345a3665578726739ee234e114c3e73641b2cd2e449ed035facd0cda614247cbac9d8a3b346895d121302c4de63eb2f7a8b761683511d9daf2fc2970bb348771f0ed7f7aaf81b796a2fd9d993bb53cee526fc0fbe513d810427ef71b584fc1e0818c9a9baac19e3112385cb996c40eca2827e5a0195707acdd1edf121eadb5f624a089d7c12d3d3c93f048839d4c1069de885fc95784f3bdc9095b5ac48dd0e226e0315ccec5507b49f8f37d9c6c7a78a082059dda1c1d4ca79e51f7890f321b63724664b791f0e0bc1704348a2cbe7e0048c6f1be0e467a294b374e83815ae4185a08413d2cb49d399b7fd6c193007739257a757078fc4df8bef5a9cd33c3e1f80a8b817783adc272cedc89e3c1c740b53b2d35a077e6a39047fbb09a67253dd2111f63f28a895f0fa6dff12fd0981cd35a5635c7b6747264c39137f2e0b3733fffb4f6b30d2ed0612af625db95f10bcf433f31cc4b94675b826bfef3909e824cc736a163b5a4c5287942a15c703bd954c1faacf482146de21c2a5c3002d9ec3bacb213404bfa88fd76b78083708b8cbeb4cc05cb3bc8c45eba9e57524b7ee76f02a718d780b557dcae9711f81d75cfe657306a9e189271379a2c1d06e4b093af6043c9cb1f6cc89e8d4418f6d29688f3431a78337b539812478d65df5f2b7bbc20fd76b2335462d8ba6a94926d6cab94436731e0d9965d919d5cb4948f6465c36b6041ea303820361e016f0b65d7f05bfe8f396ae9e89d10a70159193a6b6e0947ca30044fc1ab6e9ceab7f8d3c930fe850975a83a19dc5188b36c52be4b266d2b1470c90616a2258eb982582ef1fba4a6ddd54534e30b04be6bbfca0378521ed3243dcd7508e75fbbdcc1335d88454674ab8afead8c06806817a671b227f2409f5b23b7aa1f9c60bfe245158d9313927b7cdc062ff19bcd7685f6f2d1979b6b6ae964d1478916ff9b0499bce3c001843cc6631706232da4c998dc7abc0af2b19e962d58e920559908410b3f045db6b05ef121103391ead5e526fdcada5e8fec3ed0314dce834dd3ca36106da71c2d1cbc1d3bb317962a14d0de042af5592cf242b30fdc33ea6a8ee660a1c990ab45159d4c19da48f1c274d1f1db61adb4c4fe80f4a96c42d51a0803d496cdd0d93fa31c9e813fea27a31a5e8c38dac7892d870fb331f9deef94724462416a95498aaa22bf7b0a535de8da8ccba4c6a60602937a90537a038806e50c8c416bd16eb8306ada5c41d85a599837eb03b58559b23e1df99a16e0104d43c26500a1d2b053e2d18b4ec1dd782795a826f6b992ab9fdbf2049ec652fc43b62dc4861f29faa16eed12af65aa6ca2f489ebd578c1225b378ae1e51d670c5b464b3ef391a2617e1ccb161ea830df6abd210b5b3a050d71da51d1049a40cc3b09ee587e51b55e62305ab276e1f646c07476a5522ecb11c7f0375fb14abc8900d49242c11c78aff773c15011e94e23a454c1bb3613d7f064d5fd423a0654b1b443536c3f0ebdad326a45873957c645384e890f910138d397a80724d1b7defb656446d63e4334c34b5aa8e2a5b40b1881c15a70119300df796b623224b4dfddeba850a3f04fa2bbc083fc4f2640164cf5cbca4efd5311e0461fbf558d0a07344336d1ba4eef41b96463c4e8b250f6aed46880a2439f382b5ddfb419c2650ae79eebe409f3dcf9810dc1f68eaa9b9173c8d31d2785027e744eab929b2d02a4d6bf44286be0d5c6849f0b540578fecf848f3f6fef14b2ce2b7baad1ddbe1ab152ecc23d665b980690ef523e830428038bdda0556f258f7f97241e02042075c54aad4593373ea9df0922000837d3a04e6f9527c6474e101e1a1c403ffc6fce311df2015e49cd079dc9166ace23676c43d30a9f8db4c668dc514f8abc17945729c7e46f963d8fe91c65abaf12cab9b94cbe02f680bda9e269fbb24330eaac76b0d1bed3f6d3fe304336edc204d31a95d317b0745305eef60abd827c963920137a2686c7f0fa1b68560fed9c1eaedb3287f4979ed8b8101d1d3316dfabc842fed695b6bfc8d98514d496bc996f6bf4c5fc42c51767c674d4b4210fe673997d7916d34ff24d5f4c9b6f34217894d20f1cc275d32fe4e6cc3572231e2c180877a3ed12d292462347ed756d6a9ca782f9fe9e2dc3a36b08d67fc5e79d398e740ae8e3d977143a5b27a427bda451385ab1717c1c51a935401394b346e3adb325d2d54c4ceafdcda95d2c4fcab811382283c24c209ee2f0ccb7be5e0e23aa9e1a3e95f5279e4816f022eff779c381d4db1231c03355d6a6a7549485bda21cbdd7ae6a1bdbeff90459984e9cf01051a018a051b6859a3e0fe0b7ee39504eac6d417d45c91f13fac8c3307061d535fc08f6fac87aaf90bccb07a911c2f954a0494d02cbad291edb895197aa6c03d639a140a21d6a65b57216a2799d851aa566c50137d4c828cdaf763dc493677ae7d66a875a9fda99be7e0a5f45bb1a400a39c59586a8a0000e92eb70ac8142faf5fc563a68115efe9250538852357587096605dcf293a0394f31c9348463b408d0131d004e8c71b1bea4fa0cd7abed76d2326d4d50fbd3a66c758cabea48eb63fe55bc8095615aec6e97798ffd0a778c7a1e578940e9953e6027ac522f3ab756ecb5ad75005357dea364aeddb5222e471c445418819bccc9251da7aefa1e87624e34a5794a136ec99fb36da22a15fd580fea9a41d0203b5f0f276909d6a4d8b0f75c0e9ee0235165eb002b2afcaa21aec8158241b3af3104196e681210bacbd7eaf690265bffc37a7f770872c2425f659932bf47396246c43272c3f919f693f94c996ba5f8eaedf</script>
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Leihehe" />
+  <meta name="description" content="我该说些什么呢？" />
+  
+  
+  <title>
+    
+      Bug Bounty Learning - Journey from LFI to RCE 
+      
+      
+      |
+    
+     LeiH - Blog
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Bug Bounty Learning - Journey from LFI to RCE</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2022-06-12 22:30:24
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Bug-bounty-learning/" title="Bug bounty learning">
+                    #Bug bounty learning
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="Oh, these decrypted content cannot be verified, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="b2f682c7c1423cb14cf4aca4c2f99e1ca7378733935d5f3421a00d8375abfc35">b60e26754db75fa005b995163af0d5a1ec8bbd33d365b1eadf7044f4ac4eb25e1f8d703834b10e832769189d33c4333e4a6c446b1a1b24c0a4a762e275c5b56303e7a6271428e9533bd5418f1e92716a8594277c6189e2c20a5bac9bf580e841c744478c42fb3e54f8c63c9a5a31b75692a38a8da8abe572bfec09842aa3c2cb4a6cf86c983afd2c9a9484060dca82af904af7fa83a4d6b633a3da8f53e04b40991654921349ebbe9401c90612b4697c80bfecbfee0c5456441201278d82fda2eb5c646eb70e80adf37345a3665578726739ee234e114c3e73641b2cd2e449ed035facd0cda614247cbac9d8a3b346895d121302c4de63eb2f7a8b761683511d9daf2fc2970bb348771f0ed7f7aaf81b796a2fd9d993bb53cee526fc0fbe513d810427ef71b584fc1e0818c9a9baac19e3112385cb996c40eca2827e5a0195707acdd1edf121eadb5f624a089d7c12d3d3c93f048839d4c1069de885fc95784f3bdc9095b5ac48dd0e226e0315ccec5507b49f8f37d9c6c7a78a082059dda1c1d4ca79e51f7890f321b63724664b791f0e0bc1704348a2cbe7e0048c6f1be0e467a294b374e83815ae4185a08413d2cb49d399b7fd6c193007739257a757078fc4df8bef5a9cd33c3e1f80a8b817783adc272cedc89e3c1c740b53b2d35a077e6a39047fbb09a67253dd2111f63f28a895f0fa6dff12fd0981cd35a5635c7b6747264c39137f2e0b3733fffb4f6b30d2ed0612af625db95f10bcf433f31cc4b94675b826bfef3909e824cc736a163b5af3e5381e14b9209ff77eb625c623cb085e862e72767341e5bc8ad801df0db88ea74f3bd3dba716fe7821e9ad9768cfd37ba4018da26080b73adf9e46cc16b48be29c5fd8ffb0fd36cd5c5d15ec451712fc78db4b7aa413aeecf87c9604655ce3687d5e916ee56c50e5fcaced78421480692ff9607428dce45c382c4bc597de8736a02407ecec842f0da8d8c9a9239f8113c12046f53a04f7f15dfd3c3fc00ff65ae2a9afcc8c0724dff5a86e1408ae8f01adaf1470a54369c5d448bf9705fa66dfc221820245634de0844d153dc6946225e03e191c84805a2da17d6121a69d8815af59a41fa7a4bda4c5a30c2657ebf4512211fd1e446ab6b1c1fadb5683a01948556276c2b7bf3676602772c396c2f70486384585830dcb20c831d4fbdcc2092008ac23dc8c98e42a70f8a5c19e05e0ad9498c8cdc6ac213f309580823664d799f02c84d5ae0d8c85a0ea46c5b3ebfca25fce56b197dd18027f55e8a38e39bd3e50e0f53c5f13a6c9f6e65f8b449823a01a086f5ab89a4df4deafb24e4289bc7e4956c60041b6bcf4f3bcba639df0b3042c6c96454b0811111ad8b4aef771f58a860d49e4dca2037df79c1cae6d1cee1b02cfddec4ee6590df135ffb64ec2defa198711c5f034e3803cbea6ce90619f2eff612431f191fa765b6ab1009676e86004a364998308325ab2341e122fa8291411c6e29d246857c72f1173b2d8c6e3401dc9f8c5c0ebc19869b40c2642754c003f7b9620f3c7d016a5dcd46983a4030679b9534f41e435dc4cf368ff8b2484656ac9144639abc658b93923d846613a47b40f7329facec384357493f520ad88609d4b637186e5105db054f4fcce9ab5af8f3e6146e6b6fb45be35d3b460821b4aaa321aa5c57ef883eec845427f72918b5415cdc2b39274d1ff7ec55b8a2db2a2c43b231276de75d1f2b7ac0085f33244d03149c817cb885f394cefbb7cca3b86feb0ee52c0b7fe9c60f617238802c3b65b7c41dad8d1e4843410bca0750bbf12ddfb33a3e010b0531a0ecb972f1af6c46b483b5da715f9ecd7198705e487f7cfd70ba7b31836c7b21410a6f85ec3a25737e24fc66788d661ac0bce0fc6bb22f2cf9ebefaf771c5847a1f6a5b4ec00c487e25c512b7e6e1644c4f147d11112ae3538ebee33475a24a5b3b5ce492a82da993ec9949d9b57a624eb7f61b24d765a01dcc0a7f5ff6798d192bb876180db6ec5c758bd4f7676d443245583ae797fb2d15cc7ceadaa94ef22bc8e712892863b3c36065f434adf6d242aa8483b0ef030c522f840a831731d3240a9fb245808cbb07863e7c8e675912230f782bf28e7e6b096576c8319110c570b17fafb1a1f7d6690f39be1b88e097903a9d033c5c9c6e6cf10cd2859a8b5be458f0f2103040f78a59b23bb3b30f2dd6a3eca90a88b56248765339604a41314fcc736cc59177ce147c146bd7767ebca3ee7e47e038813acaa2afb55f0a45cd9ccd7c528eed4df008a6cf82d117efb2c11d5b127a6d5743ebe58a1bb4fb7e7f47cf80b8144da10382cad2120f75cd91213b4e0536b51f84396188d55ed26befe27e4e209188a901f3612220cece917f33f08e849861b83a8deb8558dbd5b1c4e719ca922e554e11b2c7ffe669e56f57a2440462b6826370285673301cfc6c3d75464f58d900420deb1703fbd455a82fef1e91695874754497f8263b6fdd31ba0f3794c1577f8a32243f15f8ee9693de80b7591b5a63a5f01711f2edb0afbfe46ce3efc8800f61c93694852ba8028db3aa18ed93870b292c0c0feb94ad187dc9499fa5f977abe0c437099b5f19ae47b08f7d30e19f44bc9036390a1fec5cee2b1e487a8f6276591afbe9926e1e6445925a0dd78b4f1c31c144efc319550c95b9d00cf3fa13b80aa901894aaf19d672f21cca3b25db4b60321bee26a6706a1c76536c6ef7924f9cccd5226cd79fbc7298c0ea2fc879350da0abe09e890a1cdff9ca88712a8e1bda9e43a758ab9914e888ebc2841852dad2eb1c97b4ab3464b65bdb371ac413dc7191374a88c8471e660a93db45492b011e7cff4dea5ec6cbf9064c877867b684d09079c558dee92fd422b1a08aac1f43f7e5bea4beec726d093885baa1ac1d8b205675cdce0452a1a977598ba974d1d139b77d9451f3677b4321466ec3f943da857912ac2ad8a367c0435131a898e14f31b7be51c7d38f2c31bf0f75af01890366</script>
   <div class="hbe hbe-content">
     <div class="hbe hbe-input hbe-input-default">
       <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
@@ -41,30 +182,359 @@ document.addEventListener("pjax:success", initScrollReveal);
     </div>
   </div>
 </div>
-<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css"></div><ul class="post-copyright"><li class="post-copyright-author"><strong>Post author: </strong>Leihehe</li><li class="post-copyright-link"><strong>Post link: </strong><a href="https://leihehe.top/2022/06/12/Bug-Bounty-Learning-Journey-from-LFI-to-RCE/" title="Bug Bounty Learning - Journey from LFI to RCE">https://leihehe.top/2022/06/12/Bug-Bounty-Learning-Journey-from-LFI-to-RCE/</a></li><li class="post-copyright-license"><strong>Copyright Notice: </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> unless otherwise stated.</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2022/06/14/Hash-Mac-and-Digital-Signature/" rel="prev" title="Hash, Mac, and Digital Signature"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">Hash, Mac, and Digital Signature</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2022/06/12/Security-Protocols/" rel="next" title="Security Protocols"><span class="post-nav-text">Security Protocols</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
-  max-width: 100%;
-}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2023 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="Search"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
-  // Handle and trigger popup window
-  document.querySelector(".popup-trigger").addEventListener("click", () => {
-    document.querySelector(".popup").classList.add("show");
-    setTimeout(() => {
-      document.querySelector(".search-input").focus();
-    }, 100);
-  });
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/06/12/Security-Protocols/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2022-06-12 22:30:24
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Bug-bounty-learning/" title="Bug bounty learning">
+                        #Bug bounty learning
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/06/14/Hash-Mac-and-Digital-Signature/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Cause"><span class="toc-text">Cause</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Analysis"><span class="toc-text">Analysis</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-text">Reference</span></a></li></ol>
+      
+    </div>
+  </div>
 
-  // Monitor main search box
-  const onPopupClose = () => {
-    document.querySelector(".popup").classList.remove("show");
-  };
+  
+<script src="/js/catalog.js"></script>
 
-  document.querySelector(".popup-btn-close").addEventListener("click", () => {
-    onPopupClose();
-  });
 
-  window.addEventListener("keyup", event => {
-    if (event.key === "Escape") {
-      onPopupClose();
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
     }
-  });
-});
-</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="Searching..." value=""></div><div id="local-search-result"></div></div></div></body></html>
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Bug%20Bounty%20Learning%20-%20Journey%20from%20LFI%20to%20RCE + '&url=' + https%3A%2F%2Fleihehe.top%2F2022%2F06%2F12%2FBug-Bounty-Learning-Journey-from-LFI-to-RCE%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2022/06/12/Bug-Bounty-Learning-Journey-from-LFI-to-RCE/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

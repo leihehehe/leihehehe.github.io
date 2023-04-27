@@ -1,62 +1,191 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 6.0.0"><meta name="theme" content="hexo-theme-yun"><title>upload-labs 通关WP | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
-  [".post-card",".post-content img"].forEach((target)=> {
-    ScrollReveal().reveal(target);
-  })
-}
-document.addEventListener("DOMContentLoaded", initScrollReveal);
-document.addEventListener("pjax:success", initScrollReveal);
-</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
-    const Yun = window.Yun || {};
-    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
-  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
-  var bp = document.createElement('script');
-  var curProtocol = window.location.protocol.split(':')[0];
-  if (curProtocol === 'https') {
-    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
-  }
-  else {
-    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-  }
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(bp, s);
-})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="前言最近在练习文件上传漏洞，正好拿upload-labs靶场练手。这里是在windows系统环境下进行的，建议直接使用作者提供的windows集成环境（之前我自己搭建的环境因为中间件和PHP配置不同，有些上传漏洞无法复原）。 Pass-01 - 前端JS后缀名检测绕过解题思路首先常规思路，选择一个shell文件上传，同时用Burp Suit抓包  提示文件不允许上传，同时观察Burp Suite中">
-<meta property="og:type" content="article">
-<meta property="og:title" content="upload-labs 通关WP">
-<meta property="og:url" content="https://leihehe.top/2021/07/14/upload-labs-%E9%80%9A%E5%85%B3WP/index.html">
-<meta property="og:site_name" content="LeiH - Blog">
-<meta property="og:description" content="前言最近在练习文件上传漏洞，正好拿upload-labs靶场练手。这里是在windows系统环境下进行的，建议直接使用作者提供的windows集成环境（之前我自己搭建的环境因为中间件和PHP配置不同，有些上传漏洞无法复原）。 Pass-01 - 前端JS后缀名检测绕过解题思路首先常规思路，选择一个shell文件上传，同时用Burp Suit抓包  提示文件不允许上传，同时观察Burp Suite中">
-<meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210714224722994.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210714233757638.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210715012843947.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210715013059979.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717095818207.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717101506612.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717101648489.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717102255081.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724141808920.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724143037092.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724143207754.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724144725750.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724144838086.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724152210037.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724152308213.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729144343197.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729144504045.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150201358.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150320292.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150350556.png">
-<meta property="og:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150848554.png">
-<meta property="article:published_time" content="2021-07-14T12:32:10.000Z">
-<meta property="article:modified_time" content="2022-06-08T23:43:07.131Z">
-<meta property="article:author" content="Leihehe">
-<meta property="article:tag" content="Web Security">
-<meta property="article:tag" content="Write-up">
-<meta property="article:tag" content="文件上传漏洞">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://leihehe.top/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210714224722994.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="Table of Contents"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="Overview"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info mickey-mouse"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"><span class="site-author-status" title="学习学习再学习努力努力再努力">😊</span></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="My Home"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="Archives"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">49</span></a></div><div class="site-state-item"><a href="/categories/" title="Categories"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">21</span></a></div><div class="site-state-item"><a href="/tags/" title="Tags"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">30</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-01-%E5%89%8D%E7%AB%AFJS%E5%90%8E%E7%BC%80%E5%90%8D%E6%A3%80%E6%B5%8B%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">Pass-01 - 前端JS后缀名检测绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">2.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93"><span class="toc-number">2.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-02-Content-Type%E7%BB%95%E8%BF%87"><span class="toc-number">3.</span> <span class="toc-text">Pass-02 - Content-Type绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-1"><span class="toc-number">3.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-1"><span class="toc-number">3.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-03-PHP%E6%96%87%E4%BB%B6%E7%9A%84%E5%85%B6%E4%BB%96%E6%A0%BC%E5%BC%8F%E7%BB%95%E8%BF%87"><span class="toc-number">4.</span> <span class="toc-text">Pass-03 - PHP文件的其他格式绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-2"><span class="toc-number">4.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-2"><span class="toc-number">4.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-04-htaccess%E7%BB%95%E8%BF%87%EF%BC%88Apache-%E7%89%B9%E6%80%A7%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">Pass-04 - .htaccess绕过（Apache 特性）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-3"><span class="toc-number">5.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-3"><span class="toc-number">5.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-05-%E5%A4%A7%E5%B0%8F%E5%86%99%E7%BB%95%E8%BF%87"><span class="toc-number">6.</span> <span class="toc-text">Pass-05 - 大小写绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-4"><span class="toc-number">6.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-4"><span class="toc-number">6.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-06-%E5%90%8E%E7%BC%80%E5%90%8D%E6%9C%AB%E5%B0%BE%E7%9A%84%E7%A9%BA%E6%A0%BC%E7%BB%95%E8%BF%87%EF%BC%88Windows%E7%89%B9%E6%80%A7%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">Pass-06 - 后缀名末尾的空格绕过（Windows特性）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-5"><span class="toc-number">7.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-5"><span class="toc-number">7.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-07-%E5%90%8E%E7%BC%80%E5%90%8D%E6%9C%AB%E5%B0%BE%E7%9A%84%E7%82%B9%E7%BB%95%E8%BF%87%EF%BC%88Windows%E7%89%B9%E6%80%A7%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">Pass-07 - 后缀名末尾的点绕过（Windows特性）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-6"><span class="toc-number">8.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-6"><span class="toc-number">8.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-08-DATA%E6%96%87%E4%BB%B6%E6%B5%81%E7%BB%95%E8%BF%87%EF%BC%88Windows%E7%89%B9%E6%80%A7%EF%BC%89"><span class="toc-number">9.</span> <span class="toc-text">Pass-08 - $DATA文件流绕过（Windows特性）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#NTFS%E6%96%87%E4%BB%B6%E6%B5%81"><span class="toc-number">9.1.</span> <span class="toc-text">NTFS文件流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-7"><span class="toc-number">9.2.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-7"><span class="toc-number">9.3.</span> <span class="toc-text">方法总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">9.4.</span> <span class="toc-text">Reference</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-09-%E7%82%B9%E7%A9%BA%E6%A0%BC%E7%82%B9%E7%BB%95%E8%BF%87-Windows%E7%89%B9%E6%80%A7"><span class="toc-number">10.</span> <span class="toc-text">Pass-09 - 点空格点绕过(Windows特性)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-8"><span class="toc-number">10.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-8"><span class="toc-number">10.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-10-%E5%85%B3%E9%94%AE%E5%AD%97%E6%9B%BF%E6%8D%A2%E7%BB%95%E8%BF%87"><span class="toc-number">11.</span> <span class="toc-text">Pass-10 - 关键字替换绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-9"><span class="toc-number">11.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-9"><span class="toc-number">11.2.</span> <span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-11"><span class="toc-number">12.</span> <span class="toc-text">Pass-11</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-10"><span class="toc-number">12.1.</span> <span class="toc-text">解题思路</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/07/14/upload-labs-%E9%80%9A%E5%85%B3WP/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">upload-labs 通关WP</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="Created: 2021-07-14 22:32:10" itemprop="dateCreated datePublished" datetime="2021-07-14T22:32:10+10:00">2021-07-14</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="Modified: 2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="Word count in article"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="Word count in article">3.1k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="Reading time"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="Reading time">12m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/" style="--text-color:#F4645F" itemprop="url" rel="index"><span itemprop="text">Web Security</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Web-Security/Upload%E6%BC%8F%E6%B4%9E/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Upload漏洞</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Web-Security/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Web Security</span></a><a class="tag-item" href="/tags/Write-up/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Write-up</span></a><a class="tag-item" href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">文件上传漏洞</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近在练习文件上传漏洞，正好拿<a target="_blank" rel="noopener" href="https://github.com/c0ny1/upload-labs">upload-labs</a>靶场练手。这里是在windows系统环境下进行的，建议直接使用作者提供的<a target="_blank" rel="noopener" href="https://github.com/c0ny1/upload-labs/releases">windows集成环境</a>（之前我自己搭建的环境因为中间件和PHP配置不同，有些上传漏洞无法复原）。</p>
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Leihehe" />
+  <meta name="description" content="我该说些什么呢？" />
+  
+  
+  <title>
+    
+      upload-labs 通关WP 
+      
+      
+      |
+    
+     LeiH - Blog
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">upload-labs 通关WP</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2022-06-09 09:43:07
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Web-Security/" title="Web Security">
+                    #Web Security
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Write-up/" title="Write-up">
+                    #Write-up
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/" title="文件上传漏洞">
+                    #文件上传漏洞
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近在练习文件上传漏洞，正好拿<a target="_blank" rel="noopener" href="https://github.com/c0ny1/upload-labs">upload-labs</a>靶场练手。这里是在windows系统环境下进行的，建议直接使用作者提供的<a target="_blank" rel="noopener" href="https://github.com/c0ny1/upload-labs/releases">windows集成环境</a>（之前我自己搭建的环境因为中间件和PHP配置不同，有些上传漏洞无法复原）。</p>
 <h1 id="Pass-01-前端JS后缀名检测绕过"><a href="#Pass-01-前端JS后缀名检测绕过" class="headerlink" title="Pass-01 - 前端JS后缀名检测绕过"></a>Pass-01 - 前端JS后缀名检测绕过</h1><h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h2><p>首先常规思路，选择一个shell文件上传，同时用<code>Burp Suit</code>抓包</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210714224722994.png" alt="image-20210714224722994" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210714224722994.png" alt="image-20210714224722994"></p>
 <p>提示文件不允许上传，同时观察<code>Burp Suite</code>中并未抓到数据，说明此处是通过前端<code>js</code>文件来检查文件类型的。在<code>chrome</code>上用<code>Network</code>功能抓包，发现并未有任何<code>js</code>文件加载，于是猜测<strong>检测代码</strong>是直接写在当前页面的。</p>
 <span id="more"></span>
 
@@ -82,13 +211,13 @@ document.addEventListener("pjax:success", initScrollReveal);
 <span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>我们把shell文件后缀修改为jpg,然后再上传抓包,在<code>filename</code>处将文件名后缀改回php。</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210714233757638.png" alt="image-20210714233757638" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210714233757638.png" alt="image-20210714233757638"></p>
 <p>上传成功，复制图像链接即可获得shell文件地址。</p>
 <h2 id="方法总结"><a href="#方法总结" class="headerlink" title="方法总结"></a>方法总结</h2><p>主要是绕过前端javascript的文件名检测，可以先改成图片的格式，绕过js后通过抓包再修改回来。</p>
-<h1 id="Pass-02-Content-Type绕过"><a href="#Pass-02-Content-Type绕过" class="headerlink" title="Pass-02 - Content-Type绕过"></a>Pass-02 - Content-Type绕过</h1><h2 id="解题思路-1"><a href="#解题思路-1" class="headerlink" title="解题思路"></a>解题思路</h2><p>直接上传php文件，出现<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210715012843947.png" alt="image-20210715012843947" loading="lazy"></p>
+<h1 id="Pass-02-Content-Type绕过"><a href="#Pass-02-Content-Type绕过" class="headerlink" title="Pass-02 - Content-Type绕过"></a>Pass-02 - Content-Type绕过</h1><h2 id="解题思路-1"><a href="#解题思路-1" class="headerlink" title="解题思路"></a>解题思路</h2><p>直接上传php文件，出现<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210715012843947.png" alt="image-20210715012843947"></p>
 <p><code>Burpsuite</code>抓包发现被拦截，所以我们推测是后端代码检测文件类型。</p>
 <p><code>Burpsuite</code>抓包后直接修改<code>Content-Type</code>为<code>image/gif</code></p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210715013059979.png" alt="image-20210715013059979" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210715013059979.png" alt="image-20210715013059979"></p>
 <p>文件上传成功，成功绕过。</p>
 <h2 id="方法总结-1"><a href="#方法总结-1" class="headerlink" title="方法总结"></a>方法总结</h2><p>根据其源码更好理解：</p>
 <pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token variable">$is_upload</span> <span class="token operator">=</span> <span class="token constant boolean">false</span><span class="token punctuation">;</span>
@@ -112,14 +241,14 @@ document.addEventListener("pjax:success", initScrollReveal);
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>可知其仅判断文件类型：<code>$_FILES[&#39;upload_file&#39;][&#39;type&#39;]</code>，使用<code>Burp Suite</code>修改<code>Content-Type</code>即可。</p>
-<h1 id="Pass-03-PHP文件的其他格式绕过"><a href="#Pass-03-PHP文件的其他格式绕过" class="headerlink" title="Pass-03 - PHP文件的其他格式绕过"></a>Pass-03 - PHP文件的其他格式绕过</h1><h2 id="解题思路-2"><a href="#解题思路-2" class="headerlink" title="解题思路"></a>解题思路</h2><p>先直接上传一个<code>shell.php</code>, 发现提示<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717095818207.png" alt="image-20210717095818207" loading="lazy">，抓包也抓到了，说明此处是后端检测后缀名，但它并未检测<code>.phtml</code>, <code>.php3</code>和<code>.php5</code>这样的后缀，所以我们直接上传该格式即可。</p>
+<h1 id="Pass-03-PHP文件的其他格式绕过"><a href="#Pass-03-PHP文件的其他格式绕过" class="headerlink" title="Pass-03 - PHP文件的其他格式绕过"></a>Pass-03 - PHP文件的其他格式绕过</h1><h2 id="解题思路-2"><a href="#解题思路-2" class="headerlink" title="解题思路"></a>解题思路</h2><p>先直接上传一个<code>shell.php</code>, 发现提示<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717095818207.png" alt="image-20210717095818207">，抓包也抓到了，说明此处是后端检测后缀名，但它并未检测<code>.phtml</code>, <code>.php3</code>和<code>.php5</code>这样的后缀，所以我们直接上传该格式即可。</p>
 <p>如果不解析上述后缀，我们可以在<code>httpd.conf</code>添加 <code>AddType application/x-httpd-php .php .phtml .php3 .php5</code></p>
 <h2 id="方法总结-2"><a href="#方法总结-2" class="headerlink" title="方法总结"></a>方法总结</h2><p>看代码：</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717101506612.png" alt="image-20210717101506612" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717101506612.png" alt="image-20210717101506612"></p>
 <p>采用黑名单时，过滤后缀不全，我们可以尝试<code>.phtml</code>, <code>.php3</code>和<code>.php5</code>这样的后缀。</p>
-<h1 id="Pass-04-htaccess绕过（Apache-特性）"><a href="#Pass-04-htaccess绕过（Apache-特性）" class="headerlink" title="Pass-04 - .htaccess绕过（Apache 特性）"></a>Pass-04 - .htaccess绕过（Apache 特性）</h1><h2 id="解题思路-3"><a href="#解题思路-3" class="headerlink" title="解题思路"></a>解题思路</h2><p>先上传一个<code>shell.php</code>，提示<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717101648489.png" alt="image-20210717101648489" loading="lazy">，抓包抓到了，说明此处时后端检测文件。</p>
+<h1 id="Pass-04-htaccess绕过（Apache-特性）"><a href="#Pass-04-htaccess绕过（Apache-特性）" class="headerlink" title="Pass-04 - .htaccess绕过（Apache 特性）"></a>Pass-04 - .htaccess绕过（Apache 特性）</h1><h2 id="解题思路-3"><a href="#解题思路-3" class="headerlink" title="解题思路"></a>解题思路</h2><p>先上传一个<code>shell.php</code>，提示<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717101648489.png" alt="image-20210717101648489">，抓包抓到了，说明此处时后端检测文件。</p>
 <p>再次按第三关的思路上传<code>.phtml</code>, <code>.php3</code>和<code>.php5</code>这样的后缀，发现也被检测了。于是我们尝试上传**.htaccess**文件，内容为：<code>SetHandler application/x-httpd-php</code></p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717102255081.png" alt="image-20210717102255081" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210717102255081.png" alt="image-20210717102255081"></p>
 <p>再次上传任意后缀的shell木马,即可被解析成php文件</p>
 <h2 id="方法总结-3"><a href="#方法总结-3" class="headerlink" title="方法总结"></a>方法总结</h2><blockquote>
 <p>概述来说，htaccess文件是<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Apache">Apache</a>服务器中的一个配置文件，它负责相关目录下的网页配置。通过htaccess文件，可以帮我们实现：网页<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/301%E9%87%8D%E5%AE%9A%E5%90%91">301重定向</a>、自定义404错误页面、改变文件扩展名、允许/阻止特定的用户或者目录的访问、禁止目录列表、配置默认文档等功能。</p>
@@ -134,7 +263,7 @@ document.addEventListener("pjax:success", initScrollReveal);
 <span class="token variable">$file_ext</span> <span class="token operator">=</span> <span class="token function">trim</span><span class="token punctuation">(</span><span class="token variable">$file_ext</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//首尾去空</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>发现<code>.htaccess</code>在黑名单了，但我发现<code>PHP</code>并未被禁止，于是尝试抓包上传PHP后缀文件</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724141808920.png" alt="image-20210724141808920" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724141808920.png" alt="image-20210724141808920"></p>
 <p>成功上传并得到文件地址，使用菜刀连接即可。</p>
 <h2 id="方法总结-4"><a href="#方法总结-4" class="headerlink" title="方法总结"></a>方法总结</h2><p>这关虽然过滤了<code>.htaccess</code>，但与第四关不同的是，他去掉了<code>$file_ext = strtolower($file_ext); //转换为小写</code>的操作，导致我们能使用大写字符绕过检测。再次证明，采用黑名单的形式来检测文件上传是不可靠的！</p>
 <h1 id="Pass-06-后缀名末尾的空格绕过（Windows特性）"><a href="#Pass-06-后缀名末尾的空格绕过（Windows特性）" class="headerlink" title="Pass-06 - 后缀名末尾的空格绕过（Windows特性）"></a>Pass-06 - 后缀名末尾的空格绕过（Windows特性）</h1><h2 id="解题思路-5"><a href="#解题思路-5" class="headerlink" title="解题思路"></a>解题思路</h2><p>观察源码：</p>
@@ -149,9 +278,9 @@ document.addEventListener("pjax:success", initScrollReveal);
 <p>那么这关是怎么处理文件名的呢 - 先删除末尾的点，查找到 <code>.</code> 最后一次出现的位置，获取从该位置开始一直到文件末尾的字符，再转换成小写、去掉<code>::$DATA</code>字符后得到最终的后缀名，去和上面的<code>deny_ext</code>做对比。那么我们可以想办法构造它的后缀名。</p>
 <p>在Windows中，后缀名最后是不能带空格的，那么我们可以构造<code>shell.php .</code>，这样经过处理后，这里过滤器得到的后缀是<code>.php[空格] </code>，而黑名单中并没有此文件，于是绕过了过滤。加上在Windows中，就算我们上传的后缀名尾部是带空格的，系统也会在保存文件的时候自动给我们去掉空格，这样我们可以直接访问<code>shell.php</code>。</p>
 <p>那么我们来测试下：</p>
-<p> <img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724143037092.png" alt="image-20210724143037092" loading="lazy"></p>
+<p> <img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724143037092.png" alt="image-20210724143037092"></p>
 <p>成功连接菜刀。</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724143207754.png" alt="image-20210724143207754" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724143207754.png" alt="image-20210724143207754"></p>
 <h2 id="方法总结-5"><a href="#方法总结-5" class="headerlink" title="方法总结"></a>方法总结</h2><p>学会阅读源码和查阅资料很重要。</p>
 <p>比如</p>
 <ul>
@@ -172,9 +301,9 @@ document.addEventListener("pjax:success", initScrollReveal);
 <p>相比前一关，发现其并没有对末尾的点做处理。</p>
 <p>根据<strong>Windows</strong>的特性 - 后缀名最后的点会被自动去掉，我们可以构造文件名<code>shell.php.</code>，这样获取到的后缀是<code>.</code>，能够绕过黑名单。在文件被保存在<code>windows</code>系统上后，后缀名最后的<code>.</code>会被自动去掉，我们访问<code>shell.php</code>即可。</p>
 <p>演示：</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724144725750.png" alt="image-20210724144725750" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724144725750.png" alt="image-20210724144725750"></p>
 <p>菜刀连接成功：</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724144838086.png" alt="image-20210724144838086" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724144838086.png" alt="image-20210724144838086"></p>
 <h2 id="方法总结-6"><a href="#方法总结-6" class="headerlink" title="方法总结"></a>方法总结</h2><p>根据<strong>Windows</strong>的特性，后缀名最后的点会被自动去掉。利用逻辑漏洞解出题目。</p>
 <h1 id="Pass-08-DATA文件流绕过（Windows特性）"><a href="#Pass-08-DATA文件流绕过（Windows特性）" class="headerlink" title="Pass-08 - $DATA文件流绕过（Windows特性）"></a>Pass-08 - $DATA文件流绕过（Windows特性）</h1><h2 id="NTFS文件流"><a href="#NTFS文件流" class="headerlink" title="NTFS文件流"></a>NTFS文件流</h2><p>在做这关之前，我们需要了解以下<code>NTFS</code>文件流。</p>
 <blockquote>
@@ -201,9 +330,9 @@ document.addEventListener("pjax:success", initScrollReveal);
 <p>根据上文所讲，我们抓包修改上传文件名为<code>shell.php::DATA</code>，即指定文件名为<code>shell.php</code>，无流名，流类型为<code>DATA</code>。</p>
 <p>当我们上传以后，过滤器判断出后缀是<code>.php::DATA</code>，黑名单中未查询到，于是我们可以绕过检测。但Windows文件在保存的时候，该数据流的格式名不会显示，所以实际上还是以<code>shell.php</code>的名字保存在服务器上的。</p>
 <p>那么我们就可以开始操作了：</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724152210037.png" alt="image-20210724152210037" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724152210037.png" alt="image-20210724152210037"></p>
 <p>连接菜刀成功！</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724152308213.png" alt="image-20210724152308213" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210724152308213.png" alt="image-20210724152308213"></p>
 <h2 id="方法总结-7"><a href="#方法总结-7" class="headerlink" title="方法总结"></a>方法总结</h2><p>Windows上的NTFS文件流帮助我们绕过后缀检测。这个有时间要好好了解下，后期还会遇到和NTFS文件流有关的绕过。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://www.gushiciku.cn/pl/2y05">Windows下的ADS NTFS交换数据流</a></p>
 <h1 id="Pass-09-点空格点绕过-Windows特性"><a href="#Pass-09-点空格点绕过-Windows特性" class="headerlink" title="Pass-09 - 点空格点绕过(Windows特性)"></a>Pass-09 - 点空格点绕过(Windows特性)</h1><h2 id="解题思路-8"><a href="#解题思路-8" class="headerlink" title="解题思路"></a>解题思路</h2><p>观察源码，发现和<strong>pass07</strong>其实没有什么区别，这一关加了去掉末尾的点，但只去掉了一次。</p>
@@ -217,13 +346,13 @@ document.addEventListener("pjax:success", initScrollReveal);
 
 <p>如果我们文件名是<code>. .</code>，删除文件名末尾的点后，文件后缀变成了<code>.[空格]</code>，接着去掉空格，最终检测的后缀名为<code>.</code>，这不是和<strong>Pass-09</strong>一样吗？</p>
 <p>直接上burp修改：</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729144343197.png" alt="image-20210729144343197" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729144343197.png" alt="image-20210729144343197"></p>
 <p>上传成功。</p>
 <p>上菜刀即可</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729144504045.png" alt="image-20210729144504045" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729144504045.png" alt="image-20210729144504045"></p>
 <h2 id="方法总结-8"><a href="#方法总结-8" class="headerlink" title="方法总结"></a>方法总结</h2><p>还是分析源码，找出逻辑问题。</p>
 <p>了解Windows的特性，后缀名末尾的点或空格会被自动去掉。</p>
-<h1 id="Pass-10-关键字替换绕过"><a href="#Pass-10-关键字替换绕过" class="headerlink" title="Pass-10 - 关键字替换绕过"></a>Pass-10 - 关键字替换绕过</h1><h2 id="解题思路-9"><a href="#解题思路-9" class="headerlink" title="解题思路"></a>解题思路</h2><p>我们直接上传一个<code>php</code>文件<code>shell.php</code>，发现上传成功。<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150201358.png" alt="image-20210729150201358" loading="lazy"></p>
+<h1 id="Pass-10-关键字替换绕过"><a href="#Pass-10-关键字替换绕过" class="headerlink" title="Pass-10 - 关键字替换绕过"></a>Pass-10 - 关键字替换绕过</h1><h2 id="解题思路-9"><a href="#解题思路-9" class="headerlink" title="解题思路"></a>解题思路</h2><p>我们直接上传一个<code>php</code>文件<code>shell.php</code>，发现上传成功。<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150201358.png" alt="image-20210729150201358"></p>
 <p>复制看看文件地址，发现文件地址是<code>http://127.0.0.1/upload/shell.</code>后面的php被去掉了，那么我们猜测应该是触发了黑名单，然后后缀名被替换为空了。</p>
 <p>观察代码：</p>
 <pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token variable">$deny_ext</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"php"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"php5"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"php4"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"php3"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"php2"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"html"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"htm"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"phtml"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"pht"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"jsp"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"jspa"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"jspx"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"jsw"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"jsv"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"jspf"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"jtml"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"asp"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"aspx"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"asa"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"asax"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"ascx"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"ashx"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"asmx"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"cer"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"swf"</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"htaccess"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -234,37 +363,378 @@ document.addEventListener("pjax:success", initScrollReveal);
 <p>那么我们可以构造以下文件名</p>
 <p>test.p<strong>php</strong>hp</p>
 <p>这样检测到<code>php</code>字段并替换为空，这样我们上传的文件名仍然为<code>test.php</code>。</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150320292.png" alt="image-20210729150320292" loading="lazy"></p>
-<p>连接菜刀：<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150350556.png" alt="image-20210729150350556" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150320292.png" alt="image-20210729150320292"></p>
+<p>连接菜刀：<img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150350556.png" alt="image-20210729150350556"></p>
 <h2 id="方法总结-9"><a href="#方法总结-9" class="headerlink" title="方法总结"></a>方法总结</h2><p>直接替换非法后缀名是很不安全的，尽量使用白名单检测。</p>
 <p>相对的，对于替换后缀名检测的方法，我们可以选择重复后缀进行绕过。</p>
 <h1 id="Pass-11"><a href="#Pass-11" class="headerlink" title="Pass-11"></a>Pass-11</h1><h2 id="解题思路-10"><a href="#解题思路-10" class="headerlink" title="解题思路"></a>解题思路</h2><p>直接上传PHP文件，发现只能上传图片格式</p>
-<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150848554.png" alt="image-20210729150848554" loading="lazy"></p>
+<p><img src="/image/upload-labs-%E9%80%9A%E5%85%B3WP/image-20210729150848554.png" alt="image-20210729150848554"></p>
 <p>抓包看看：</p>
-</div><ul class="post-copyright"><li class="post-copyright-author"><strong>Post author: </strong>Leihehe</li><li class="post-copyright-link"><strong>Post link: </strong><a href="https://leihehe.top/2021/07/14/upload-labs-%E9%80%9A%E5%85%B3WP/" title="upload-labs 通关WP">https://leihehe.top/2021/07/14/upload-labs-%E9%80%9A%E5%85%B3WP/</a></li><li class="post-copyright-license"><strong>Copyright Notice: </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> unless otherwise stated.</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/07/15/%E7%BD%91%E9%BC%8E%E6%9D%AF2020%E9%9D%92%E9%BE%99%E7%BB%84AreUSerialz-php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E-Write-up/" rel="prev" title="网鼎杯2020青龙组AreUSerialz php反序列化漏洞 Write-up"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">网鼎杯2020青龙组AreUSerialz php反序列化漏洞 Write-up</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/07/10/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/" rel="next" title="HPP参数污染攻击(sqli labs 29-31关)"><span class="post-nav-text">HPP参数污染攻击(sqli labs 29-31关)</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
-  max-width: 100%;
-}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2023 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="Search"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
-  // Handle and trigger popup window
-  document.querySelector(".popup-trigger").addEventListener("click", () => {
-    document.querySelector(".popup").classList.add("show");
-    setTimeout(() => {
-      document.querySelector(".search-input").focus();
-    }, 100);
-  });
 
-  // Monitor main search box
-  const onPopupClose = () => {
-    document.querySelector(".popup").classList.remove("show");
-  };
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2021/07/10/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2022-06-09 09:43:07
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Web-Security/" title="Web Security">
+                        #Web Security
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Write-up/" title="Write-up">
+                        #Write-up
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/" title="文件上传漏洞">
+                        #文件上传漏洞
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2021/07/15/%E7%BD%91%E9%BC%8E%E6%9D%AF2020%E9%9D%92%E9%BE%99%E7%BB%84AreUSerialz-php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E-Write-up/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-01-%E5%89%8D%E7%AB%AFJS%E5%90%8E%E7%BC%80%E5%90%8D%E6%A3%80%E6%B5%8B%E7%BB%95%E8%BF%87"><span class="toc-text">Pass-01 - 前端JS后缀名检测绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-02-Content-Type%E7%BB%95%E8%BF%87"><span class="toc-text">Pass-02 - Content-Type绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-1"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-1"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-03-PHP%E6%96%87%E4%BB%B6%E7%9A%84%E5%85%B6%E4%BB%96%E6%A0%BC%E5%BC%8F%E7%BB%95%E8%BF%87"><span class="toc-text">Pass-03 - PHP文件的其他格式绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-2"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-2"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-04-htaccess%E7%BB%95%E8%BF%87%EF%BC%88Apache-%E7%89%B9%E6%80%A7%EF%BC%89"><span class="toc-text">Pass-04 - .htaccess绕过（Apache 特性）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-3"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-3"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-05-%E5%A4%A7%E5%B0%8F%E5%86%99%E7%BB%95%E8%BF%87"><span class="toc-text">Pass-05 - 大小写绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-4"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-4"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-06-%E5%90%8E%E7%BC%80%E5%90%8D%E6%9C%AB%E5%B0%BE%E7%9A%84%E7%A9%BA%E6%A0%BC%E7%BB%95%E8%BF%87%EF%BC%88Windows%E7%89%B9%E6%80%A7%EF%BC%89"><span class="toc-text">Pass-06 - 后缀名末尾的空格绕过（Windows特性）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-5"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-5"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-07-%E5%90%8E%E7%BC%80%E5%90%8D%E6%9C%AB%E5%B0%BE%E7%9A%84%E7%82%B9%E7%BB%95%E8%BF%87%EF%BC%88Windows%E7%89%B9%E6%80%A7%EF%BC%89"><span class="toc-text">Pass-07 - 后缀名末尾的点绕过（Windows特性）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-6"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-6"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-08-DATA%E6%96%87%E4%BB%B6%E6%B5%81%E7%BB%95%E8%BF%87%EF%BC%88Windows%E7%89%B9%E6%80%A7%EF%BC%89"><span class="toc-text">Pass-08 - $DATA文件流绕过（Windows特性）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#NTFS%E6%96%87%E4%BB%B6%E6%B5%81"><span class="toc-text">NTFS文件流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-7"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-7"><span class="toc-text">方法总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-text">Reference</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-09-%E7%82%B9%E7%A9%BA%E6%A0%BC%E7%82%B9%E7%BB%95%E8%BF%87-Windows%E7%89%B9%E6%80%A7"><span class="toc-text">Pass-09 - 点空格点绕过(Windows特性)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-8"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-8"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-10-%E5%85%B3%E9%94%AE%E5%AD%97%E6%9B%BF%E6%8D%A2%E7%BB%95%E8%BF%87"><span class="toc-text">Pass-10 - 关键字替换绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-9"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93-9"><span class="toc-text">方法总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass-11"><span class="toc-text">Pass-11</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF-10"><span class="toc-text">解题思路</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
 
-  document.querySelector(".popup-btn-close").addEventListener("click", () => {
-    onPopupClose();
-  });
+  
+<script src="/js/catalog.js"></script>
 
-  window.addEventListener("keyup", event => {
-    if (event.key === "Escape") {
-      onPopupClose();
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
     }
-  });
-});
-</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="Searching..." value=""></div><div id="local-search-result"></div></div></div></body></html>
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + upload-labs%20%E9%80%9A%E5%85%B3WP + '&url=' + https%3A%2F%2Fleihehe.top%2F2021%2F07%2F14%2Fupload-labs-%25E9%2580%259A%25E5%2585%25B3WP%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2021/07/14/upload-labs-%E9%80%9A%E5%85%B3WP/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

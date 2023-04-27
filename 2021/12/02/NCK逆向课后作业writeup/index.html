@@ -1,230 +1,293 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Leihehe"><meta name="copyright" content="Leihehe"><meta name="generator" content="Hexo 6.0.0"><meta name="theme" content="hexo-theme-yun"><title>NCK逆向课后作业writeup | LeiH - Blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
-  [".post-card",".post-content img"].forEach((target)=> {
-    ScrollReveal().reveal(target);
-  })
-}
-document.addEventListener("DOMContentLoaded", initScrollReveal);
-document.addEventListener("pjax:success", initScrollReveal);
-</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="/logo.png"><link rel="mask-icon" href="/logo.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="preload" href="/js/prism.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
-    const Yun = window.Yun || {};
-    window.CONFIG = {"hostname":"leihehe.top","root":"/","title":["LeiH's","Blog"],"version":"1.7.0","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
-  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/prism.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap"><script>(function(){
-  var bp = document.createElement('script');
-  var curProtocol = window.location.protocol.split(':')[0];
-  if (curProtocol === 'https') {
-    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
-  }
-  else {
-    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-  }
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(bp, s);
-})();</script><!-- Google Tag Manager --><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M9KWR9L');</script><!-- End Google Tag Manager --><meta name="description" content="前言个人的一些逆向小练习和解题思路 每天一道">
-<meta property="og:type" content="article">
-<meta property="og:title" content="NCK逆向课后作业writeup">
-<meta property="og:url" content="https://leihehe.top/2021/12/02/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/index.html">
-<meta property="og:site_name" content="LeiH - Blog">
-<meta property="og:description" content="前言个人的一些逆向小练习和解题思路 每天一道">
-<meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152510850.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152727330.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152857114.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153141019.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153406827.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153609778.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153658090.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153721601.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154530079.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154638521.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154720897.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154812809.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203155354377.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203155835217.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203160619957.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090025209.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090912027.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090935331.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090953203.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204091114188.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204093044610.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204093940723.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204094300480.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204094354057.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103356194.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103426796.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103920873.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104024600.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104112887.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104706503.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104725383.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205124112526.png">
-<meta property="og:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205124716992.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125058597.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125215342.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125611118.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125735454.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125913192.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130101207.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/1.gif">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130947860.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131235695.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131301886.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130254590.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131520337.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208132929602.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/hw5HardBreakHook.gif">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185701029.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185710786.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185906127.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209190001299.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209190436336.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191453997.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191547960.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191725737.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191821736.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213153606918.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213153904764.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154209385.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154450306.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154629467.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154656969.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160036921.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160052211.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160126767.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160322310.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213162550645.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163002542.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163034570.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163536224.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164107383.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164245856.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164406622.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165156917.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165345317.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165435708.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165659661.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165742029.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165804348.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213172917906.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213175431347.png">
-<meta property="og:image" content="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213175444354.png">
-<meta property="article:published_time" content="2021-12-02T10:13:44.000Z">
-<meta property="article:modified_time" content="2022-06-08T23:43:07.128Z">
-<meta property="article:author" content="Leihehe">
-<meta property="article:tag" content="Write-up">
-<meta property="article:tag" content="逆向">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://leihehe.top/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152510850.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="Table of Contents"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="Overview"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info mickey-mouse"><a class="site-author-avatar" href="/about/" title="Leihehe"><img width="96" loading="lazy" src="/image/avatar.png" alt="Leihehe"><span class="site-author-status" title="学习学习再学习努力努力再努力">😊</span></a><div class="site-author-name"><a href="/about/">Leihehe</a></div><span class="site-name">LeiH - Blog</span><sub class="site-subtitle"></sub><div class="site-desciption">我该说些什么呢？</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="My Home"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/about/"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span></a></div><div class="site-state-item"><a href="/archives/" title="Archives"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">49</span></a></div><div class="site-state-item"><a href="/categories/" title="Categories"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">21</span></a></div><div class="site-state-item"><a href="/tags/" title="Tags"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">30</span></a></div><a class="site-state-item hty-icon-button" href="/about/#comment" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/leihehehe" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:hslscarlett@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="友情链接" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%BE%E5%90%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80"><span class="toc-number">2.</span> <span class="toc-text">课后小程序下载地址</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-number">3.</span> <span class="toc-text">第一课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8"><span class="toc-number">3.1.</span> <span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MessageBoxA-API%E6%96%AD%E7%82%B9"><span class="toc-number">3.2.</span> <span class="toc-text">MessageBoxA API断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E5%BC%95%E7%94%A8%E6%9F%A5%E6%89%BE%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">交叉引用查找法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%9F%A5%E6%89%BE%E6%B3%95"><span class="toc-number">3.4.</span> <span class="toc-text">内存查找法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E5%9B%9E%E6%BA%AF-ALT-K%E6%9A%82%E5%81%9C%E6%B3%95"><span class="toc-number">3.5.</span> <span class="toc-text">栈回溯 ALT+K暂停法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GetWindowTextA-API%E6%96%AD%E7%82%B9"><span class="toc-number">3.6.</span> <span class="toc-text">GetWindowTextA API断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.7.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-number">4.</span> <span class="toc-text">第二课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-1"><span class="toc-number">4.1.</span> <span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E6%BA%AF%E6%BA%90%E6%B3%95-ALT-K%E6%9A%82%E5%81%9C%E6%B3%95"><span class="toc-number">4.2.</span> <span class="toc-text">栈溯源法 ALT+K暂停法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E5%BC%95%E7%94%A8%E6%96%AD%E7%82%B9"><span class="toc-number">4.3.</span> <span class="toc-text">交叉引用断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E4%B8%81%E4%BD%BF%E7%94%A8"><span class="toc-number">4.4.</span> <span class="toc-text">补丁使用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-number">5.</span> <span class="toc-text">第三课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-2"><span class="toc-number">5.1.</span> <span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MessageBoxA-API%E6%96%AD%E7%82%B9-1"><span class="toc-number">5.2.</span> <span class="toc-text">MessageBoxA API断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E4%B8%81%E4%BD%BF%E7%94%A8-1"><span class="toc-number">5.3.</span> <span class="toc-text">补丁使用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-number">6.</span> <span class="toc-text">第四课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#E%E8%AF%AD%E8%A8%80%E5%86%99%E5%86%85%E5%AD%98%E8%A1%A5%E4%B8%81"><span class="toc-number">6.1.</span> <span class="toc-text">E语言写内存补丁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#E%E8%AF%AD%E8%A8%80%E5%86%99%E5%8A%AB%E6%8C%81%E8%A1%A5%E4%B8%81"><span class="toc-number">6.2.</span> <span class="toc-text">E语言写劫持补丁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C%E8%AF%AD%E8%A8%80%E5%86%99%E5%86%85%E5%AD%98%E8%A1%A5%E4%B8%81"><span class="toc-number">6.3.</span> <span class="toc-text">C语言写内存补丁</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-number">7.</span> <span class="toc-text">第五课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80-1"><span class="toc-number">7.1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-3"><span class="toc-number">7.2.</span> <span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SetWindowTextA-%E5%AF%BB%E6%89%BE%E5%85%B3%E9%94%AE%E8%B7%B3"><span class="toc-number">7.3.</span> <span class="toc-text">SetWindowTextA 寻找关键跳</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9A%E8%BF%9B%E7%A8%8B%E6%8C%82%E8%B5%B7-%E4%BF%AE%E6%94%B9ZF%E6%A0%87%E5%BF%97%E4%BD%8D"><span class="toc-number">7.4.</span> <span class="toc-text">破解方法一：进程挂起+修改ZF标志位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95%E4%BA%8C%EF%BC%9A%E7%A1%AC%E4%BB%B6HOOK"><span class="toc-number">7.5.</span> <span class="toc-text">破解方法二：硬件HOOK</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-number">8.</span> <span class="toc-text">第六课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-4"><span class="toc-number">8.1.</span> <span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95"><span class="toc-number">8.2.</span> <span class="toc-text">破解方法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-number">9.</span> <span class="toc-text">第七课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-5"><span class="toc-number">9.1.</span> <span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%86%E5%90%91%E6%B5%81%E7%A8%8B"><span class="toc-number">9.2.</span> <span class="toc-text">逆向流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C%E8%AF%AD%E8%A8%80%E9%80%86%E7%AE%97%E6%B3%95"><span class="toc-number">9.3.</span> <span class="toc-text">C语言逆算法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-number">10.</span> <span class="toc-text">第八课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-6"><span class="toc-number">10.1.</span> <span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%BB%E8%8A%B1%E6%8C%87%E4%BB%A4"><span class="toc-number">10.2.</span> <span class="toc-text">去花指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95"><span class="toc-number">10.3.</span> <span class="toc-text">分析算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C%E8%AF%AD%E8%A8%80%E9%80%86%E7%AE%97%E6%B3%95-1"><span class="toc-number">10.4.</span> <span class="toc-text">C语言逆算法</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://leihehe.top/2021/12/02/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Leihehe"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="LeiH - Blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">NCK逆向课后作业writeup</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="Created: 2021-12-02 21:13:44" itemprop="dateCreated datePublished" datetime="2021-12-02T21:13:44+11:00">2021-12-02</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="Modified: 2022-06-09 09:43:07" itemprop="dateModified" datetime="2022-06-09T09:43:07+10:00">2022-06-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="Word count in article"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="Word count in article">3.8k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="Reading time"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="Reading time">14m</span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Reverse-Engineering/" style="--text-color:#8892BF" itemprop="url" rel="index"><span itemprop="text">Reverse Engineering</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Write-up/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Write-up</span></a><a class="tag-item" href="/tags/%E9%80%86%E5%90%91/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">逆向</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>个人的一些逆向小练习和解题思路</p>
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Leihehe" />
+  <meta name="description" content="我该说些什么呢？" />
+  
+  
+  <title>
+    
+      NCK逆向课后作业writeup 
+      
+      
+      |
+    
+     LeiH - Blog
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">NCK逆向课后作业writeup</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2022-06-09 09:43:07
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Write-up/" title="Write-up">
+                    #Write-up
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E9%80%86%E5%90%91/" title="逆向">
+                    #逆向
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>个人的一些逆向小练习和解题思路</p>
 <p>每天一道</p>
 <span id="more"></span>
 
 <h1 id="课后小程序下载地址"><a href="#课后小程序下载地址" class="headerlink" title="课后小程序下载地址"></a>课后小程序下载地址</h1><p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1U-LK9lZf4CjVjUCuSSFIlQ">https://pan.baidu.com/s/1U-LK9lZf4CjVjUCuSSFIlQ</a><br>提取码：k5pf </p>
-<h1 id="第一课课后作业"><a href="#第一课课后作业" class="headerlink" title="第一课课后作业"></a>第一课课后作业</h1><h2 id="软件使用"><a href="#软件使用" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152510850.png" alt="image-20211203152510850" loading="lazy"></p>
+<h1 id="第一课课后作业"><a href="#第一课课后作业" class="headerlink" title="第一课课后作业"></a>第一课课后作业</h1><h2 id="软件使用"><a href="#软件使用" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152510850.png" alt="image-20211203152510850"></p>
 <h2 id="MessageBoxA-API断点"><a href="#MessageBoxA-API断点" class="headerlink" title="MessageBoxA API断点"></a>MessageBoxA API断点</h2><p>通过信息框，猜测有<code>MessageBox</code> API被调用，<code>ctrl+g</code>找到调用处，直接下断点</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152727330.png" alt="image-20211203152727330" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152727330.png" alt="image-20211203152727330"></p>
 <p>点击按钮后让他在此处断下。</p>
 <p>看见右下方堆栈顶端显示了CALL的返回地址，右键跟随反汇编窗口。</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152857114.png" alt="image-20211203152857114" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203152857114.png" alt="image-20211203152857114"></p>
 <p>这里跟随到的是返回地址，这样我们就可以找到这个<code>MessageBoxA</code>的返回地址了。</p>
-<p>在此处下断点，继续运行，让他断到这里来。往上看了下，好像并没有看见什么明显的判断条件，继续F8。<img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153141019.png" alt="image-20211203153141019" loading="lazy"></p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153406827.png" alt="image-20211203153406827" loading="lazy"></p>
+<p>在此处下断点，继续运行，让他断到这里来。往上看了下，好像并没有看见什么明显的判断条件，继续F8。<img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153141019.png" alt="image-20211203153141019"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153406827.png" alt="image-20211203153406827"></p>
 <p>往上面找，但发现这个我们猜测的成功的call并没有命令跳过它。继续往上看，发现又有2个这样的call，同时有个je跳过了这2个call</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153609778.png" alt="image-20211203153609778" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153609778.png" alt="image-20211203153609778"></p>
 <p>基本可以确定是这个跳转的问题了。</p>
 <p>直接nop掉。</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153658090.png" alt="image-20211203153658090" loading="lazy"></p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153721601.png" alt="image-20211203153721601" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153658090.png" alt="image-20211203153658090"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203153721601.png" alt="image-20211203153721601"></p>
 <h2 id="交叉引用查找法"><a href="#交叉引用查找法" class="headerlink" title="交叉引用查找法"></a>交叉引用查找法</h2><p>先是在OD里字符串搜索，发现找不到字符串“注册失败” - OD里的各种插件可能会导致这个问题。于是转用IDA。</p>
 <p>视图-》子视图-》字符串， 搜索<code>注册失败</code></p>
 <blockquote>
 <p>搜索字符串还是搜索不到?</p>
 <p>在快捷方式处添加<code>-dCULTURE=all</code></p>
 </blockquote>
-<p>找到后双击跟过去<img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154530079.png" alt="image-20211203154530079" loading="lazy"></p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154638521.png" alt="image-20211203154638521" loading="lazy"></p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154720897.png" alt="image-20211203154720897" loading="lazy"></p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154812809.png" alt="image-20211203154812809" loading="lazy"></p>
+<p>找到后双击跟过去<img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154530079.png" alt="image-20211203154530079"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154638521.png" alt="image-20211203154638521"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154720897.png" alt="image-20211203154720897"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203154812809.png" alt="image-20211203154812809"></p>
 <p>上面的JE就是关键跳了。NOP掉即可</p>
 <h2 id="内存查找法"><a href="#内存查找法" class="headerlink" title="内存查找法"></a>内存查找法</h2><p>我们知道软件在运行的时候，函数的数据是会保存在内存里的</p>
 <p>如果我们运行软件后将他暂停，再看内存窗口的话，可以查找到字符串</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203155354377.png" alt="image-20211203155354377" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203155354377.png" alt="image-20211203155354377"></p>
 <p>内存断点或硬件断点即可。</p>
 <p>注意，如果硬件断点不起作用，可能是OD的问题，它各种反调试插件、汉化等等都可能导致这个问题，我们可以使用<strong>x64dbg.</strong></p>
 <h2 id="栈回溯-ALT-K暂停法"><a href="#栈回溯-ALT-K暂停法" class="headerlink" title="栈回溯 ALT+K暂停法"></a>栈回溯 ALT+K暂停法</h2><p>软件再执行call的时候，会把一些参数都压入堆栈，最后执行完后再pop出来，我们可以在弹出信息框的时候给他暂停，这样参数都会保留在stack中，这时我们再去OD的K窗口（栈回溯窗口），就能看到function的信息了。</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203155835217.png" alt="image-20211203155835217" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203155835217.png" alt="image-20211203155835217"></p>
 <h2 id="GetWindowTextA-API断点"><a href="#GetWindowTextA-API断点" class="headerlink" title="GetWindowTextA API断点"></a>GetWindowTextA API断点</h2><p>对<code>GetWindowTextA</code> API进行断点，执行程序后被断下，一直F8。</p>
 <p>发现在做比较，正确的字符串已经获取到了。</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203160619957.png" alt="image-20211203160619957" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211203160619957.png" alt="image-20211203160619957"></p>
 <p>后续就不分析了。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>之前一直以为从断下的地方跳一层就会回到主函数下面，导致这么简单都没搞出来，事实上跳N层都是有可能的。</p>
-<h1 id="第二课课后作业"><a href="#第二课课后作业" class="headerlink" title="第二课课后作业"></a>第二课课后作业</h1><h2 id="软件使用-1"><a href="#软件使用-1" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090025209.png" alt="image-20211204090025209" loading="lazy"></p>
+<h1 id="第二课课后作业"><a href="#第二课课后作业" class="headerlink" title="第二课课后作业"></a>第二课课后作业</h1><h2 id="软件使用-1"><a href="#软件使用-1" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090025209.png" alt="image-20211204090025209"></p>
 <h2 id="栈溯源法-ALT-K暂停法"><a href="#栈溯源法-ALT-K暂停法" class="headerlink" title="栈溯源法 ALT+K暂停法"></a>栈溯源法 ALT+K暂停法</h2><p>加载程序后运行，点击按钮让他弹出信息框，然后暂停。</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090912027.png" alt="image-20211204090912027" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090912027.png" alt="image-20211204090912027"></p>
 <p>在窗口K中找到堆栈信息，双击</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090935331.png" alt="image-20211204090935331" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090935331.png" alt="image-20211204090935331"></p>
 <p>发现有跳转，直接enter进入</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090953203.png" alt="image-20211204090953203" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204090953203.png" alt="image-20211204090953203"></p>
 <p>在此处断点</p>
 <p>再让程序跑一次，找到最终返回的地方。</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204091114188.png" alt="image-20211204091114188" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204091114188.png" alt="image-20211204091114188"></p>
 <p>此处跳过了成功消息，将JNZ改为NOP</p>
-<h2 id="交叉引用断点"><a href="#交叉引用断点" class="headerlink" title="交叉引用断点"></a>交叉引用断点</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204093044610.png" alt="image-20211204093044610" loading="lazy"></p>
+<h2 id="交叉引用断点"><a href="#交叉引用断点" class="headerlink" title="交叉引用断点"></a>交叉引用断点</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204093044610.png" alt="image-20211204093044610"></p>
 <p>在OD处修改即可。</p>
 <p><strong>如何在IDA修改？</strong></p>
 <p>选项-》常规-》操作数字节-》16</p>
 <p>编辑-》修补程序-》汇编</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204093940723.png" alt="image-20211204093940723" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204093940723.png" alt="image-20211204093940723"></p>
 <p>nop两次把这两个都填充</p>
 <p>编辑-》修补程序-》修补程序到输入文件</p>
 <p>EA起始为你的基址</p>
 <p>生成即可</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204094300480.png" alt="image-20211204094300480" loading="lazy"></p>
-<h2 id="补丁使用"><a href="#补丁使用" class="headerlink" title="补丁使用"></a>补丁使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204094354057.png" alt="image-20211204094354057" loading="lazy"></p>
-<h1 id="第三课课后作业"><a href="#第三课课后作业" class="headerlink" title="第三课课后作业"></a>第三课课后作业</h1><h2 id="软件使用-2"><a href="#软件使用-2" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103356194.png" alt="image-20211205103356194" loading="lazy"></p>
-<h2 id="MessageBoxA-API断点-1"><a href="#MessageBoxA-API断点-1" class="headerlink" title="MessageBoxA API断点"></a>MessageBoxA API断点</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103426796.png" alt="image-20211205103426796" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204094300480.png" alt="image-20211204094300480"></p>
+<h2 id="补丁使用"><a href="#补丁使用" class="headerlink" title="补丁使用"></a>补丁使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211204094354057.png" alt="image-20211204094354057"></p>
+<h1 id="第三课课后作业"><a href="#第三课课后作业" class="headerlink" title="第三课课后作业"></a>第三课课后作业</h1><h2 id="软件使用-2"><a href="#软件使用-2" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103356194.png" alt="image-20211205103356194"></p>
+<h2 id="MessageBoxA-API断点-1"><a href="#MessageBoxA-API断点-1" class="headerlink" title="MessageBoxA API断点"></a>MessageBoxA API断点</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103426796.png" alt="image-20211205103426796"></p>
 <p>发现带壳，之后得用补丁。</p>
 <p>先让程序运行起来，下断点MessageBoxA</p>
 <p>找到关键跳，需要修改JE为nop</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103920873.png" alt="image-20211205103920873" loading="lazy"></p>
-<h2 id="补丁使用-1"><a href="#补丁使用-1" class="headerlink" title="补丁使用"></a>补丁使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104024600.png" alt="image-20211205104024600" loading="lazy"></p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104112887.png" alt="image-20211205104112887" loading="lazy"></p>
-<h1 id="第四课课后作业"><a href="#第四课课后作业" class="headerlink" title="第四课课后作业"></a>第四课课后作业</h1><h2 id="E语言写内存补丁"><a href="#E语言写内存补丁" class="headerlink" title="E语言写内存补丁"></a>E语言写内存补丁</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104706503.png" alt="image-20211205104706503" loading="lazy"></p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104725383.png" alt="image-20211205104725383" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205103920873.png" alt="image-20211205103920873"></p>
+<h2 id="补丁使用-1"><a href="#补丁使用-1" class="headerlink" title="补丁使用"></a>补丁使用</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104024600.png" alt="image-20211205104024600"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104112887.png" alt="image-20211205104112887"></p>
+<h1 id="第四课课后作业"><a href="#第四课课后作业" class="headerlink" title="第四课课后作业"></a>第四课课后作业</h1><h2 id="E语言写内存补丁"><a href="#E语言写内存补丁" class="headerlink" title="E语言写内存补丁"></a>E语言写内存补丁</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104706503.png" alt="image-20211205104706503"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205104725383.png" alt="image-20211205104725383"></p>
 <h2 id="E语言写劫持补丁"><a href="#E语言写劫持补丁" class="headerlink" title="E语言写劫持补丁"></a>E语言写劫持补丁</h2><p>检测数据是否被壳还原 -》 检测004010A9地址的数据是否为0x55(85)</p>
-<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205124112526.png" alt="image-20211205124112526" loading="lazy"></p>
-<h2 id="C语言写内存补丁"><a href="#C语言写内存补丁" class="headerlink" title="C语言写内存补丁"></a>C语言写内存补丁</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205124716992.png" alt="image-20211205124716992" loading="lazy"></p>
+<p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205124112526.png" alt="image-20211205124112526"></p>
+<h2 id="C语言写内存补丁"><a href="#C语言写内存补丁" class="headerlink" title="C语言写内存补丁"></a>C语言写内存补丁</h2><p><img src="/image/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/image-20211205124716992.png" alt="image-20211205124716992"></p>
 <p>这里主要是用<code>OpenProcess()</code>和<code>WriteProcessMemory()</code>来完成内存写入操作的。</p>
 <h1 id="第五课课后作业"><a href="#第五课课后作业" class="headerlink" title="第五课课后作业"></a>第五课课后作业</h1><h2 id="前言-1"><a href="#前言-1" class="headerlink" title="前言"></a>前言</h2><p>这一课涉及到了很多知识点，我花了两三天的事件才慢慢把各个知识点理清楚。 主要涉及到了硬件断点、硬件HOOK和线程方面的知识，虽然老师只讲了一节课，但是自己真正弄清楚并实践还是得费不少时间。另外我使用的VS2022版本给我带来了不少麻烦，各种不兼容，还好最后解决了，之后可能会出一些解决VS问题的合集。</p>
 <p>该课后作业的要求是<strong>不修改代码从而实现破解。</strong></p>
-<h2 id="软件使用-3"><a href="#软件使用-3" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125058597.png" alt="image-20211208125058597" loading="lazy"></p>
+<h2 id="软件使用-3"><a href="#软件使用-3" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125058597.png" alt="image-20211208125058597"></p>
 <h2 id="SetWindowTextA-寻找关键跳"><a href="#SetWindowTextA-寻找关键跳" class="headerlink" title="SetWindowTextA 寻找关键跳"></a>SetWindowTextA 寻找关键跳</h2><p>OD载入发现有壳</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125215342.png" alt="image-20211208125215342" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125215342.png" alt="image-20211208125215342"></p>
 <p>我们将它运行起来 - 加壳的程序必须运行起来，才会被恢复源码。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125611118.png" alt="image-20211208125611118" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125611118.png" alt="image-20211208125611118"></p>
 <p><strong>注册失败</strong>的信息显示在了标题上，那么可以猜测它使用了SetWindowTextA函数，下一个断点。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125735454.png" alt="image-20211208125735454" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125735454.png" alt="image-20211208125735454"></p>
 <p>断下来了，开始F8。现在走到了一个可疑的地方，附近有大跳，我们用Immlabel插件标记一下，发现上面也有一处一样的call，那么猜测可能是成功的call。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125913192.png" alt="image-20211208125913192" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208125913192.png" alt="image-20211208125913192"></p>
 <p>观察发现，上面有一个jnz跳转，跳过了成功的call，那么我们可以确定关键跳就在这里了<strong>0x401053</strong>。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130101207.png" alt="image-20211208130101207" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130101207.png" alt="image-20211208130101207"></p>
 <h2 id="破解方法一：进程挂起-修改ZF标志位"><a href="#破解方法一：进程挂起-修改ZF标志位" class="headerlink" title="破解方法一：进程挂起+修改ZF标志位"></a>破解方法一：进程挂起+修改ZF标志位</h2><p>在之前得知的关键跳<strong>0x401053</strong>处下一个CC断点</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/1.gif" alt="1" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/1.gif" alt="1"></p>
 <p>奇怪的是，程序会被终止。CC断点是将地址的首字节改为0xCC，因此我们判断该程序使用了某种校验方法（可能是CRC检测）来检测固定的某段代码段是否在运行过程中被修改。此处我们可以修改JNZ为NOP完成破解，但题目要求是不修改代码破解，所以我们还需另寻他法。</p>
 <p>一个软件为了保证整个程序流程正常运行，不太可能将CRC检测(while loop形式)写在主线程（单一线程），不然后面的代码将无法执行，所以猜测可能是有新的线程建立。</p>
 <p>在OD的T窗口查看线程情况</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130947860.png" alt="image-20211208130947860" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130947860.png" alt="image-20211208130947860"></p>
 <p>发现了一个异常活跃的线程，基本可以确定是用来检测的线程 - 直接将线程挂起。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131235695.png" alt="image-20211208131235695" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131235695.png" alt="image-20211208131235695"></p>
 <p>再次将<strong>0X00401053</strong>下断，发现程序正常，成功过掉CRC检测。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131301886.png" alt="image-20211208131301886" loading="lazy"></p>
-<p>JNZ在ZF标志位为1的时候不跳转 <img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130254590.png" alt="image-20211208130254590" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131301886.png" alt="image-20211208131301886"></p>
+<p>JNZ在ZF标志位为1的时候不跳转 <img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208130254590.png" alt="image-20211208130254590"></p>
 <p>破解成功</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131520337.png" alt="image-20211208131520337" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208131520337.png" alt="image-20211208131520337"></p>
 <h2 id="破解方法二：硬件HOOK"><a href="#破解方法二：硬件HOOK" class="headerlink" title="破解方法二：硬件HOOK"></a>破解方法二：硬件HOOK</h2><p>已知检测程序是校验代码位数，从而判断代码是否被修改，但硬件断点不会被断下，因为它是通过操纵Dr寄存器来完成的下断。关于硬件断点的讲解见<a target="_blank" rel="noopener" href="https://leihehehe.github.io/2021/12/07/%E6%B5%85%E6%9E%90%E7%A1%AC%E4%BB%B6%E6%96%AD%E7%82%B9%E5%92%8C%E5%86%85%E5%AD%98%E6%96%AD%E7%82%B9/">浅析硬件断点和内存断点</a></p>
 <p>硬件断点会触发**STATUS_SINGLE_STEP(单步异常)**，异常会交给程序的异常处理函数管理，若程序的异常处理函数不处理，才会交给调试器。</p>
 <p>我们现在可以利用以下思路：</p>
 <p>配合DLL劫持，让程序在JNZ跳转<strong>0x401053</strong>处触发硬件断点，同时给程序写一个异常处理函数 - 异常处理函数里是我们的恶意代码 - 将EIP+6，这样能够直接<strong>绕过JNZ判断</strong>。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208132929602.png" alt="image-20211208132929602" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211208132929602.png" alt="image-20211208132929602"></p>
 <p><strong>WIN10代码</strong>（我的环境）: <strong>winspool.drv</strong>，使用第四课的C语言劫持补丁代码进行改写。</p>
 <p>注意:win10在设置硬件断点的时候必须<strong>先挂起目标线程</strong>，否则无法断点，所以我们需要创建一个新的线程，再在这个线程中暂停主线程从而保存修改后的寄存器内容。</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">DWORD g_dwBreakPoint <span class="token operator">=</span> <span class="token number">0x401053</span><span class="token punctuation">;</span>
@@ -323,46 +386,46 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 
 
 <p>破解成功。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/hw5HardBreakHook.gif" alt="hw5HardBreakHook" loading="lazy"></p>
-<h1 id="第六课课后作业"><a href="#第六课课后作业" class="headerlink" title="第六课课后作业"></a>第六课课后作业</h1><h2 id="软件使用-4"><a href="#软件使用-4" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185701029.png" alt="image-20211209185701029" loading="lazy"></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185710786.png" alt="image-20211209185710786" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/hw5HardBreakHook.gif" alt="hw5HardBreakHook"></p>
+<h1 id="第六课课后作业"><a href="#第六课课后作业" class="headerlink" title="第六课课后作业"></a>第六课课后作业</h1><h2 id="软件使用-4"><a href="#软件使用-4" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185701029.png" alt="image-20211209185701029"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185710786.png" alt="image-20211209185710786"></p>
 <p>此处注册码并没有任何用处，随意输入也会提示注册成功</p>
 <h2 id="破解方法"><a href="#破解方法" class="headerlink" title="破解方法"></a>破解方法</h2><p>运行起来转到代码段401000 - 从模块中删除分析</p>
 <p>字符串搜索</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185906127.png" alt="image-20211209185906127" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209185906127.png" alt="image-20211209185906127"></p>
 <p>我们看见有一个<strong>\License.key</strong>，双击过去，在<strong>段开头</strong>断点</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209190001299.png" alt="image-20211209190001299" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209190001299.png" alt="image-20211209190001299"></p>
 <p>我们猜测该程序是在启动的时候判断是否注册，而关键点就在于这个<strong>License.key</strong></p>
 <p>记录一下下断点的地址<strong>004016D6</strong></p>
 <p>现在重新运行软件，正常的话，程序应该在这里断下来，但现在并没有断下，发现断点被禁用了。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209190436336.png" alt="image-20211209190436336" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209190436336.png" alt="image-20211209190436336"></p>
 <p>程序带壳，刚开始运行时，下断的地址没有被恢复，所以断点会被禁止。</p>
 <p>因此我们需要在程序代码恢复后再给<strong>004016D6</strong>地址下断。</p>
 <p>转到<strong>CreateWindowExW</strong>下断 - 大部分加壳程序代码在此处都已还原。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191453997.png" alt="image-20211209191453997" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191453997.png" alt="image-20211209191453997"></p>
 <p>在004016D6下断</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191547960.png" alt="image-20211209191547960" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191547960.png" alt="image-20211209191547960"></p>
 <p>运行后被断下,一直F8</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191725737.png" alt="image-20211209191725737" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191725737.png" alt="image-20211209191725737"></p>
 <p>在此处修改jnz为nop即可</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191821736.png" alt="image-20211209191821736" loading="lazy"></p>
-<h1 id="第七课课后作业"><a href="#第七课课后作业" class="headerlink" title="第七课课后作业"></a>第七课课后作业</h1><h2 id="软件使用-5"><a href="#软件使用-5" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213153606918.png" alt="image-20211213153606918" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211209191821736.png" alt="image-20211209191821736"></p>
+<h1 id="第七课课后作业"><a href="#第七课课后作业" class="headerlink" title="第七课课后作业"></a>第七课课后作业</h1><h2 id="软件使用-5"><a href="#软件使用-5" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213153606918.png" alt="image-20211213153606918"></p>
 <p><strong>作业要求：逆出算法，不能爆破，不能修改代码。</strong></p>
 <h2 id="逆向流程"><a href="#逆向流程" class="headerlink" title="逆向流程"></a>逆向流程</h2><p>直接载入OD，找关键点</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213153904764.png" alt="image-20211213153904764" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213153904764.png" alt="image-20211213153904764"></p>
 <p>在IDA中发现左侧第一个就是401000的函数，我们点击以后按F5，让它直接转变为代码</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154209385.png" alt="image-20211213154209385" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154209385.png" alt="image-20211213154209385"></p>
 <p>分析a1应该是我们输入的key，下面的messageBox乱码，怎么解决呢？双击乱码的地方过去</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154450306.png" alt="image-20211213154450306" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154450306.png" alt="image-20211213154450306"></p>
 <p>这种情况通常是因为IDA将其识别为Unicode，而unicode不能正确表示我们的字符串。</p>
 <p>菜单栏-&gt;选项-&gt;字符串文本-&gt;修改为UTF-16LE</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154629467.png" alt="image-20211213154629467" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154629467.png" alt="image-20211213154629467"></p>
 <p>发现已经改回来了。</p>
 <p>再回到之前的代码区，按F5</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154656969.png" alt="image-20211213154656969" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213154656969.png" alt="image-20211213154656969"></p>
 <p>代码成功恢复</p>
 <p>接下来我们对一些变量名做一些修改，方便理解</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160036921.png" alt="image-20211213160036921" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160036921.png" alt="image-20211213160036921"></p>
 <h2 id="C语言逆算法"><a href="#C语言逆算法" class="headerlink" title="C语言逆算法"></a>C语言逆算法</h2><p>直接把代码从IDA上copy&amp;paste，然后做一些修改。</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;iostream></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;windows.h></span></span>
@@ -397,41 +460,41 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 	<span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160052211.png" alt="image-20211213160052211" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160052211.png" alt="image-20211213160052211"></p>
 <p>算出来正确的注册码是17</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160126767.png" alt="image-20211213160126767" loading="lazy"></p>
-<h1 id="第八课课后作业"><a href="#第八课课后作业" class="headerlink" title="第八课课后作业"></a>第八课课后作业</h1><h2 id="软件使用-6"><a href="#软件使用-6" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160322310.png" alt="image-20211213160322310" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160126767.png" alt="image-20211213160126767"></p>
+<h1 id="第八课课后作业"><a href="#第八课课后作业" class="headerlink" title="第八课课后作业"></a>第八课课后作业</h1><h2 id="软件使用-6"><a href="#软件使用-6" class="headerlink" title="软件使用"></a>软件使用</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213160322310.png" alt="image-20211213160322310"></p>
 <h2 id="去花指令"><a href="#去花指令" class="headerlink" title="去花指令"></a>去花指令</h2><p>载入OD后在字符串中查找，发现并没有注册失败或成功，跟进<code>请输入注册码</code>，发现后面代码加了花指令</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213162550645.png" alt="image-20211213162550645" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213162550645.png" alt="image-20211213162550645"></p>
 <p>我选择先去除花指令。</p>
 <p>花指令一般是由恒成立的跳转组成的，我们只需要nop掉永远不会访问的无效指令，就能去除</p>
 <p>例如</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163002542.png" alt="image-20211213163002542" loading="lazy"></p>
-<p>在数据窗口中去除 <img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163034570.png" alt="image-20211213163034570" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163002542.png" alt="image-20211213163002542"></p>
+<p>在数据窗口中去除 <img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163034570.png" alt="image-20211213163034570"></p>
 <p>将所有花指令去除后，复制保存到可执行文件</p>
 <h2 id="分析算法"><a href="#分析算法" class="headerlink" title="分析算法"></a>分析算法</h2><p>因为程序比较小，我们可以直接拖入IDA，在前几个函数中能找到我们的关键位置</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163536224.png" alt="image-20211213163536224" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213163536224.png" alt="image-20211213163536224"></p>
 <p>我们做一些注释</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164107383.png" alt="image-20211213164107383" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164107383.png" alt="image-20211213164107383"></p>
 <p>其中一个call中的**&amp;byte_442578<strong>引起了我的注意，我有些困惑这是什么，根据上下文猜测，感觉后面的v4像是我们输入的key，</strong>&amp;byte_442578**又是什么呢？</p>
 <p>双击进去看看，此时它为数据类型</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164245856.png" alt="image-20211213164245856" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164245856.png" alt="image-20211213164245856"></p>
 <p>我们将他转换成字符串，发现它变成了%s</p>
 <p>返回刚才的地方F5，显而易见，这是一个**scanf()**方法</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164406622.png" alt="image-20211213164406622" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213164406622.png" alt="image-20211213164406622"></p>
 <p>我们进入**algrithms()**继续分析算法</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165156917.png" alt="image-20211213165156917" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165156917.png" alt="image-20211213165156917"></p>
 <p>一顿分析后，我们发现下方有一个<code>*(_BYTE *)</code>，通常这种<strong>pointer</strong>前方又有一个星号的情况，都是因为IDA识别错误。</p>
 <p>我们发现括号后面finalResult，和inputKey的类型是错误的</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165345317.png" alt="image-20211213165345317" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165345317.png" alt="image-20211213165345317"></p>
 <p>修改一下参数类型</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165435708.png" alt="image-20211213165435708" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165435708.png" alt="image-20211213165435708"></p>
 <p>显示正常。</p>
 <p>同样我们再修改一下以下位置</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165659661.png" alt="image-20211213165659661" loading="lazy"></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165742029.png" alt="image-20211213165742029" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165659661.png" alt="image-20211213165659661"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165742029.png" alt="image-20211213165742029"></p>
 <p>对应的值为**’bcdaren’**</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165804348.png" alt="image-20211213165804348" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213165804348.png" alt="image-20211213165804348"></p>
 <h2 id="C语言逆算法-1"><a href="#C语言逆算法-1" class="headerlink" title="C语言逆算法"></a>C语言逆算法</h2><p>将算法从IDA复制到C</p>
 <p>观察下面的算法,我们发现再第二个for循环中，<strong>i</strong>一直没变，不停的再给同一个数重新赋值新的<strong>aBacdaren_1[j]^xxx</strong>，所以我们可以看出来，其实这两个for循环是在干一件事，就是把最后一个字母<strong>n</strong>和(key中的每一位+13)做异或运算。</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
@@ -469,7 +532,7 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 	<span class="token keyword">return</span> finalResult<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213172917906.png" alt="image-20211213172917906" loading="lazy"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213172917906.png" alt="image-20211213172917906"></p>
 <p>最后<strong>finalResult</strong>的值应该等于<code>((++**--,,//..QQPP</code></p>
 <p>我们再写个逆运算的算法，注意，<strong>异或运算中任意两个数异或可以得到第三个数</strong>，例如：</p>
 <p>a^b=c</p>
@@ -500,32 +563,367 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 	<span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213175431347.png" alt="image-20211213175431347" loading="lazy"></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213175444354.png" alt="image-20211213175444354" loading="lazy"></p>
-</div><ul class="post-copyright"><li class="post-copyright-author"><strong>Post author: </strong>Leihehe</li><li class="post-copyright-link"><strong>Post link: </strong><a href="https://leihehe.top/2021/12/02/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/" title="NCK逆向课后作业writeup">https://leihehe.top/2021/12/02/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/</a></li><li class="post-copyright-license"><strong>Copyright Notice: </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> unless otherwise stated.</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/12/07/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%80-Filter%E5%9E%8B/" rel="prev" title="Tomcat内存马系列(一):Filter型"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">Tomcat内存马系列(一):Filter型</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/11/24/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/" rel="next" title="Java反序列化漏洞之Javassist(8)"><span class="post-nav-text">Java反序列化漏洞之Javassist(8)</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>说点什么好呢？</span><br></div><style>.utterances {
-  max-width: 100%;
-}</style><script src="https://utteranc.es/client.js" repo="leihehehe/leihehehe.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2021 – 2023 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Leihehe</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="Search"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
-  // Handle and trigger popup window
-  document.querySelector(".popup-trigger").addEventListener("click", () => {
-    document.querySelector(".popup").classList.add("show");
-    setTimeout(() => {
-      document.querySelector(".search-input").focus();
-    }, 100);
-  });
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213175431347.png" alt="image-20211213175431347"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211213175444354.png" alt="image-20211213175444354"></p>
 
-  // Monitor main search box
-  const onPopupClose = () => {
-    document.querySelector(".popup").classList.remove("show");
-  };
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2021/11/24/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2022-06-09 09:43:07
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Write-up/" title="Write-up">
+                        #Write-up
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E9%80%86%E5%90%91/" title="逆向">
+                        #逆向
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2021/12/07/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%80-Filter%E5%9E%8B/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%BE%E5%90%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80"><span class="toc-text">课后小程序下载地址</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-text">第一课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8"><span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MessageBoxA-API%E6%96%AD%E7%82%B9"><span class="toc-text">MessageBoxA API断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E5%BC%95%E7%94%A8%E6%9F%A5%E6%89%BE%E6%B3%95"><span class="toc-text">交叉引用查找法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%9F%A5%E6%89%BE%E6%B3%95"><span class="toc-text">内存查找法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E5%9B%9E%E6%BA%AF-ALT-K%E6%9A%82%E5%81%9C%E6%B3%95"><span class="toc-text">栈回溯 ALT+K暂停法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GetWindowTextA-API%E6%96%AD%E7%82%B9"><span class="toc-text">GetWindowTextA API断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-text">第二课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-1"><span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E6%BA%AF%E6%BA%90%E6%B3%95-ALT-K%E6%9A%82%E5%81%9C%E6%B3%95"><span class="toc-text">栈溯源法 ALT+K暂停法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E5%BC%95%E7%94%A8%E6%96%AD%E7%82%B9"><span class="toc-text">交叉引用断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E4%B8%81%E4%BD%BF%E7%94%A8"><span class="toc-text">补丁使用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-text">第三课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-2"><span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MessageBoxA-API%E6%96%AD%E7%82%B9-1"><span class="toc-text">MessageBoxA API断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E4%B8%81%E4%BD%BF%E7%94%A8-1"><span class="toc-text">补丁使用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-text">第四课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#E%E8%AF%AD%E8%A8%80%E5%86%99%E5%86%85%E5%AD%98%E8%A1%A5%E4%B8%81"><span class="toc-text">E语言写内存补丁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#E%E8%AF%AD%E8%A8%80%E5%86%99%E5%8A%AB%E6%8C%81%E8%A1%A5%E4%B8%81"><span class="toc-text">E语言写劫持补丁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C%E8%AF%AD%E8%A8%80%E5%86%99%E5%86%85%E5%AD%98%E8%A1%A5%E4%B8%81"><span class="toc-text">C语言写内存补丁</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-text">第五课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80-1"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-3"><span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SetWindowTextA-%E5%AF%BB%E6%89%BE%E5%85%B3%E9%94%AE%E8%B7%B3"><span class="toc-text">SetWindowTextA 寻找关键跳</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9A%E8%BF%9B%E7%A8%8B%E6%8C%82%E8%B5%B7-%E4%BF%AE%E6%94%B9ZF%E6%A0%87%E5%BF%97%E4%BD%8D"><span class="toc-text">破解方法一：进程挂起+修改ZF标志位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95%E4%BA%8C%EF%BC%9A%E7%A1%AC%E4%BB%B6HOOK"><span class="toc-text">破解方法二：硬件HOOK</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-text">第六课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-4"><span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95"><span class="toc-text">破解方法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-text">第七课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-5"><span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%86%E5%90%91%E6%B5%81%E7%A8%8B"><span class="toc-text">逆向流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C%E8%AF%AD%E8%A8%80%E9%80%86%E7%AE%97%E6%B3%95"><span class="toc-text">C语言逆算法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E8%AF%BE%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9A"><span class="toc-text">第八课课后作业</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8-6"><span class="toc-text">软件使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%BB%E8%8A%B1%E6%8C%87%E4%BB%A4"><span class="toc-text">去花指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95"><span class="toc-text">分析算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C%E8%AF%AD%E8%A8%80%E9%80%86%E7%AE%97%E6%B3%95-1"><span class="toc-text">C语言逆算法</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
 
-  document.querySelector(".popup-btn-close").addEventListener("click", () => {
-    onPopupClose();
-  });
+  
+<script src="/js/catalog.js"></script>
 
-  window.addEventListener("keyup", event => {
-    if (event.key === "Escape") {
-      onPopupClose();
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
     }
-  });
-});
-</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="Searching..." value=""></div><div id="local-search-result"></div></div></div></body></html>
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup + '&url=' + https%3A%2F%2Fleihehe.top%2F2021%2F12%2F02%2FNCK%25E9%2580%2586%25E5%2590%2591%25E8%25AF%25BE%25E5%2590%258E%25E4%25BD%259C%25E4%25B8%259Awriteup%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2021/12/02/NCK%E9%80%86%E5%90%91%E8%AF%BE%E5%90%8E%E4%BD%9C%E4%B8%9Awriteup/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>
