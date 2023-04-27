@@ -23,109 +23,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Amazing URL Shortener - Technical Doc</title>
-    <url>/2022/12/04/Amazing-URL-Shortener-Technical-Doc/</url>
-    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Amazing URL Shortener is an online tool with high availability to shorten a long link and provide detailed statistics.</p>
-<p><strong>Demo</strong>:</p>
-<ul>
-<li><a href="http://official.urls.fit/">http://official.urls.fit</a></li>
-<li><a href="http://short.urls.fit/">http://short.urls.fit</a></li>
-</ul>
-<p><code>username: test</code></p>
-<p><code>password: test</code></p>
-<p><strong>Short link demo</strong>: <code>urls.fit/a26B4EM0</code></p>
-<p><strong>GitHub repo:</strong> </p>
-<ul>
-<li>Backend: <a href="https://github.com/leihehehe/java-url-shortener">https://github.com/leihehehe/java-url-shortener</a></li>
-<li>Frontend: currently is a private repo</li>
-</ul>
-<span id="more"></span>
-
-<h1 id="Technical-Stacks-Used"><a href="#Technical-Stacks-Used" class="headerlink" title="Technical Stacks Used"></a>Technical Stacks Used</h1><p><strong>Backend Techniques:</strong> </p>
-<ul>
-<li><p><strong>Framework</strong>: SpringBoot, Spring Cloud</p>
-</li>
-<li><p><strong>Gateway</strong>: Spring Cloud Gateway</p>
-</li>
-<li><p><strong>Message Queues</strong>: RabbitMQ, Kafka</p>
-</li>
-<li><p><strong>Database-related Techs</strong>: Redis, Redisson(operating on Redis), ClickHouse, SpringData JPA, MySQL,  Apache Shardingsphere</p>
-</li>
-<li><p><strong>Data Streaming-processing Framework</strong>: Flink</p>
-</li>
-<li><p><strong>Availability</strong>: resillience4j</p>
-</li>
-<li><p><strong>Others</strong>: Openfeign, etc.</p>
-</li>
-</ul>
-<p><strong>Frontend:</strong> Angular.js</p>
-<p><strong>DevOps</strong>:</p>
-<ul>
-<li>Jenkins</li>
-<li>Kubernetes</li>
-</ul>
-<h2 id="ShardingSphere"><a href="#ShardingSphere" class="headerlink" title="ShardingSphere"></a>ShardingSphere</h2><blockquote>
-<p><strong>ShardingSphere</strong> provides a distributed database solution based on the underlying database, which can scale computing and storage horizontally</p>
-</blockquote>
-<h3 id="Why-use-it"><a href="#Why-use-it" class="headerlink" title="Why use it?"></a>Why use it?</h3><p>Since we are developing a system that can handle massive data, it is not possible to just use one single database or a few tables to store the data. Storing massive data in only one node or database will cause much pressure on the database itself, and speed will be significantly slowed down.</p>
-<p>Therefore, it is necessary to do sharding and partitioning. For example, I divided the <code>product_order</code> table into two tables stored in the <code>url_shop</code> database and divided the <code>short_link</code> table into 6 tables and every two tables are distributed in a <code>url_link</code> table. (For more details, please see the <strong>Database Structure</strong> part)</p>
-<h3 id="Partition-Keys"><a href="#Partition-Keys" class="headerlink" title="Partition Keys"></a>Partition Keys</h3><p>Partition keys are set in terms of different cases. For example, for users to find their orders quickly, <code>accountNo</code> is used as a partition key, so that a user’s orders will be in the same table.</p>
-<p>Another situation is that we need to handle a large number of shortened links across multiple databases and tables. In this case, I use <code>accountNo</code> as a partition key to finding out which <strong>databases</strong> the records are currently in. Besides, <code>groupId</code> is used as a partition key for finding out which <strong>tables</strong> the records are currently in.</p>
-<h3 id="How-to-query-the-data-in-this-case"><a href="#How-to-query-the-data-in-this-case" class="headerlink" title="How to query the data in this case?"></a>How to query the data in this case?</h3><p>I used two methods to query the data</p>
-<ul>
-<li><strong>Modulo</strong>. For example, <code>k = accountNo mod n</code> where n is the number of tables that will query the <strong>kth</strong> table </li>
-<li><strong>Store database and column info in the data itself</strong>. For example, we got a short link code stored in the database <code>a</code> and table <code>2</code>, then we can update the short link code to <code>axxxx2</code>, so that we could quickly locate this short link when querying the data.</li>
-</ul>
-<h2 id="Redis-Redisson-amp-Lua-Script"><a href="#Redis-Redisson-amp-Lua-Script" class="headerlink" title="Redis, Redisson &amp; Lua Script"></a>Redis, Redisson &amp; Lua Script</h2><ul>
-<li>Redis is used as a cache in the project. It stores the users’ plan data information to prevent frequent requests to the MySQL database.</li>
-<li>Redis and Redisson are used together to handle distributed locks. In addition to using Redisson, Lua script is also straightforward and used for creating locks.</li>
-</ul>
-<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><ul>
-<li>RabbitMQ is used to slow down the response waiting time as operations can be asynchronously executed by sending messages.</li>
-<li>RabbitMQ is also used to deliver delayed messages for different purposes like order cancellation and distributed transactions.</li>
-<li>Compared to <code>Kafka</code>, it is more suitable for an e-commerce business service(e.g. scheduled tasks and distributed transaction management) </li>
-</ul>
-<h2 id="Flink-Kafka-amp-ClickHouse"><a href="#Flink-Kafka-amp-ClickHouse" class="headerlink" title="Flink, Kafka &amp; ClickHouse"></a>Flink, Kafka &amp; ClickHouse</h2><blockquote>
-<p><strong>Flink is used for processing data streams at a large scale and to deliver real-time analytical insights about your processed data with your streaming application</strong>.</p>
-</blockquote>
-<p>In this project, I used <code>Flink</code> to get visitor information when a visitor is trying to access a shortened link. Flink helps to process the visitor information in each layer and pass the processed information to the next layer using <code>Kafka</code>.</p>
-<p>At the last layer, I used Flink to pass the final datasets to ClickHouse which is a fast column-oriented database management system.</p>
-<p>ClickHouse allows us to generate analytical reports using SQL queries.</p>
-<h2 id="Jenkins-amp-Kubernetes-High-Availability"><a href="#Jenkins-amp-Kubernetes-High-Availability" class="headerlink" title="Jenkins &amp; Kubernetes(High Availability)"></a>Jenkins &amp; Kubernetes(High Availability)</h2><p>The Jenkins file is included in the project, and both front-end and back-end projects are deployed using Kubernetes and Jenkins.</p>
-<p>Jenkins runs a piepeline to build and upload images to AWS ECR.</p>
-<p>Using <strong>3</strong> servers(<strong>1 master node and 1 worker node</strong>) to build a Kubernetes cluster. </p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/202212042225127.png" alt="kubernetes deployments"></p>
-<h1 id="Technical-Difficulties-amp-Solutions"><a href="#Technical-Difficulties-amp-Solutions" class="headerlink" title="Technical Difficulties &amp; Solutions"></a>Technical Difficulties &amp; Solutions</h1><h2 id="User-and-Visitors-Querying-Links"><a href="#User-and-Visitors-Querying-Links" class="headerlink" title="User and Visitors Querying Links"></a>User and Visitors Querying Links</h2><p>As we know users prefer to query links in terms of their <code>accountNo</code>, if the links are distributed in different databases and tables, it will be very difficult for users to query the data since the system needs to access all the databases and tables to get the records.</p>
-<p>However, visitors, just need the <strong>short link code</strong> to locate the table, and they have no idea about the <code>groupId</code> and <code>accountNo</code>.</p>
-<p>So apparently, we would have two different partition keys to deal with these two cases.</p>
-<p>Therefore, I duplicated the tables so that tables <code>group_link_mapping</code> are used to store data for users, <code>short_link</code> tables are used to store data for visitors.</p>
-<h2 id="Distributed-Transaction-Management"><a href="#Distributed-Transaction-Management" class="headerlink" title="Distributed Transaction Management"></a>Distributed Transaction Management</h2><p>New issues have arisen after duplicating the short link tables. Since tables need to be synchronized, there will be inconsistent data if the operation on the user side failed but succeed on the visitor side.</p>
-<p><strong>Solution</strong>: Use <code>RabbitMQ</code> to send a <strong>delayed message</strong> to check if operations on both sides are successful.</p>
-<h2 id="Two-Users-Creating-the-Same-Short-Link"><a href="#Two-Users-Creating-the-Same-Short-Link" class="headerlink" title="Two Users Creating the Same Short Link"></a>Two Users Creating the Same Short Link</h2><p>If two users are generating the same short link, <strong>user A</strong> has inserted data to <code>group_link_mapping</code> and <strong>user B</strong> has inserted data into <code>short_link</code>, at this time, both users will fail because they cannot insert data into others tables(data already exists).</p>
-<p><strong>Solution</strong>: Use <code>Redis</code> to add a lock. The value stored in the Redis will be <code>accountNo</code>, if <code>accountNo</code> in the Redis matches the current logged-in <code>accountNo</code>, continue the operations. Otherwise, stop the operations(another user is holding the lock).</p>
-<h2 id="Nginx-Short-Link-Access-and-API-server"><a href="#Nginx-Short-Link-Access-and-API-server" class="headerlink" title="Nginx - Short Link Access and API server"></a>Nginx - Short Link Access and API server</h2><p><strong>Updates</strong>: </p>
-<p>I have changed the Load balancer to Nginx. Using Nginx can help us load balance and proxy traffic to bankend servers. It significantly saves the overhead of using the AWS load balancer.</p>
-<hr>
-<p><del>I used the <strong>Load Balancer</strong> in AWS to forward different requests with different URLs and the specific port (80). Basically, we will have two different domains for websites and shorten urls.</del></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20230406225347.png"></p>
-<h2 id="Eureka-Servers"><a href="#Eureka-Servers" class="headerlink" title="Eureka Servers"></a>Eureka Servers</h2><p>I did not deploy Eureka servers to Kubernetes. Instead, I deployed them to another machine and used Docker network functions to enable communication between them.</p>
-<h1 id="Database-Structure-ER-Diagram"><a href="#Database-Structure-ER-Diagram" class="headerlink" title="Database Structure (ER Diagram)"></a>Database Structure (ER Diagram)</h1><p><strong>url_shop</strong></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20221129155609.png"></p>
-<p><strong>url_link_0</strong></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20221129155800.png"></p>
-<p><strong>url_link_1</strong></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20221129155832.png"></p>
-<p><strong>url_link_a</strong></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20221129155900.png"></p>
-<p><strong>url_shop</strong></p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221129155931898.png"></p>
-]]></content>
-      <tags>
-        <tag>Java Project</tag>
-        <tag>URL shortener</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Apache Dubbo系列漏洞分析</title>
     <url>/2022/01/23/Apache-Dubbo%E7%B3%BB%E5%88%97%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>此篇文章将分析apache dubbo系列漏洞，在复现的时候花了些时间，因为国内好多文章都是照搬，这里将自己的复现过程全部写出来，也是为以后避坑。</p>
@@ -349,6 +246,109 @@ else:
         <tag>Web Security</tag>
         <tag>漏洞复现</tag>
         <tag>中间件</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Amazing URL Shortener - Technical Doc</title>
+    <url>/2022/12/04/Amazing-URL-Shortener-Technical-Doc/</url>
+    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Amazing URL Shortener is an online tool with high availability to shorten a long link and provide detailed statistics.</p>
+<p><strong>Demo</strong>:</p>
+<ul>
+<li><a href="http://official.urls.fit/">http://official.urls.fit</a></li>
+<li><a href="http://short.urls.fit/">http://short.urls.fit</a></li>
+</ul>
+<p><code>username: test</code></p>
+<p><code>password: test</code></p>
+<p><strong>Short link demo</strong>: <code>urls.fit/a26B4EM0</code></p>
+<p><strong>GitHub repo:</strong> </p>
+<ul>
+<li>Backend: <a href="https://github.com/leihehehe/java-url-shortener">https://github.com/leihehehe/java-url-shortener</a></li>
+<li>Frontend: currently is a private repo</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Technical-Stacks-Used"><a href="#Technical-Stacks-Used" class="headerlink" title="Technical Stacks Used"></a>Technical Stacks Used</h1><p><strong>Backend Techniques:</strong> </p>
+<ul>
+<li><p><strong>Framework</strong>: SpringBoot, Spring Cloud</p>
+</li>
+<li><p><strong>Gateway</strong>: Spring Cloud Gateway</p>
+</li>
+<li><p><strong>Message Queues</strong>: RabbitMQ, Kafka</p>
+</li>
+<li><p><strong>Database-related Techs</strong>: Redis, Redisson(operating on Redis), ClickHouse, SpringData JPA, MySQL,  Apache Shardingsphere</p>
+</li>
+<li><p><strong>Data Streaming-processing Framework</strong>: Flink</p>
+</li>
+<li><p><strong>Availability</strong>: resillience4j</p>
+</li>
+<li><p><strong>Others</strong>: Openfeign, etc.</p>
+</li>
+</ul>
+<p><strong>Frontend:</strong> Angular.js</p>
+<p><strong>DevOps</strong>:</p>
+<ul>
+<li>Jenkins</li>
+<li>Kubernetes</li>
+</ul>
+<h2 id="ShardingSphere"><a href="#ShardingSphere" class="headerlink" title="ShardingSphere"></a>ShardingSphere</h2><blockquote>
+<p><strong>ShardingSphere</strong> provides a distributed database solution based on the underlying database, which can scale computing and storage horizontally</p>
+</blockquote>
+<h3 id="Why-use-it"><a href="#Why-use-it" class="headerlink" title="Why use it?"></a>Why use it?</h3><p>Since we are developing a system that can handle massive data, it is not possible to just use one single database or a few tables to store the data. Storing massive data in only one node or database will cause much pressure on the database itself, and speed will be significantly slowed down.</p>
+<p>Therefore, it is necessary to do sharding and partitioning. For example, I divided the <code>product_order</code> table into two tables stored in the <code>url_shop</code> database and divided the <code>short_link</code> table into 6 tables and every two tables are distributed in a <code>url_link</code> table. (For more details, please see the <strong>Database Structure</strong> part)</p>
+<h3 id="Partition-Keys"><a href="#Partition-Keys" class="headerlink" title="Partition Keys"></a>Partition Keys</h3><p>Partition keys are set in terms of different cases. For example, for users to find their orders quickly, <code>accountNo</code> is used as a partition key, so that a user’s orders will be in the same table.</p>
+<p>Another situation is that we need to handle a large number of shortened links across multiple databases and tables. In this case, I use <code>accountNo</code> as a partition key to finding out which <strong>databases</strong> the records are currently in. Besides, <code>groupId</code> is used as a partition key for finding out which <strong>tables</strong> the records are currently in.</p>
+<h3 id="How-to-query-the-data-in-this-case"><a href="#How-to-query-the-data-in-this-case" class="headerlink" title="How to query the data in this case?"></a>How to query the data in this case?</h3><p>I used two methods to query the data</p>
+<ul>
+<li><strong>Modulo</strong>. For example, <code>k = accountNo mod n</code> where n is the number of tables that will query the <strong>kth</strong> table </li>
+<li><strong>Store database and column info in the data itself</strong>. For example, we got a short link code stored in the database <code>a</code> and table <code>2</code>, then we can update the short link code to <code>axxxx2</code>, so that we could quickly locate this short link when querying the data.</li>
+</ul>
+<h2 id="Redis-Redisson-amp-Lua-Script"><a href="#Redis-Redisson-amp-Lua-Script" class="headerlink" title="Redis, Redisson &amp; Lua Script"></a>Redis, Redisson &amp; Lua Script</h2><ul>
+<li>Redis is used as a cache in the project. It stores the users’ plan data information to prevent frequent requests to the MySQL database.</li>
+<li>Redis and Redisson are used together to handle distributed locks. In addition to using Redisson, Lua script is also straightforward and used for creating locks.</li>
+</ul>
+<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><ul>
+<li>RabbitMQ is used to slow down the response waiting time as operations can be asynchronously executed by sending messages.</li>
+<li>RabbitMQ is also used to deliver delayed messages for different purposes like order cancellation and distributed transactions.</li>
+<li>Compared to <code>Kafka</code>, it is more suitable for an e-commerce business service(e.g. scheduled tasks and distributed transaction management) </li>
+</ul>
+<h2 id="Flink-Kafka-amp-ClickHouse"><a href="#Flink-Kafka-amp-ClickHouse" class="headerlink" title="Flink, Kafka &amp; ClickHouse"></a>Flink, Kafka &amp; ClickHouse</h2><blockquote>
+<p><strong>Flink is used for processing data streams at a large scale and to deliver real-time analytical insights about your processed data with your streaming application</strong>.</p>
+</blockquote>
+<p>In this project, I used <code>Flink</code> to get visitor information when a visitor is trying to access a shortened link. Flink helps to process the visitor information in each layer and pass the processed information to the next layer using <code>Kafka</code>.</p>
+<p>At the last layer, I used Flink to pass the final datasets to ClickHouse which is a fast column-oriented database management system.</p>
+<p>ClickHouse allows us to generate analytical reports using SQL queries.</p>
+<h2 id="Jenkins-amp-Kubernetes-High-Availability"><a href="#Jenkins-amp-Kubernetes-High-Availability" class="headerlink" title="Jenkins &amp; Kubernetes(High Availability)"></a>Jenkins &amp; Kubernetes(High Availability)</h2><p>The Jenkins file is included in the project, and both front-end and back-end projects are deployed using Kubernetes and Jenkins.</p>
+<p>Jenkins runs a piepeline to build and upload images to AWS ECR.</p>
+<p>Using <strong>3</strong> servers(<strong>1 master node and 1 worker node</strong>) to build a Kubernetes cluster. </p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/202212042225127.png" alt="kubernetes deployments"></p>
+<h1 id="Technical-Difficulties-amp-Solutions"><a href="#Technical-Difficulties-amp-Solutions" class="headerlink" title="Technical Difficulties &amp; Solutions"></a>Technical Difficulties &amp; Solutions</h1><h2 id="User-and-Visitors-Querying-Links"><a href="#User-and-Visitors-Querying-Links" class="headerlink" title="User and Visitors Querying Links"></a>User and Visitors Querying Links</h2><p>As we know users prefer to query links in terms of their <code>accountNo</code>, if the links are distributed in different databases and tables, it will be very difficult for users to query the data since the system needs to access all the databases and tables to get the records.</p>
+<p>However, visitors, just need the <strong>short link code</strong> to locate the table, and they have no idea about the <code>groupId</code> and <code>accountNo</code>.</p>
+<p>So apparently, we would have two different partition keys to deal with these two cases.</p>
+<p>Therefore, I duplicated the tables so that tables <code>group_link_mapping</code> are used to store data for users, <code>short_link</code> tables are used to store data for visitors.</p>
+<h2 id="Distributed-Transaction-Management"><a href="#Distributed-Transaction-Management" class="headerlink" title="Distributed Transaction Management"></a>Distributed Transaction Management</h2><p>New issues have arisen after duplicating the short link tables. Since tables need to be synchronized, there will be inconsistent data if the operation on the user side failed but succeed on the visitor side.</p>
+<p><strong>Solution</strong>: Use <code>RabbitMQ</code> to send a <strong>delayed message</strong> to check if operations on both sides are successful.</p>
+<h2 id="Two-Users-Creating-the-Same-Short-Link"><a href="#Two-Users-Creating-the-Same-Short-Link" class="headerlink" title="Two Users Creating the Same Short Link"></a>Two Users Creating the Same Short Link</h2><p>If two users are generating the same short link, <strong>user A</strong> has inserted data to <code>group_link_mapping</code> and <strong>user B</strong> has inserted data into <code>short_link</code>, at this time, both users will fail because they cannot insert data into others tables(data already exists).</p>
+<p><strong>Solution</strong>: Use <code>Redis</code> to add a lock. The value stored in the Redis will be <code>accountNo</code>, if <code>accountNo</code> in the Redis matches the current logged-in <code>accountNo</code>, continue the operations. Otherwise, stop the operations(another user is holding the lock).</p>
+<h2 id="Nginx-Short-Link-Access-and-API-server"><a href="#Nginx-Short-Link-Access-and-API-server" class="headerlink" title="Nginx - Short Link Access and API server"></a>Nginx - Short Link Access and API server</h2><p><strong>Updates</strong>: </p>
+<p>I have changed the Load balancer to Nginx. Using Nginx can help us load balance and proxy traffic to bankend servers. It significantly saves the overhead of using the AWS load balancer.</p>
+<hr>
+<p><del>I used the <strong>Load Balancer</strong> in AWS to forward different requests with different URLs and the specific port (80). Basically, we will have two different domains for websites and shorten urls.</del></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20230406225347.png"></p>
+<h2 id="Eureka-Servers"><a href="#Eureka-Servers" class="headerlink" title="Eureka Servers"></a>Eureka Servers</h2><p>I did not deploy Eureka servers to Kubernetes. Instead, I deployed them to another machine and used Docker network functions to enable communication between them.</p>
+<h1 id="Database-Structure-ER-Diagram"><a href="#Database-Structure-ER-Diagram" class="headerlink" title="Database Structure (ER Diagram)"></a>Database Structure (ER Diagram)</h1><p><strong>url_shop</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20221129155609.png"></p>
+<p><strong>url_link_0</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20221129155800.png"></p>
+<p><strong>url_link_1</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20221129155832.png"></p>
+<p><strong>url_link_a</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20221129155900.png"></p>
+<p><strong>url_shop</strong></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/image-20221129155931898.png"></p>
+]]></content>
+      <tags>
+        <tag>Java Project</tag>
+        <tag>URL shortener</tag>
       </tags>
   </entry>
   <entry>
@@ -624,6 +624,37 @@ public List&lt;Integer&gt; postorderTraversal(TreeNode root) &#123;
       </tags>
   </entry>
   <entry>
+    <title>Bitmaps in Algorithms</title>
+    <url>/2023/03/14/Bitmaps-in-Algorithms/</url>
+    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Bitwise operations is one of the bitmap representation methods.</p>
+<p>Basically we have an integer <code>num</code>, we can use its <code>i-th</code> bit(counting from right to left, starting from 0) to represent the true/false value of <code>num[i]</code>.</p>
+<span id="more"></span>
+
+<ul>
+<li>Set the i-th bit to 1(true), and leave other bits unchanged: <code>num|=(1&lt;&lt;i)</code><ul>
+<li>left shift 1 by i bits, and perform OR operation with <code>num</code>.</li>
+</ul>
+</li>
+<li>Set the i-th bit to 0(false), and leave other bits unchanged: <code>num &amp;= ~(1&lt;&lt;i)</code> or <code>(num ^=1&lt;&lt;i)</code><ul>
+<li>take the complement(~) of 1 left shifted by i bits, and perform bitwise AND(&amp;) operation with <code>num</code>.</li>
+</ul>
+</li>
+<li>Get <code>num[i]</code>: <code>(num &gt;&gt; i) &amp; 1</code><ul>
+<li>extracts the i-th bit(counting from right to left)</li>
+</ul>
+</li>
+</ul>
+<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><ul>
+<li>Bitmap indexing</li>
+<li>Bloom filters</li>
+<li>Leetcode 698</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Bitmaps</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Bug Bounty Learning - Edit target website&#39;s aws file</title>
     <url>/2022/06/11/Bug-Bounty-Learning-Edit-target-website&#39;s-aws-file/</url>
     <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="Oh, these decrypted content cannot be verified, but you can still have a look.">
@@ -665,37 +696,6 @@ public List&lt;Integer&gt; postorderTraversal(TreeNode root) &#123;
       </categories>
       <tags>
         <tag>Bug bounty learning</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bitmaps in Algorithms</title>
-    <url>/2023/03/14/Bitmaps-in-Algorithms/</url>
-    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Bitwise operations is one of the bitmap representation methods.</p>
-<p>Basically we have an integer <code>num</code>, we can use its <code>i-th</code> bit(counting from right to left, starting from 0) to represent the true/false value of <code>num[i]</code>.</p>
-<span id="more"></span>
-
-<ul>
-<li>Set the i-th bit to 1(true), and leave other bits unchanged: <code>num|=(1&lt;&lt;i)</code><ul>
-<li>left shift 1 by i bits, and perform OR operation with <code>num</code>.</li>
-</ul>
-</li>
-<li>Set the i-th bit to 0(false), and leave other bits unchanged: <code>num &amp;= ~(1&lt;&lt;i)</code> or <code>(num ^=1&lt;&lt;i)</code><ul>
-<li>take the complement(~) of 1 left shifted by i bits, and perform bitwise AND(&amp;) operation with <code>num</code>.</li>
-</ul>
-</li>
-<li>Get <code>num[i]</code>: <code>(num &gt;&gt; i) &amp; 1</code><ul>
-<li>extracts the i-th bit(counting from right to left)</li>
-</ul>
-</li>
-</ul>
-<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><ul>
-<li>Bitmap indexing</li>
-<li>Bloom filters</li>
-<li>Leetcode 698</li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Bitmaps</tag>
       </tags>
   </entry>
   <entry>
@@ -1217,6 +1217,45 @@ end
       <tags>
         <tag>Web Security</tag>
         <tag>Write-up</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HPP参数污染攻击(sqli labs 29-31关)</title>
+    <url>/2021/07/10/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/</url>
+    <content><![CDATA[<h1 id="HPP参数污染攻击"><a href="#HPP参数污染攻击" class="headerlink" title="HPP参数污染攻击"></a>HPP参数污染攻击</h1><h2 id="什么是HPP参数污染"><a href="#什么是HPP参数污染" class="headerlink" title="什么是HPP参数污染"></a>什么是HPP参数污染</h2><p><code>HPP</code>是(Http Parameter Pollution)的简称。简单来说，有AB两台服务器，你访问的网站实际上是先通过A服务器进行数据过滤处理然后A将过滤好的数据传给B服务器，B再传给A，最后A传给你。所以过程是：<code>User-&gt;A-&gt;B-&gt;A-&gt;User</code> 因此，A在当中充当着<code>WAF</code>的角色。 若想绕过A对参数的过滤，我们可以尝试直接请求B，因为A最终也是要请求B才能获得数据的。</p>
+<span id="more"></span>
+
+<p>那么我们可以利用不同服务器类型解析处理参数位置的不同来完成攻击，这就是HPP。</p>
+<p><img src="/image/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/image-20210710101238806.png" alt="image-20210710101238806"></p>
+<p>假设A服务器是<code>JSP/Tomcat</code>,B服务器是<code>PHP/Apache</code>。当我们访问网站<code>www.example.com/index.php?id=1&amp;id=1</code>的时候，通过上图可知，A服务器是<code>JSP/Tomcat</code>，只接收第一个参数，而B服务器是<code>PHP/Apache</code>,接收最后一个参数。所以我们可以构造：<code>www.example.com/index.php?id=1&amp;id=-2 order by 3--+</code></p>
+<h2 id="sqli-labs-第29关"><a href="#sqli-labs-第29关" class="headerlink" title="sqli labs 第29关"></a>sqli labs 第29关</h2><p><img src="/image/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/image-20210710104023467.png" alt="image-20210710104023467"></p>
+<p>当我们尝试注入时：</p>
+<p><img src="/image/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/image-20210710104057030.png" alt="image-20210710104057030"></p>
+<p>被拦截。</p>
+<p>查看源码：<img src="/image/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/image-20210710104152453.png" alt="image-20210710104152453"></p>
+<p>我们可以看到参数被检测了</p>
+<pre><code class="php">                String rex = &quot;^\\d+$&quot;;//正整数
+                Boolean match=id.matches(rex);
+</code></pre>
+<p>那么我们可以通过<code>HPP参数污染</code>绕过这个<code>WAF</code>，观察发现<code>PHP</code>代码是没有任何过滤的，我们构造代码：</p>
+<p><code>http://192.168.120.128:8080/sqli-labs/Less-29/?id=1&amp;id=-1&#39; union select 1,2,3--+</code></p>
+<p>接下来就可以继续注入了。</p>
+<h2 id="sqli-labs-第30关"><a href="#sqli-labs-第30关" class="headerlink" title="sqli labs 第30关"></a>sqli labs 第30关</h2><p>和29关相同，只是<strong>id</strong>加了<strong>引号</strong></p>
+<p>构造代码：</p>
+<p><code>http://192.168.120.128:8080/sqli-labs/Less-30/?id=1&amp;id=-1&quot; union select 1,2,3--+</code></p>
+<h2 id="sqli-labs-第31关"><a href="#sqli-labs-第31关" class="headerlink" title="sqli labs 第31关"></a>sqli labs 第31关</h2><p>同上，id加了(“”)</p>
+<p>构造代码：</p>
+<p><code>http://192.168.120.128:8080/sqli-labs/Less-31/?id=1&amp;id=-1&quot;) union select 1,2,3--+</code></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>HPP参数污染攻击的应用还有很多很多，之后还需学习</p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+        <category>sqlilabs</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
+        <tag>SQL Injection</tag>
+        <tag>SQLilab</tag>
       </tags>
   </entry>
   <entry>
@@ -2453,45 +2492,6 @@ end
       </tags>
   </entry>
   <entry>
-    <title>HPP参数污染攻击(sqli labs 29-31关)</title>
-    <url>/2021/07/10/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/</url>
-    <content><![CDATA[<h1 id="HPP参数污染攻击"><a href="#HPP参数污染攻击" class="headerlink" title="HPP参数污染攻击"></a>HPP参数污染攻击</h1><h2 id="什么是HPP参数污染"><a href="#什么是HPP参数污染" class="headerlink" title="什么是HPP参数污染"></a>什么是HPP参数污染</h2><p><code>HPP</code>是(Http Parameter Pollution)的简称。简单来说，有AB两台服务器，你访问的网站实际上是先通过A服务器进行数据过滤处理然后A将过滤好的数据传给B服务器，B再传给A，最后A传给你。所以过程是：<code>User-&gt;A-&gt;B-&gt;A-&gt;User</code> 因此，A在当中充当着<code>WAF</code>的角色。 若想绕过A对参数的过滤，我们可以尝试直接请求B，因为A最终也是要请求B才能获得数据的。</p>
-<span id="more"></span>
-
-<p>那么我们可以利用不同服务器类型解析处理参数位置的不同来完成攻击，这就是HPP。</p>
-<p><img src="/image/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/image-20210710101238806.png" alt="image-20210710101238806"></p>
-<p>假设A服务器是<code>JSP/Tomcat</code>,B服务器是<code>PHP/Apache</code>。当我们访问网站<code>www.example.com/index.php?id=1&amp;id=1</code>的时候，通过上图可知，A服务器是<code>JSP/Tomcat</code>，只接收第一个参数，而B服务器是<code>PHP/Apache</code>,接收最后一个参数。所以我们可以构造：<code>www.example.com/index.php?id=1&amp;id=-2 order by 3--+</code></p>
-<h2 id="sqli-labs-第29关"><a href="#sqli-labs-第29关" class="headerlink" title="sqli labs 第29关"></a>sqli labs 第29关</h2><p><img src="/image/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/image-20210710104023467.png" alt="image-20210710104023467"></p>
-<p>当我们尝试注入时：</p>
-<p><img src="/image/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/image-20210710104057030.png" alt="image-20210710104057030"></p>
-<p>被拦截。</p>
-<p>查看源码：<img src="/image/HPP%E5%8F%82%E6%95%B0%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB-sqli-labs-29-31%E5%85%B3/image-20210710104152453.png" alt="image-20210710104152453"></p>
-<p>我们可以看到参数被检测了</p>
-<pre><code class="php">                String rex = &quot;^\\d+$&quot;;//正整数
-                Boolean match=id.matches(rex);
-</code></pre>
-<p>那么我们可以通过<code>HPP参数污染</code>绕过这个<code>WAF</code>，观察发现<code>PHP</code>代码是没有任何过滤的，我们构造代码：</p>
-<p><code>http://192.168.120.128:8080/sqli-labs/Less-29/?id=1&amp;id=-1&#39; union select 1,2,3--+</code></p>
-<p>接下来就可以继续注入了。</p>
-<h2 id="sqli-labs-第30关"><a href="#sqli-labs-第30关" class="headerlink" title="sqli labs 第30关"></a>sqli labs 第30关</h2><p>和29关相同，只是<strong>id</strong>加了<strong>引号</strong></p>
-<p>构造代码：</p>
-<p><code>http://192.168.120.128:8080/sqli-labs/Less-30/?id=1&amp;id=-1&quot; union select 1,2,3--+</code></p>
-<h2 id="sqli-labs-第31关"><a href="#sqli-labs-第31关" class="headerlink" title="sqli labs 第31关"></a>sqli labs 第31关</h2><p>同上，id加了(“”)</p>
-<p>构造代码：</p>
-<p><code>http://192.168.120.128:8080/sqli-labs/Less-31/?id=1&amp;id=-1&quot;) union select 1,2,3--+</code></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>HPP参数污染攻击的应用还有很多很多，之后还需学习</p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-        <category>sqlilabs</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
-        <tag>SQL Injection</tag>
-        <tag>SQLilab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hash, Mac, and Digital Signature</title>
     <url>/2022/06/14/Hash-Mac-and-Digital-Signature/</url>
     <content><![CDATA[<h1 id="Hash-functions"><a href="#Hash-functions" class="headerlink" title="Hash functions"></a>Hash functions</h1><ul>
@@ -2834,202 +2834,6 @@ public class javassistTest &#123;
 </tr>
 </tbody></table>
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://juejin.cn/post/6952765170544279566#heading-13">Java字节码编程之非常好用的javassist</a></p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-        <category>JAVA反序列化漏洞</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
-        <tag>Java反序列化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java反序列化漏洞之Java反射机制(1)</title>
-    <url>/2021/07/21/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是正式开始学习Java反序列化漏洞的第一篇，而Java反射机制是熟知Java反序列化漏洞的第一步，此系列笔记是为了自己能更好理解反序列化漏洞，也希望通过学习，自己能深层了解漏洞成因、学会利用、自己编写、改编利用工具。</p>
-<h1 id="Java-Reflection"><a href="#Java-Reflection" class="headerlink" title="Java Reflection"></a>Java Reflection</h1><h2 id="什么是Java反射机制"><a href="#什么是Java反射机制" class="headerlink" title="什么是Java反射机制"></a>什么是Java反射机制</h2><blockquote>
-<p>Java的反射（reflection）机制是指在程序的运行状态中，可以构造任意一个类的对象，可以了解任意一个对象所属的类，可以了解任意一个类的成员变量和方法，可以调用任意一个对象的属性和方法。这种动态获取程序信息以及动态调用对象的功能称为Java语言的反射机制。反射被视为动态语言的关键。</p>
-</blockquote>
-<p>通俗的来说，就是我们可以通过Java的反射机制来获取到任意一个Class、变量、method、instance等等，而我们<strong>动态</strong>地任意获取Class，正有利于我们实现反序列化漏洞的利用。</p>
-<h2 id="静态语言和动态特性"><a href="#静态语言和动态特性" class="headerlink" title="静态语言和动态特性"></a>静态语言和动态特性</h2><p>简单来说，动态语言可以改变一个变量的类型 - 你不用提前定义某个变量的类型，比如<code>Python</code>和<code>PHP</code>,这些语言会在运行时自动探针你的变量类型，而你也可以在代码中随时对这些变量类型进行改变。</p>
-<p>而静态语言例如<code>Java</code>,<code>C/C++</code>,<code>C#</code>就不一样，我们必须事先指定变量类型是<code>String</code>,<code>int</code>,还是<code>double</code>？</p>
-<p>而在<code>Java</code>中，有一个<strong>反射机制</strong>，它可以为我们提供一些动态特性 - 即使<code>Java</code>是一门静态语言。</p>
-<p>Java的反射机制可以让我们做到如下：</p>
-<ul>
-<li>在程序运行时，查找到一个<code>Object</code>所属的<code>Class</code></li>
-<li>在程序运行时，能找到任意一个Class的<code>variable</code>和<code>method</code></li>
-<li>在程序运行时，可以构造任意一个<code>Class</code>的<code>instance(Object)</code></li>
-<li>在程序运行时，可以调用任何一个<code>Object</code>的方法</li>
-</ul>
-<span id="more"></span>
-
-<h2 id="Class类"><a href="#Class类" class="headerlink" title="Class类"></a>Class类</h2><p>先来看一张图：</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/image-20211126201028486.png" alt="image-20211126201028486"></p>
-<p><strong>Class类</strong>： 保存类信息的类</p>
-<p>每一个新的class在创建的时候，都会new一个新的Class类。</p>
-<p>比如，我们在创建一个String类，这个String类在创建的同时，会有一个Class cls=new Class(String)被创建，专门用来保存这个String Class。</p>
-<p>再举个例子，比如我们在创建一个Person类，这个Person类在创建的时候，会有一个Class cls = new Class(Person)这样的instance被创建。<strong>但Class类和这两个类并非继承关系！！</strong></p>
-<p>所以，我们需要区分的是Class类是一个类，就像Person和String类一样，都是<strong>类</strong>，Person和String类在生成的时候，都会先生成Class类的instance（对象）。</p>
-<p>在Class类中，我们含有各种方法函数，其中Class类的构造方法是private，Class类还拥有<code>getMethod,invoke</code>这样的方法。</p>
-<p><strong>从图中可以看出：我们可以通过一个【person instance】.getClass()获取到person的Class类对象</strong></p>
-<p><strong>通过【person的Class类对象】.class获取到person instance.</strong></p>
-<h2 id="利用反射机制获取Class及Class静态初始化"><a href="#利用反射机制获取Class及Class静态初始化" class="headerlink" title="利用反射机制获取Class及Class静态初始化"></a>利用反射机制获取Class及Class静态初始化</h2><p>我们知道有三种方法可以获取到一个Class对象</p>
-<ul>
-<li><p><code>obj.getClass();</code></p>
-<ul>
-<li>当我们知道<strong>obj instance对象</strong>时可以使用这个方法</li>
-</ul>
-</li>
-<li><p><code>Class.forName(&quot;Class的名字&quot;);</code></p>
-</li>
-<li><p><code>Class.forName( String className , Boolean initialize , ClassLoader loader );</code></p>
-<ul>
-<li><p>此处<code>Class.forName(&quot;Class的名字&quot;);</code>等同于<code>Class.forName( &quot;Class的名字&quot; , true , currentLoader );</code></p>
-<blockquote>
-<ul>
-<li><code>String className</code> : 类名</li>
-<li><code>Boolean initialize</code> : 是否进行类初始化</li>
-<li><code>ClassLoader loader</code> : 加载器( 告诉 Java 虚拟机如何加载获取的类 , Java 默认根据类名( 即类的绝对路径 , 例如 <code>java.lang.Runtime()</code> )来加载类 )</li>
-</ul>
-</blockquote>
-</li>
-<li><p><code>Class</code>在<strong>初始化</strong>的时候，会自动执行<code>static&#123;&#125;</code>中的代码，如果我们能够控制一个<code>Class</code>，并向其中添加含有恶意代码的<strong>静态代码块</strong>，当<code>Class</code>被初始化的时候就会执行恶意代码。</p>
-</li>
-<li><p>当我们知道<strong>Class名字</strong>时可以使用这个方法</p>
-</li>
-</ul>
-</li>
-<li><p><code>className.class</code></p>
-<ul>
-<li>当我们已经<strong>加载过</strong>某个Class，可以用这个方法</li>
-</ul>
-</li>
-</ul>
-<p>其中，<code>Class.forName(&quot;Class的名字&quot;);</code>是最为常用的一种方式。</p>
-<pre><code class="java">Class&lt;?&gt; person = Class.forName(&quot;Person&quot;);
-
-System.out.println(person);
-</code></pre>
-<h2 id="利用反射机制获取method"><a href="#利用反射机制获取method" class="headerlink" title="利用反射机制获取method"></a>利用反射机制获取method</h2><p>我们在通过上面的代码获取到<code>class</code>后，可以获取到该<code>Class</code>的<code>method</code>。</p>
-<p>需要注意的是，我们依然有两种不同的方法来获取到<code>method</code>。</p>
-<pre><code class="java">//第一种方式：
-person.getDeclaredMethods();//获取所有Method，除了继承类的方法
-person.getDeclaredMethod(&quot;methodName&quot;,parameterTypes);//获取指定的method
-//第二种方式：
-person.getMethods();//获取类方法，但不包含private属性的方法
-person.getMethod(&quot;methodName&quot;,parameterTypes);//获取指定名字的方法
-</code></pre>
-<h2 id="构造instance"><a href="#构造instance" class="headerlink" title="构造instance"></a>构造instance</h2><p> 获取到了<code>Class</code>,我们又该如何获取到一个新的object呢？</p>
-<p>假设在Person Class中，我们有三个构造函数：</p>
-<pre><code class="java">public Person()&#123;//无参构造
-    System.out.println(&quot;NoArgConstructor&quot;);
-&#125;
-public Person(String name,String age)&#123;//两个参数构造
-    System.out.println(&quot;TwoArgsConstructor&quot;);
-&#125;
-public Person(String name,String age,boolean flag)&#123;
-    //三个参数构造
-    System.out.println(&quot;ThreeArgsConstructor&quot;);
-&#125;
-</code></pre>
-<p>当我们依次获取时</p>
-<pre><code class="java">person.newInstance();//在创建新的instance时，class的constructor会被执行，而此处默认执行无参数constructor
-       person.getConstructor(String.class,String.class).newInstance(&quot;leihehe&quot;,&quot;21&quot;);//此处执行两个参数的constructor
-       person.getConstructor(String.class,String.class,boolean.class).newInstance(&quot;leiheee&quot;,&quot;20&quot;,true);//此处执行三个参数的constructor
-</code></pre>
-<p>可得如下结果</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721212917832.png" alt="image-20210721212917832"></p>
-<h2 id="invoke方法"><a href="#invoke方法" class="headerlink" title="invoke方法"></a>invoke方法</h2><p>当我们构造出来了一个新的<code>instance（Object）</code>且得到需要的<code>method</code>后，我们该如何<code>call</code>这个<code>Class</code>的方法呢？</p>
-<pre><code class="java">Object o = person.newInstance();//得到object
-person.getDeclaredMethod(&quot;setAge&quot;, String.class).invoke(o,&quot;11&quot;);//call setAge()方法
-</code></pre>
-<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="java-lang-Runtime命令执行及访问private的方法"><a href="#java-lang-Runtime命令执行及访问private的方法" class="headerlink" title="java.lang.Runtime命令执行及访问private的方法"></a>java.lang.Runtime命令执行及访问private的方法</h2><p>我们在反序列化漏洞中会遇到的<code>java.lang.Runtime</code>是执行命令的最常见的方式。</p>
-<p>以下是java执行命令的语句</p>
-<pre><code class="java">Runtime.getRuntime().exec(&quot;ipconfig&quot;);
-</code></pre>
-<p>那如果我们要用<code>java</code>的反射机制来执行这段代码应该如何操作呢？</p>
-<p>于是我写下了这段代码：</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class的Class类
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Object o1 = runTimeClass.newInstance();//创建一个新的Runtime的实例
-exec.invoke(o1,&quot;ipconfig&quot;);//在实例中call exec()这个method
-</code></pre>
-<p>但是奇怪的事情发生了：</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214436241.png" alt="image-20210721214436241"></p>
-<p>代码提示19行出错 - 我们不能访问<code>private</code>属性的成员。难道是<code>constructor</code>有问题吗？</p>
-<p>我们尝试进入<code>Runtime Class</code>中看一下：</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214751377.png" alt="image-20210721214751377"> 果然，该构造方法是<code>private</code>的，加上前面所提到的，<code>className.newInstance()</code>是直接使用无参构造，所以我们不能直接创建这个<code>instance</code>。 </p>
-<p>如何解决呢？我们有两个方法</p>
-<ol>
-<li><p><strong>getRuntime()</strong></p>
-<p>其实之前我们就有写到执行语句是<code>Runtime.getRuntime().exec(&quot;ipconfig&quot;);</code>此处我们就没有new一个新的<code>instance</code>，反而是直接用<code>getter</code>来获取到<code>Runtime</code>。</p>
-<p>所以我们在此处可以这样写：</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Method getRuntime = runTimeClass.getDeclaredMethod(&quot;getRuntime&quot;);//找到getRuntime()这个method
-Object o1=getRuntime.invoke(null);//call getRuntime()来获取到Runtime实例
-exec.invoke(o1,&quot;ipconfig&quot;);//执行方法
-</code></pre>
-</li>
-<li><p><strong>setAccessible() - 访问private方法</strong> </p>
-<p><code>Java</code>会对<code>private</code>的方法进行禁止访问的操作，而<code>setAccessible</code>可以让我们禁止或允许<code>Java</code>语言的访问检查，当我们设置<code>setAccessible(true)</code>时，我们便可以访问<code>private</code>方法。</p>
-<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
-Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
-Constructor&lt;?&gt; declaredConstructor = runTimeClass.getDeclaredConstructor();//不带参数的getConstructor是会获取到无参构造方法的，但因为Runtime的Constructor是private的，所以我们需要使用Declared
-declaredConstructor.setAccessible(true);//禁止java语言访问检查，让我们可以访问这个私有的constructor
-Object o1 = declaredConstructor.newInstance();//通过该constructor来创建新的instance
-exec.invoke(o1,&quot;ipconfig&quot;);//完成命令执行
-</code></pre>
-</li>
-</ol>
-<h2 id="java-lang-ProcessBuilder命令执行"><a href="#java-lang-ProcessBuilder命令执行" class="headerlink" title="java.lang.ProcessBuilder命令执行"></a>java.lang.ProcessBuilder命令执行</h2><p>知道我们是通过<code>exec()</code>执行代码后，我们接下来想要弄清楚，<code>exec()</code>是怎么工作的。在尝试跟随exec()方法后，我们最终来到了如下地方：</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221330679.png" alt="image-20210721221330679"></p>
-<p>可见我们创建了一个<code>ProcessBuilder</code>的<code>instance</code>，同时向其中传入了我们需要执行的命令<code>cmdArray</code>，<code>cmdArray</code>也是以<code>String[]</code>的类型传入的。</p>
-<p>进入<code>Processbuilder</code>可以看到它有两个<code>constructor</code>，一个是传入有参数的(<code>List&lt;String&gt;类型</code>)，一个是传入无参数的(<code>String[]类型</code>),注意,这里<code>String...</code>等价于<code>String[]</code></p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721222648669.png" alt="image-20210721222648669"></p>
-<p>再看<code>start()</code>方法</p>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221932382.png" alt="image-20210721221932382"></p>
-<p>传入的<code>command</code>又会被转化为<code>Array</code>，最后开始创建子程序执行等等（就不深入探究了）</p>
-<p>综上所述，我们只需要执行<code>new ProcessBuilder.start()</code>即可完成命令执行</p>
-<p>于是我们写出如下代码：</p>
-<pre><code class="java">        Class&lt;?&gt; processBuilderClass = Class.forName(&quot;java.lang.ProcessBuilder&quot;);//获取到ProcessBuilder这个class
-        Method start = processBuilderClass.getDeclaredMethod(&quot;start&quot;);//获取到start()这个方法
-        //因为两个constructor都是public的，所以我们可以只用用getConstructor而不用getDeclaredConstructor
-        Object oWithArg = processBuilderClass.getConstructor(List.class).newInstance(Arrays.asList(&quot;ipconfig&quot;,&quot;/all&quot;));//获取带参数的命令的instance
-        Object oNoArg = processBuilderClass.getConstructor(String[].class).newInstance((Object) new String[]&#123;&quot;ipconfig&quot;&#125;);//获取不带参数的命令的instance
-        Process argStart=(Process) start.invoke(oWithArg);
-        Process noArgStart=(Process) start.invoke(oNoArg);
-        InputStream argIn = argStart.getInputStream();//获取Process的输出流来作为输入字节流
-        InputStream noArgIn = noArgStart.getInputStream();//获取Process的输出流来作为输入字节流
-        InputStreamReader argReader=new InputStreamReader(argIn);//把字节流转化为字符流
-        InputStreamReader noArgReader=new InputStreamReader(noArgIn);//把字节流转化为字符流
-        BufferedReader argBr=new BufferedReader(argReader);//为字符流提供缓冲区，以便一次性读取整块数据
-        BufferedReader noArgBr=new BufferedReader(noArgReader);//为字符流提供缓冲区，以便一次性读取整块数据
-
-        String line=null;
-        while((line=argBr.readLine())!=null)&#123;//一行行读取
-            System.out.println(line);
-        &#125;
-
-        while((line=noArgBr.readLine())!=null)&#123;//一行行读取
-            System.out.println(line);
-        &#125;
-</code></pre>
-<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721232833104.png" alt="image-20210721232833104"></p>
-<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><ul>
-<li><p>Java反射机制是Java这个静态语言中的动态特性，它让我们能够获取到、执行任意类的方法、变量，也能创建任意类的对象。</p>
-</li>
-<li><p><code>Class</code>被初始化时会自动执行<code>static&#123;&#125;</code>中的内容，此处可以被利用。</p>
-</li>
-<li><p><code>Declared</code>关键字让我们可以获取处继承类以外的所有方法。</p>
-</li>
-<li><p><code>setAccessible(true)</code>可以访问private方法，不被<code>java</code>语言进行访问检测。</p>
-</li>
-<li><p>我们可以通过Java反射机制利用Runtime和ProcessBuilder执行命令</p>
-</li>
-</ul>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://www.guildhab.top/2020/04/java-rmi-%e5%88%a9%e7%94%a82-java-%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%bc%8f%e6%b4%9e/">Epicccal - Java 反序列化漏洞(2) – Java 反射机制</a></p>
 ]]></content>
       <categories>
         <category>Web Security</category>
@@ -3622,6 +3426,202 @@ public class TEST &#123;
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://www.youtube.com/watch?v=Y8a5nB-vy78">A Journey From JNDI/LDAP Manipulation to Remote Code Execution Dream Land</a></p>
 <p><a href="https://www.blackhat.com/docs/us-16/materials/us-16-Munoz-A-Journey-From-JNDI-LDAP-Manipulation-To-RCE-wp.pdf">HPE Security Fortify, Software Security Research</a></p>
 <p><a href="https://blog.z3ratu1.cn/Java%20RMI%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8EJNDI%E6%B3%A8%E5%85%A5%E5%85%A5%E9%97%A8.html">Java RMI反序列化与JNDI注入入门</a></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+        <category>JAVA反序列化漏洞</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
+        <tag>Java反序列化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java反序列化漏洞之Java反射机制(1)</title>
+    <url>/2021/07/21/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是正式开始学习Java反序列化漏洞的第一篇，而Java反射机制是熟知Java反序列化漏洞的第一步，此系列笔记是为了自己能更好理解反序列化漏洞，也希望通过学习，自己能深层了解漏洞成因、学会利用、自己编写、改编利用工具。</p>
+<h1 id="Java-Reflection"><a href="#Java-Reflection" class="headerlink" title="Java Reflection"></a>Java Reflection</h1><h2 id="什么是Java反射机制"><a href="#什么是Java反射机制" class="headerlink" title="什么是Java反射机制"></a>什么是Java反射机制</h2><blockquote>
+<p>Java的反射（reflection）机制是指在程序的运行状态中，可以构造任意一个类的对象，可以了解任意一个对象所属的类，可以了解任意一个类的成员变量和方法，可以调用任意一个对象的属性和方法。这种动态获取程序信息以及动态调用对象的功能称为Java语言的反射机制。反射被视为动态语言的关键。</p>
+</blockquote>
+<p>通俗的来说，就是我们可以通过Java的反射机制来获取到任意一个Class、变量、method、instance等等，而我们<strong>动态</strong>地任意获取Class，正有利于我们实现反序列化漏洞的利用。</p>
+<h2 id="静态语言和动态特性"><a href="#静态语言和动态特性" class="headerlink" title="静态语言和动态特性"></a>静态语言和动态特性</h2><p>简单来说，动态语言可以改变一个变量的类型 - 你不用提前定义某个变量的类型，比如<code>Python</code>和<code>PHP</code>,这些语言会在运行时自动探针你的变量类型，而你也可以在代码中随时对这些变量类型进行改变。</p>
+<p>而静态语言例如<code>Java</code>,<code>C/C++</code>,<code>C#</code>就不一样，我们必须事先指定变量类型是<code>String</code>,<code>int</code>,还是<code>double</code>？</p>
+<p>而在<code>Java</code>中，有一个<strong>反射机制</strong>，它可以为我们提供一些动态特性 - 即使<code>Java</code>是一门静态语言。</p>
+<p>Java的反射机制可以让我们做到如下：</p>
+<ul>
+<li>在程序运行时，查找到一个<code>Object</code>所属的<code>Class</code></li>
+<li>在程序运行时，能找到任意一个Class的<code>variable</code>和<code>method</code></li>
+<li>在程序运行时，可以构造任意一个<code>Class</code>的<code>instance(Object)</code></li>
+<li>在程序运行时，可以调用任何一个<code>Object</code>的方法</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="Class类"><a href="#Class类" class="headerlink" title="Class类"></a>Class类</h2><p>先来看一张图：</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-1/image-20211126201028486.png" alt="image-20211126201028486"></p>
+<p><strong>Class类</strong>： 保存类信息的类</p>
+<p>每一个新的class在创建的时候，都会new一个新的Class类。</p>
+<p>比如，我们在创建一个String类，这个String类在创建的同时，会有一个Class cls=new Class(String)被创建，专门用来保存这个String Class。</p>
+<p>再举个例子，比如我们在创建一个Person类，这个Person类在创建的时候，会有一个Class cls = new Class(Person)这样的instance被创建。<strong>但Class类和这两个类并非继承关系！！</strong></p>
+<p>所以，我们需要区分的是Class类是一个类，就像Person和String类一样，都是<strong>类</strong>，Person和String类在生成的时候，都会先生成Class类的instance（对象）。</p>
+<p>在Class类中，我们含有各种方法函数，其中Class类的构造方法是private，Class类还拥有<code>getMethod,invoke</code>这样的方法。</p>
+<p><strong>从图中可以看出：我们可以通过一个【person instance】.getClass()获取到person的Class类对象</strong></p>
+<p><strong>通过【person的Class类对象】.class获取到person instance.</strong></p>
+<h2 id="利用反射机制获取Class及Class静态初始化"><a href="#利用反射机制获取Class及Class静态初始化" class="headerlink" title="利用反射机制获取Class及Class静态初始化"></a>利用反射机制获取Class及Class静态初始化</h2><p>我们知道有三种方法可以获取到一个Class对象</p>
+<ul>
+<li><p><code>obj.getClass();</code></p>
+<ul>
+<li>当我们知道<strong>obj instance对象</strong>时可以使用这个方法</li>
+</ul>
+</li>
+<li><p><code>Class.forName(&quot;Class的名字&quot;);</code></p>
+</li>
+<li><p><code>Class.forName( String className , Boolean initialize , ClassLoader loader );</code></p>
+<ul>
+<li><p>此处<code>Class.forName(&quot;Class的名字&quot;);</code>等同于<code>Class.forName( &quot;Class的名字&quot; , true , currentLoader );</code></p>
+<blockquote>
+<ul>
+<li><code>String className</code> : 类名</li>
+<li><code>Boolean initialize</code> : 是否进行类初始化</li>
+<li><code>ClassLoader loader</code> : 加载器( 告诉 Java 虚拟机如何加载获取的类 , Java 默认根据类名( 即类的绝对路径 , 例如 <code>java.lang.Runtime()</code> )来加载类 )</li>
+</ul>
+</blockquote>
+</li>
+<li><p><code>Class</code>在<strong>初始化</strong>的时候，会自动执行<code>static&#123;&#125;</code>中的代码，如果我们能够控制一个<code>Class</code>，并向其中添加含有恶意代码的<strong>静态代码块</strong>，当<code>Class</code>被初始化的时候就会执行恶意代码。</p>
+</li>
+<li><p>当我们知道<strong>Class名字</strong>时可以使用这个方法</p>
+</li>
+</ul>
+</li>
+<li><p><code>className.class</code></p>
+<ul>
+<li>当我们已经<strong>加载过</strong>某个Class，可以用这个方法</li>
+</ul>
+</li>
+</ul>
+<p>其中，<code>Class.forName(&quot;Class的名字&quot;);</code>是最为常用的一种方式。</p>
+<pre><code class="java">Class&lt;?&gt; person = Class.forName(&quot;Person&quot;);
+
+System.out.println(person);
+</code></pre>
+<h2 id="利用反射机制获取method"><a href="#利用反射机制获取method" class="headerlink" title="利用反射机制获取method"></a>利用反射机制获取method</h2><p>我们在通过上面的代码获取到<code>class</code>后，可以获取到该<code>Class</code>的<code>method</code>。</p>
+<p>需要注意的是，我们依然有两种不同的方法来获取到<code>method</code>。</p>
+<pre><code class="java">//第一种方式：
+person.getDeclaredMethods();//获取所有Method，除了继承类的方法
+person.getDeclaredMethod(&quot;methodName&quot;,parameterTypes);//获取指定的method
+//第二种方式：
+person.getMethods();//获取类方法，但不包含private属性的方法
+person.getMethod(&quot;methodName&quot;,parameterTypes);//获取指定名字的方法
+</code></pre>
+<h2 id="构造instance"><a href="#构造instance" class="headerlink" title="构造instance"></a>构造instance</h2><p> 获取到了<code>Class</code>,我们又该如何获取到一个新的object呢？</p>
+<p>假设在Person Class中，我们有三个构造函数：</p>
+<pre><code class="java">public Person()&#123;//无参构造
+    System.out.println(&quot;NoArgConstructor&quot;);
+&#125;
+public Person(String name,String age)&#123;//两个参数构造
+    System.out.println(&quot;TwoArgsConstructor&quot;);
+&#125;
+public Person(String name,String age,boolean flag)&#123;
+    //三个参数构造
+    System.out.println(&quot;ThreeArgsConstructor&quot;);
+&#125;
+</code></pre>
+<p>当我们依次获取时</p>
+<pre><code class="java">person.newInstance();//在创建新的instance时，class的constructor会被执行，而此处默认执行无参数constructor
+       person.getConstructor(String.class,String.class).newInstance(&quot;leihehe&quot;,&quot;21&quot;);//此处执行两个参数的constructor
+       person.getConstructor(String.class,String.class,boolean.class).newInstance(&quot;leiheee&quot;,&quot;20&quot;,true);//此处执行三个参数的constructor
+</code></pre>
+<p>可得如下结果</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721212917832.png" alt="image-20210721212917832"></p>
+<h2 id="invoke方法"><a href="#invoke方法" class="headerlink" title="invoke方法"></a>invoke方法</h2><p>当我们构造出来了一个新的<code>instance（Object）</code>且得到需要的<code>method</code>后，我们该如何<code>call</code>这个<code>Class</code>的方法呢？</p>
+<pre><code class="java">Object o = person.newInstance();//得到object
+person.getDeclaredMethod(&quot;setAge&quot;, String.class).invoke(o,&quot;11&quot;);//call setAge()方法
+</code></pre>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="java-lang-Runtime命令执行及访问private的方法"><a href="#java-lang-Runtime命令执行及访问private的方法" class="headerlink" title="java.lang.Runtime命令执行及访问private的方法"></a>java.lang.Runtime命令执行及访问private的方法</h2><p>我们在反序列化漏洞中会遇到的<code>java.lang.Runtime</code>是执行命令的最常见的方式。</p>
+<p>以下是java执行命令的语句</p>
+<pre><code class="java">Runtime.getRuntime().exec(&quot;ipconfig&quot;);
+</code></pre>
+<p>那如果我们要用<code>java</code>的反射机制来执行这段代码应该如何操作呢？</p>
+<p>于是我写下了这段代码：</p>
+<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class的Class类
+Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
+Object o1 = runTimeClass.newInstance();//创建一个新的Runtime的实例
+exec.invoke(o1,&quot;ipconfig&quot;);//在实例中call exec()这个method
+</code></pre>
+<p>但是奇怪的事情发生了：</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214436241.png" alt="image-20210721214436241"></p>
+<p>代码提示19行出错 - 我们不能访问<code>private</code>属性的成员。难道是<code>constructor</code>有问题吗？</p>
+<p>我们尝试进入<code>Runtime Class</code>中看一下：</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721214751377.png" alt="image-20210721214751377"> 果然，该构造方法是<code>private</code>的，加上前面所提到的，<code>className.newInstance()</code>是直接使用无参构造，所以我们不能直接创建这个<code>instance</code>。 </p>
+<p>如何解决呢？我们有两个方法</p>
+<ol>
+<li><p><strong>getRuntime()</strong></p>
+<p>其实之前我们就有写到执行语句是<code>Runtime.getRuntime().exec(&quot;ipconfig&quot;);</code>此处我们就没有new一个新的<code>instance</code>，反而是直接用<code>getter</code>来获取到<code>Runtime</code>。</p>
+<p>所以我们在此处可以这样写：</p>
+<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
+Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
+Method getRuntime = runTimeClass.getDeclaredMethod(&quot;getRuntime&quot;);//找到getRuntime()这个method
+Object o1=getRuntime.invoke(null);//call getRuntime()来获取到Runtime实例
+exec.invoke(o1,&quot;ipconfig&quot;);//执行方法
+</code></pre>
+</li>
+<li><p><strong>setAccessible() - 访问private方法</strong> </p>
+<p><code>Java</code>会对<code>private</code>的方法进行禁止访问的操作，而<code>setAccessible</code>可以让我们禁止或允许<code>Java</code>语言的访问检查，当我们设置<code>setAccessible(true)</code>时，我们便可以访问<code>private</code>方法。</p>
+<pre><code class="java">Class&lt;?&gt; runTimeClass = Class.forName(&quot;java.lang.Runtime&quot;);//先找到Runtime这个Class
+Method exec = runTimeClass.getDeclaredMethod(&quot;exec&quot;, String.class);//找到exec这个method
+Constructor&lt;?&gt; declaredConstructor = runTimeClass.getDeclaredConstructor();//不带参数的getConstructor是会获取到无参构造方法的，但因为Runtime的Constructor是private的，所以我们需要使用Declared
+declaredConstructor.setAccessible(true);//禁止java语言访问检查，让我们可以访问这个私有的constructor
+Object o1 = declaredConstructor.newInstance();//通过该constructor来创建新的instance
+exec.invoke(o1,&quot;ipconfig&quot;);//完成命令执行
+</code></pre>
+</li>
+</ol>
+<h2 id="java-lang-ProcessBuilder命令执行"><a href="#java-lang-ProcessBuilder命令执行" class="headerlink" title="java.lang.ProcessBuilder命令执行"></a>java.lang.ProcessBuilder命令执行</h2><p>知道我们是通过<code>exec()</code>执行代码后，我们接下来想要弄清楚，<code>exec()</code>是怎么工作的。在尝试跟随exec()方法后，我们最终来到了如下地方：</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221330679.png" alt="image-20210721221330679"></p>
+<p>可见我们创建了一个<code>ProcessBuilder</code>的<code>instance</code>，同时向其中传入了我们需要执行的命令<code>cmdArray</code>，<code>cmdArray</code>也是以<code>String[]</code>的类型传入的。</p>
+<p>进入<code>Processbuilder</code>可以看到它有两个<code>constructor</code>，一个是传入有参数的(<code>List&lt;String&gt;类型</code>)，一个是传入无参数的(<code>String[]类型</code>),注意,这里<code>String...</code>等价于<code>String[]</code></p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721222648669.png" alt="image-20210721222648669"></p>
+<p>再看<code>start()</code>方法</p>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721221932382.png" alt="image-20210721221932382"></p>
+<p>传入的<code>command</code>又会被转化为<code>Array</code>，最后开始创建子程序执行等等（就不深入探究了）</p>
+<p>综上所述，我们只需要执行<code>new ProcessBuilder.start()</code>即可完成命令执行</p>
+<p>于是我们写出如下代码：</p>
+<pre><code class="java">        Class&lt;?&gt; processBuilderClass = Class.forName(&quot;java.lang.ProcessBuilder&quot;);//获取到ProcessBuilder这个class
+        Method start = processBuilderClass.getDeclaredMethod(&quot;start&quot;);//获取到start()这个方法
+        //因为两个constructor都是public的，所以我们可以只用用getConstructor而不用getDeclaredConstructor
+        Object oWithArg = processBuilderClass.getConstructor(List.class).newInstance(Arrays.asList(&quot;ipconfig&quot;,&quot;/all&quot;));//获取带参数的命令的instance
+        Object oNoArg = processBuilderClass.getConstructor(String[].class).newInstance((Object) new String[]&#123;&quot;ipconfig&quot;&#125;);//获取不带参数的命令的instance
+        Process argStart=(Process) start.invoke(oWithArg);
+        Process noArgStart=(Process) start.invoke(oNoArg);
+        InputStream argIn = argStart.getInputStream();//获取Process的输出流来作为输入字节流
+        InputStream noArgIn = noArgStart.getInputStream();//获取Process的输出流来作为输入字节流
+        InputStreamReader argReader=new InputStreamReader(argIn);//把字节流转化为字符流
+        InputStreamReader noArgReader=new InputStreamReader(noArgIn);//把字节流转化为字符流
+        BufferedReader argBr=new BufferedReader(argReader);//为字符流提供缓冲区，以便一次性读取整块数据
+        BufferedReader noArgBr=new BufferedReader(noArgReader);//为字符流提供缓冲区，以便一次性读取整块数据
+
+        String line=null;
+        while((line=argBr.readLine())!=null)&#123;//一行行读取
+            System.out.println(line);
+        &#125;
+
+        while((line=noArgBr.readLine())!=null)&#123;//一行行读取
+            System.out.println(line);
+        &#125;
+</code></pre>
+<p><img src="/image/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B9%8BJava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/image-20210721232833104.png" alt="image-20210721232833104"></p>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><ul>
+<li><p>Java反射机制是Java这个静态语言中的动态特性，它让我们能够获取到、执行任意类的方法、变量，也能创建任意类的对象。</p>
+</li>
+<li><p><code>Class</code>被初始化时会自动执行<code>static&#123;&#125;</code>中的内容，此处可以被利用。</p>
+</li>
+<li><p><code>Declared</code>关键字让我们可以获取处继承类以外的所有方法。</p>
+</li>
+<li><p><code>setAccessible(true)</code>可以访问private方法，不被<code>java</code>语言进行访问检测。</p>
+</li>
+<li><p>我们可以通过Java反射机制利用Runtime和ProcessBuilder执行命令</p>
+</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://www.guildhab.top/2020/04/java-rmi-%e5%88%a9%e7%94%a82-java-%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%bc%8f%e6%b4%9e/">Epicccal - Java 反序列化漏洞(2) – Java 反射机制</a></p>
 ]]></content>
       <categories>
         <category>Web Security</category>
@@ -4959,103 +4959,6 @@ sed -ri &#39;s/.*swap.*/#&amp;/&#39; /etc/fstab
         <tag>Web Security</tag>
         <tag>SQL Injection</tag>
         <tag>SQLilab</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Security Protocols</title>
-    <url>/2022/06/12/Security-Protocols/</url>
-    <content><![CDATA[<h1 id="SSL-TLS-Protocol"><a href="#SSL-TLS-Protocol" class="headerlink" title="SSL/TLS Protocol"></a>SSL/TLS Protocol</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>SSL</code> stands for <strong>Secure Sockets Layer</strong>, and TLS stands for <strong>Transport Layer Security</strong>. TLS is an updated and more secure version of SSL. Nowadays, the SSL has been deprecated and replaced with TLS, therefore, we will use the term “TLS” to explain this protocol.</p>
-<span id="more"></span>
-
-<p>SSL/TLS protocol is used to achieve the following goals</p>
-<ul>
-<li>CONFidentiality</li>
-<li>INTegrity</li>
-<li>AUTHentication</li>
-</ul>
-<p>A very common use is <strong>HTTPS</strong>. <strong>HTTPS</strong> is the HTTP protocol with data encryption using SSL/TLS.</p>
-<h2 id="TLS-Handshake-Explanation"><a href="#TLS-Handshake-Explanation" class="headerlink" title="TLS Handshake Explanation"></a>TLS Handshake Explanation</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612155851.png" alt="TLS handshake"></p>
-<ol>
-<li><p>Client sends hello, supported TLS version, supported cipher suite and Random(client random string).</p>
-</li>
-<li><p>Server sends message “server hello” back to the client, and also responds with chosen cipher suite, server random string, and SSL certificate(with server’s public key).</p>
-</li>
-<li><p>The client will verify the SSL certificate information, get the public key of the server.</p>
-</li>
-<li><p>Client sends pre-master key generated using the public key he just got from the server.</p>
-</li>
-<li><p>Server decrypts the pre-master key from the client by using his private key.</p>
-</li>
-<li><p>Both client and server use “client random”, “server random” and pre-master key to generate the same shared key using the same algorithm</p>
-</li>
-<li><p>Client is ready: client sends “finished” message which is encrypted by the shared key.</p>
-</li>
-<li><p>Server is ready: server sends “finished” message which is encrypted by the shared key.</p>
-</li>
-<li><p>Handshake is finished, server and client use symmetric crypto to communicate with each other.</p>
-</li>
-</ol>
-<h2 id="How-SSL-TLS-protocol-prevent-attack"><a href="#How-SSL-TLS-protocol-prevent-attack" class="headerlink" title="How SSL/TLS protocol prevent attack"></a>How SSL/TLS protocol prevent attack</h2><h3 id="Scenario-1"><a href="#Scenario-1" class="headerlink" title="Scenario 1"></a>Scenario 1</h3><p>Attacker intercpet the message sending from the client to the server, direct it to themselves, and the attacker itself will send hello message to the client. Server will send its certificate to attacker and attacker will send this back to the client. </p>
-<p><strong>Solution</strong></p>
-<p>Eventhough the client verified the certificate, the attcker has no idea what the private key of the server, so he cannot decrypt the key transport and also cannot get the shared key generated later.</p>
-<h3 id="Scenario-2"><a href="#Scenario-2" class="headerlink" title="Scenario 2"></a>Scenario 2</h3><p>Attacker sends client a fake certificate for google.com, will client uses the fake public key to generate a symmetric key?</p>
-<p><strong>Solution</strong></p>
-<p>After receiving the fake certificate, client would look up from the online public database for the public key of the certificate received to verify the certificate. Obviously, the certificate is fake and the website will then be labelled as not secure and the attack failed.</p>
-<h2 id="Common-Attacks"><a href="#Common-Attacks" class="headerlink" title="Common Attacks"></a>Common Attacks</h2><h3 id="SSL-Stripping-Attack"><a href="#SSL-Stripping-Attack" class="headerlink" title="SSL Stripping Attack"></a>SSL Stripping Attack</h3><p>Attacker modifies web traffic to trick a client into accepting http connection instead of https </p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612172551.png" alt="SSL stripping attack"></p>
-<p><strong>Countermeasure</strong></p>
-<p>Server tells browser upon first visit to only accept HTTPS(not HTTP) for future requests to this domain.</p>
-<h3 id="BEASAT-POODLE"><a href="#BEASAT-POODLE" class="headerlink" title="BEASAT/POODLE"></a>BEASAT/POODLE</h3><p>Browser Exploit Against SSL/TLS / Padding Oracle On Downgraded Legacy</p>
-<ul>
-<li>Attacker exploits Bugs in encryption/MAC mode of operation algorithm in TLS 1.0 to extract information on secret key.</li>
-</ul>
-<p><strong>Countermeasure</strong></p>
-<p>Patches to TLS algorithms/implementations.</p>
-<h3 id="Compression-ratio-info-leak-Made-Easy-CRIME"><a href="#Compression-ratio-info-leak-Made-Easy-CRIME" class="headerlink" title="Compression ratio info-leak Made Easy(CRIME)"></a>Compression ratio info-leak Made Easy(CRIME)</h3><p>TLS has a compress-then-encrypt mode; Compressed data length no hidden by encryption, reveals information to attacker on secret web site cookies. </p>
-<p><strong>Countermeasure</strong></p>
-<p>Disable TLS compression, avoid if possible record layer compression.</p>
-<h1 id="IPsec-Protocol"><a href="#IPsec-Protocol" class="headerlink" title="IPsec Protocol"></a>IPsec Protocol</h1><h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>IPsec</code> stands for <strong>Internet Protocol Security</strong>, and is common used by VPN(<strong>Virtual Private Network</strong>).</p>
-<h2 id="IPsec-methods"><a href="#IPsec-methods" class="headerlink" title="IPsec methods"></a>IPsec methods</h2><h3 id="AH-Authentication-Header"><a href="#AH-Authentication-Header" class="headerlink" title="AH - Authentication Header"></a>AH - Authentication Header</h3><p>AH can only authenticate data, and it cannot encrypt data. It adds an Authentication after the <strong>original IP header</strong>. AH authenticate the whole IP packet.</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204412.png" alt="authentication header"></p>
-<p><strong>Security parameters index</strong>: point to entry corresponding to browser/server; includes info on shared key.</p>
-<p><strong>Sequence Number</strong> is used for freshness vs replay attacks</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204929.png" alt="AH example"></p>
-<h3 id="ESP-Encapsulating-Security-Payload"><a href="#ESP-Encapsulating-Security-Payload" class="headerlink" title="ESP - Encapsulating Security Payload"></a>ESP - Encapsulating Security Payload</h3><p><strong>ESP supports both Authentication and Encryption.</strong> However, ESP does not encrypt and authenticate the IP header.</p>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205320.png" alt="ESP"></p>
-<h2 id="Modes"><a href="#Modes" class="headerlink" title="Modes"></a>Modes</h2><ul>
-<li><strong>Transport Mode</strong><ul>
-<li>IP packet inserted with IPsec header(AH header/ESP header)</li>
-</ul>
-</li>
-<li><strong>Tunnel Mode</strong><ul>
-<li><strong>original packet preserved</strong> incl original header, new header added/prepended(at the begining of the whole packet)</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205922.png" alt="modes"></p>
-<h1 id="PAN"><a href="#PAN" class="headerlink" title="PAN"></a>PAN</h1><h2 id="Introduction-2"><a href="#Introduction-2" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>PAN</code> stands for <strong>Personal Area Network</strong>. This technique is mainly used by Bluetooth. </p>
-<p><strong>Bluetooth’s Secure Connections</strong></p>
-<blockquote>
-<p>leverage on <strong>human channel</strong> during pairing, e.g.</p>
-<ul>
-<li><p>compare passkey on both devices</p>
-</li>
-<li><p>see passkey on one, type into the other</p>
-</li>
-<li><p>type same passkey into both</p>
-</li>
-<li><p>which option, depends on device I/O capability </p>
-</li>
-</ul>
-</blockquote>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
-<p><a href="https://blog.csdn.net/qq_38265137/article/details/89423551">https://blog.csdn.net/qq_38265137/article/details/89423551</a></p>
-]]></content>
-      <categories>
-        <category>Web Security</category>
-      </categories>
-      <tags>
-        <tag>Web Security</tag>
       </tags>
   </entry>
   <entry>
@@ -8551,6 +8454,103 @@ org.apache.tomcat.dbcp.dbcp2.BasicDataSource//需要dbcp或者tomcat-dbcp的依�
         <tag>Web Security</tag>
         <tag>SQL Injection</tag>
         <tag>SQLilab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Security Protocols</title>
+    <url>/2022/06/12/Security-Protocols/</url>
+    <content><![CDATA[<h1 id="SSL-TLS-Protocol"><a href="#SSL-TLS-Protocol" class="headerlink" title="SSL/TLS Protocol"></a>SSL/TLS Protocol</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>SSL</code> stands for <strong>Secure Sockets Layer</strong>, and TLS stands for <strong>Transport Layer Security</strong>. TLS is an updated and more secure version of SSL. Nowadays, the SSL has been deprecated and replaced with TLS, therefore, we will use the term “TLS” to explain this protocol.</p>
+<span id="more"></span>
+
+<p>SSL/TLS protocol is used to achieve the following goals</p>
+<ul>
+<li>CONFidentiality</li>
+<li>INTegrity</li>
+<li>AUTHentication</li>
+</ul>
+<p>A very common use is <strong>HTTPS</strong>. <strong>HTTPS</strong> is the HTTP protocol with data encryption using SSL/TLS.</p>
+<h2 id="TLS-Handshake-Explanation"><a href="#TLS-Handshake-Explanation" class="headerlink" title="TLS Handshake Explanation"></a>TLS Handshake Explanation</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612155851.png" alt="TLS handshake"></p>
+<ol>
+<li><p>Client sends hello, supported TLS version, supported cipher suite and Random(client random string).</p>
+</li>
+<li><p>Server sends message “server hello” back to the client, and also responds with chosen cipher suite, server random string, and SSL certificate(with server’s public key).</p>
+</li>
+<li><p>The client will verify the SSL certificate information, get the public key of the server.</p>
+</li>
+<li><p>Client sends pre-master key generated using the public key he just got from the server.</p>
+</li>
+<li><p>Server decrypts the pre-master key from the client by using his private key.</p>
+</li>
+<li><p>Both client and server use “client random”, “server random” and pre-master key to generate the same shared key using the same algorithm</p>
+</li>
+<li><p>Client is ready: client sends “finished” message which is encrypted by the shared key.</p>
+</li>
+<li><p>Server is ready: server sends “finished” message which is encrypted by the shared key.</p>
+</li>
+<li><p>Handshake is finished, server and client use symmetric crypto to communicate with each other.</p>
+</li>
+</ol>
+<h2 id="How-SSL-TLS-protocol-prevent-attack"><a href="#How-SSL-TLS-protocol-prevent-attack" class="headerlink" title="How SSL/TLS protocol prevent attack"></a>How SSL/TLS protocol prevent attack</h2><h3 id="Scenario-1"><a href="#Scenario-1" class="headerlink" title="Scenario 1"></a>Scenario 1</h3><p>Attacker intercpet the message sending from the client to the server, direct it to themselves, and the attacker itself will send hello message to the client. Server will send its certificate to attacker and attacker will send this back to the client. </p>
+<p><strong>Solution</strong></p>
+<p>Eventhough the client verified the certificate, the attcker has no idea what the private key of the server, so he cannot decrypt the key transport and also cannot get the shared key generated later.</p>
+<h3 id="Scenario-2"><a href="#Scenario-2" class="headerlink" title="Scenario 2"></a>Scenario 2</h3><p>Attacker sends client a fake certificate for google.com, will client uses the fake public key to generate a symmetric key?</p>
+<p><strong>Solution</strong></p>
+<p>After receiving the fake certificate, client would look up from the online public database for the public key of the certificate received to verify the certificate. Obviously, the certificate is fake and the website will then be labelled as not secure and the attack failed.</p>
+<h2 id="Common-Attacks"><a href="#Common-Attacks" class="headerlink" title="Common Attacks"></a>Common Attacks</h2><h3 id="SSL-Stripping-Attack"><a href="#SSL-Stripping-Attack" class="headerlink" title="SSL Stripping Attack"></a>SSL Stripping Attack</h3><p>Attacker modifies web traffic to trick a client into accepting http connection instead of https </p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612172551.png" alt="SSL stripping attack"></p>
+<p><strong>Countermeasure</strong></p>
+<p>Server tells browser upon first visit to only accept HTTPS(not HTTP) for future requests to this domain.</p>
+<h3 id="BEASAT-POODLE"><a href="#BEASAT-POODLE" class="headerlink" title="BEASAT/POODLE"></a>BEASAT/POODLE</h3><p>Browser Exploit Against SSL/TLS / Padding Oracle On Downgraded Legacy</p>
+<ul>
+<li>Attacker exploits Bugs in encryption/MAC mode of operation algorithm in TLS 1.0 to extract information on secret key.</li>
+</ul>
+<p><strong>Countermeasure</strong></p>
+<p>Patches to TLS algorithms/implementations.</p>
+<h3 id="Compression-ratio-info-leak-Made-Easy-CRIME"><a href="#Compression-ratio-info-leak-Made-Easy-CRIME" class="headerlink" title="Compression ratio info-leak Made Easy(CRIME)"></a>Compression ratio info-leak Made Easy(CRIME)</h3><p>TLS has a compress-then-encrypt mode; Compressed data length no hidden by encryption, reveals information to attacker on secret web site cookies. </p>
+<p><strong>Countermeasure</strong></p>
+<p>Disable TLS compression, avoid if possible record layer compression.</p>
+<h1 id="IPsec-Protocol"><a href="#IPsec-Protocol" class="headerlink" title="IPsec Protocol"></a>IPsec Protocol</h1><h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>IPsec</code> stands for <strong>Internet Protocol Security</strong>, and is common used by VPN(<strong>Virtual Private Network</strong>).</p>
+<h2 id="IPsec-methods"><a href="#IPsec-methods" class="headerlink" title="IPsec methods"></a>IPsec methods</h2><h3 id="AH-Authentication-Header"><a href="#AH-Authentication-Header" class="headerlink" title="AH - Authentication Header"></a>AH - Authentication Header</h3><p>AH can only authenticate data, and it cannot encrypt data. It adds an Authentication after the <strong>original IP header</strong>. AH authenticate the whole IP packet.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204412.png" alt="authentication header"></p>
+<p><strong>Security parameters index</strong>: point to entry corresponding to browser/server; includes info on shared key.</p>
+<p><strong>Sequence Number</strong> is used for freshness vs replay attacks</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612204929.png" alt="AH example"></p>
+<h3 id="ESP-Encapsulating-Security-Payload"><a href="#ESP-Encapsulating-Security-Payload" class="headerlink" title="ESP - Encapsulating Security Payload"></a>ESP - Encapsulating Security Payload</h3><p><strong>ESP supports both Authentication and Encryption.</strong> However, ESP does not encrypt and authenticate the IP header.</p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205320.png" alt="ESP"></p>
+<h2 id="Modes"><a href="#Modes" class="headerlink" title="Modes"></a>Modes</h2><ul>
+<li><strong>Transport Mode</strong><ul>
+<li>IP packet inserted with IPsec header(AH header/ESP header)</li>
+</ul>
+</li>
+<li><strong>Tunnel Mode</strong><ul>
+<li><strong>original packet preserved</strong> incl original header, new header added/prepended(at the begining of the whole packet)</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/20220612205922.png" alt="modes"></p>
+<h1 id="PAN"><a href="#PAN" class="headerlink" title="PAN"></a>PAN</h1><h2 id="Introduction-2"><a href="#Introduction-2" class="headerlink" title="Introduction"></a>Introduction</h2><p><code>PAN</code> stands for <strong>Personal Area Network</strong>. This technique is mainly used by Bluetooth. </p>
+<p><strong>Bluetooth’s Secure Connections</strong></p>
+<blockquote>
+<p>leverage on <strong>human channel</strong> during pairing, e.g.</p>
+<ul>
+<li><p>compare passkey on both devices</p>
+</li>
+<li><p>see passkey on one, type into the other</p>
+</li>
+<li><p>type same passkey into both</p>
+</li>
+<li><p>which option, depends on device I/O capability </p>
+</li>
+</ul>
+</blockquote>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>Monash Uni FIT2093</p>
+<p><a href="https://blog.csdn.net/qq_38265137/article/details/89423551">https://blog.csdn.net/qq_38265137/article/details/89423551</a></p>
+]]></content>
+      <categories>
+        <category>Web Security</category>
+      </categories>
+      <tags>
+        <tag>Web Security</tag>
       </tags>
   </entry>
   <entry>
