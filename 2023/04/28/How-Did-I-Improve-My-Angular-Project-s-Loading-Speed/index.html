@@ -11,7 +11,7 @@
   
   <title>
     
-      Bitmaps in Algorithms 
+      How Did I Improve My Angular Project&#39;s Loading Speed? 
       
       
       |
@@ -157,19 +157,25 @@
   <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
   <div class="container post-details" id="post-details">
     <div class="post-content">
-      <div class="post-title">Bitmaps in Algorithms</div>
+      <div class="post-title">How Did I Improve My Angular Project's Loading Speed?</div>
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2023-03-14 22:43:42
+          2023-04-28 17:20:11
         </span>
         
               <span class="post-tags">
                 <i class="iconfont icon-tags mr-10" title="Tags"></i>
                 
                 <span class="span--tag mr-8">
-                  <a href="/tags/Bitmaps/" title="Bitmaps">
-                    #Bitmaps
+                  <a href="/tags/URL-shortener/" title="URL shortener">
+                    #URL shortener
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Angular-Project/" title="Angular Project">
+                    #Angular Project
                   </a>
                 </span>
                 
@@ -177,28 +183,52 @@
           
       </div>
       <div class="markdown-body">
-        <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Bitwise operations is one of the bitmap representation methods.</p>
-<p>Basically we have an integer <code>num</code>, we can use its <code>i-th</code> bit(counting from right to left, starting from 0) to represent the true/false value of <code>num[i]</code>.</p>
-<span id="more"></span>
-
+        <h1 id="Problems"><a href="#Problems" class="headerlink" title="Problems"></a>Problems</h1><p><a target="_blank" rel="noopener" href="http://official.urls.fit/">My URL Shortener project</a> has been deployed by Kubernetes for high availability but it seems to be not perfectly “high availability” because of the low loading speed(you could even see the plain text without any style applied when you first open up the website).</p>
+<p>I was trying to solve this problem by checking all <code>CSS</code> files, images, even to get rid of them, but that still did not work.</p>
+<p>Another serious problem is that the pipeline ran very slowly, needing like almost 10 minutes to finish building and upload a docker image.</p>
+<h1 id="Reasons"><a href="#Reasons" class="headerlink" title="Reasons"></a>Reasons</h1><ul>
+<li><p>Used <code>express.js</code> to run the angular application. </p>
+</li>
+<li><p>Ran <code>npm i</code> and <code>npm build</code> in a docker container.</p>
+</li>
+<li><p><code>npm build</code> is not good for a production-level website</p>
+</li>
+<li><p>No resources cache was used for the website.</p>
+</li>
+</ul>
+<h1 id="Solutions"><a href="#Solutions" class="headerlink" title="Solutions"></a>Solutions</h1><ul>
+<li><p>Change <code>npm run build</code> to <code>npm run build --configuration=production -aot</code></p>
 <ul>
-<li>Set the i-th bit to 1(true), and leave other bits unchanged: <code>num|=(1&lt;&lt;i)</code><ul>
-<li>left shift 1 by i bits, and perform OR operation with <code>num</code>.</li>
-</ul>
+<li><blockquote>
+<p><strong>–configuration=production</strong> is typically optimized for production environments with features like minification and tree shaking enabled.</p>
+</blockquote>
 </li>
-<li>Set the i-th bit to 0(false), and leave other bits unchanged: <code>num &amp;= ~(1&lt;&lt;i)</code> or <code>(num ^=1&lt;&lt;i)</code><ul>
-<li>take the complement(~) of 1 left shifted by i bits, and perform bitwise AND(&amp;) operation with <code>num</code>.</li>
-</ul>
-</li>
-<li>Get <code>num[i]</code>: <code>(num &gt;&gt; i) &amp; 1</code><ul>
-<li>extracts the i-th bit(counting from right to left)</li>
-</ul>
+<li><blockquote>
+<p><strong>–aot</strong> enables Ahead-of-Time (AOT) compilation. AOT compilation pre-compiles the Angular templates during the build process, resulting in faster rendering and reduced bundle size compared to Just-in-Time (JIT) compilation.</p>
+</blockquote>
 </li>
 </ul>
-<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><ul>
-<li>Bitmap indexing</li>
-<li>Bloom filters</li>
-<li>Leetcode 698</li>
+</li>
+<li><p>Do not run <code>npm install; npm run build</code> in <code>Dockerfile</code>, instead, all the commands to build the <code>Angular</code> application should be executed in a pipeline. Then resources will need to be copied to <code>Nginx</code> in the docker container using <code>Dockerfile</code>.</p>
+</li>
+<li><p>Instead of using <code>express.js</code>, use <code>Nginx</code> to handle the static resources.</p>
+</li>
+<li><p>Nginx <strong>Gzip</strong> compression</p>
+</li>
+</ul>
+<p>Nginx <code>deafult.conf</code> : This change should be applied to both the Angular container and the Kubernetes node because I used Nginx to handle different API requests.</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">listen</span>  [::]:<span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span>  localhost;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#access_log  /var/log/nginx/host.access.log  main;</span></span><br><span class="line">    <span class="attribute">gzip</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">gzip_http_version</span> <span class="number">1</span>.<span class="number">1</span>;</span><br><span class="line">    <span class="attribute">gzip_disable</span>      <span class="string">&quot;MSIE [1-6]\.&quot;</span>;</span><br><span class="line">    <span class="attribute">gzip_min_length</span>   <span class="number">1100</span>;</span><br><span class="line">    <span class="attribute">gzip_vary</span>         <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">gzip_proxied</span>      expired <span class="literal">no</span>-cache <span class="literal">no</span>-store private auth;</span><br><span class="line">    <span class="attribute">gzip_types</span> text/plain application/json application/x-javascript application/javascript application/css application/xml application/xml+rss text/javascript application/x-httpd-php image/jpeg image/gif image/png image/x-ms-bmp;</span><br><span class="line">    <span class="attribute">gzip_comp_level</span>   <span class="number">6</span>;</span><br><span class="line">    <span class="section">location</span> / &#123; </span><br><span class="line">        <span class="attribute">root</span>   /usr/share/nginx/html;</span><br><span class="line">        <span class="attribute">index</span>  index.html index.htm;</span><br><span class="line">        <span class="attribute">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#error_page  404              /404.html;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># redirect server error pages to the static page /50x.html</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="attribute">error_page</span>   <span class="number">500</span> <span class="number">502</span> <span class="number">503</span> <span class="number">504</span>  /50x.html;</span><br><span class="line">    <span class="section">location</span> = /50x.html &#123;</span><br><span class="line">        <span class="attribute">root</span>   /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h1><h2 id="Website-Loading-Speed"><a href="#Website-Loading-Speed" class="headerlink" title="Website Loading Speed"></a>Website Loading Speed</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/202304281714275.png"></p>
+<p>To fully load all the resources when first visiting the website, around <code>8 sec</code> is needed. This is a highly optimized result compared to the previous time(<code>over 15 sec</code>).</p>
+<h2 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h2><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/202304281557490.png"></p>
+<p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/202304281557118.png"></p>
+<h1 id="Improvements"><a href="#Improvements" class="headerlink" title="Improvements"></a>Improvements</h1><p>There are still some issues that need to be fixed</p>
+<ul>
+<li><p>The loading speed can be improved further - based on the code itself.</p>
+</li>
+<li><p>Trying to use <code>Lazy Loading</code></p>
+</li>
 </ul>
 
       </div>
@@ -206,7 +236,7 @@
         <div class="prev-or-next">
           <div class="post-foot-next">
             
-              <a href="/2022/12/04/Amazing-URL-Shortener-Technical-Doc/" target="_self">
+              <a href="/2023/03/14/Bitmaps-in-Algorithms/" target="_self">
                 <i class="iconfont icon-chevronleft"></i>
                 <span>Prev</span>
               </a>
@@ -215,15 +245,21 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2023-03-14 22:43:42
+              2023-04-28 17:20:11
             </span>
             
                   <span class="post-tags">
                     <i class="iconfont icon-tags mr-10" title="Tags"></i>
                     
                     <span class="span--tag mr-8">
-                      <a href="/tags/Bitmaps/" title="Bitmaps">
-                        #Bitmaps
+                      <a href="/tags/URL-shortener/" title="URL shortener">
+                        #URL shortener
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Angular-Project/" title="Angular Project">
+                        #Angular Project
                       </a>
                     </span>
                     
@@ -231,11 +267,6 @@
               
           </div>
           <div class="post-foot-prev">
-            
-              <a href="/2023/04/28/How-Did-I-Improve-My-Angular-Project-s-Loading-Speed/" target="_self">
-                <span>Next</span>
-                <i class="iconfont icon-chevronright"></i>
-              </a>
             
           </div>
         </div>
@@ -249,7 +280,7 @@
     <div class="title">Contents</div>
     <div class="catalog-content">
       
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Scenario"><span class="toc-text">Scenario</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Problems"><span class="toc-text">Problems</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reasons"><span class="toc-text">Reasons</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Solutions"><span class="toc-text">Solutions</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Result"><span class="toc-text">Result</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Website-Loading-Speed"><span class="toc-text">Website Loading Speed</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pipeline"><span class="toc-text">Pipeline</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Improvements"><span class="toc-text">Improvements</span></a></li></ol>
       
     </div>
   </div>
@@ -583,12 +614,12 @@
       </a>
       <div class="share-content hidden">
         
-          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Bitmaps%20in%20Algorithms + '&url=' + https%3A%2F%2Fleihehe.top%2F2023%2F03%2F14%2FBitmaps-in-Algorithms%2F + '" target="_blank" title="Twitter">
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + How%20Did%20I%20Improve%20My%20Angular%20Project's%20Loading%20Speed%3F + '&url=' + https%3A%2F%2Fleihehe.top%2F2023%2F04%2F28%2FHow-Did-I-Improve-My-Angular-Project-s-Loading-Speed%2F + '" target="_blank" title="Twitter">
             <i class="iconfont icon-twitter"></i>
           </a>
         
         
-          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2023/03/14/Bitmaps-in-Algorithms/" target="_blank" title="Facebook">
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2023/04/28/How-Did-I-Improve-My-Angular-Project-s-Loading-Speed/" target="_blank" title="Facebook">
             <i class="iconfont icon-facebooksquare"></i>
           </a>
         
