@@ -626,7 +626,8 @@
   border: 0;
 }
 
-.markdown-body .highlight {
+div.gt-comment-body.markdown-body .highlight {
+  color: #24292e;
   margin-bottom: 16px;
 }
 
