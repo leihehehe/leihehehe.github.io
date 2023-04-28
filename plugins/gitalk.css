@@ -427,19 +427,19 @@
   border: 0;
 }
 
-.markdown-body blockquote {
+/* .markdown-body blockquote {
   padding: 0 1em;
   color: #6a737d;
   border-left: 0.25em solid #dfe2e5;
-}
+} */
 
-.markdown-body blockquote>:first-child {
+/* .markdown-body blockquote>:first-child {
   margin-top: 0;
 }
 
 .markdown-body blockquote>:last-child {
   margin-bottom: 0;
-}
+} */
 
 .markdown-body kbd {
   display: inline-block;
