@@ -11,7 +11,7 @@
   
   <title>
     
-      Categories 
+      Dynamic Programming Problem Notes 
       
       
       |
@@ -148,19 +148,189 @@
 
 
   
-  <!-- 分类页 url形式：https://yoursite/categories/ -->
-  <div class="container category-index">
-    <div>
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/">Web Security</a><span class="category-list-count">36</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Java-Deserialization/">Java Deserialization</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/SQL-Injection/">SQL Injection</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/PHP/">PHP</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Apache/">Apache</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Cryptography/">Cryptography</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Java-Memory-Shell/">Java Memory Shell</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Bug-Bounty/">Bug Bounty</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Information-Gathering/">Information Gathering</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Cloud-Security/">Cloud Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/CTF/">CTF</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Sqlilabs/">Sqlilabs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Nginx/">Nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/File-Upload/">File Upload</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Development/">Development</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Development/Java/">Java</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Development/Angular/">Angular</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Development/Static-Analysis/">Static Analysis</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Others/">Others</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reverse-Engineering/">Reverse Engineering</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Network-Security/">Network Security</a><span class="category-list-count">1</span></li></ul>
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Dynamic Programming Problem Notes</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2023-11-27 18:14:20
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Algorithm/" title="Algorithm">
+                    <b>#</b> Algorithm
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/DP/" title="DP">
+                    #DP
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="动态规划问题"><a href="#动态规划问题" class="headerlink" title="动态规划问题"></a>动态规划问题</h1><p><strong>判断是否能使用dp</strong>：</p>
+<ul>
+<li>一个状态是由前面的某个状态或某些状态得到的，且不用关心前面的这些状态是如何得来的。</li>
+<li>确定<code>dp[i][j][k]..[l]</code>，就是确定<code>i,j,k,l</code>这些状态是否能通过前面的<code>i,j,k,l</code>的来得到。因此可以定义出dp函数的定义、应该是几纬和动态转移方程。</li>
+<li>通常是求最值</li>
+</ul>
+<h1 id="股票系列问题"><a href="#股票系列问题" class="headerlink" title="股票系列问题"></a>股票系列问题</h1><h2 id="Leetcode-121-Best-Time-to-Buy-and-Sell-Stock"><a href="#Leetcode-121-Best-Time-to-Buy-and-Sell-Stock" class="headerlink" title="Leetcode 121. Best Time to Buy and Sell Stock"></a>Leetcode 121. Best Time to Buy and Sell Stock</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/">121. Best Time to Buy and Sell Stock</a></p>
+<p>思考如何求<strong>不能同一天买卖</strong>时的<code>maxProfit</code></p>
+<ul>
+<li>$maxProfit = maxPrice - minPrice$</li>
+<li><strong>方法一：贪心</strong>直接遍历找出array中最大和最小的price</li>
+<li><strong>方法二：</strong>使用<strong>dp</strong><ul>
+<li>为何可以使用dp？<ul>
+<li>因为处于第<code>i</code>天的<code>maxProfit</code>可以由之前的状态得到。</li>
+<li>要么是第<code>i</code>天卖出股票，要么是处于<code>i-1</code>天时的<code>maxProfit</code>，也就是第<code>i</code>天之前就已经卖出股票了。</li>
+</ul>
+</li>
+<li>为何不定义二维，比如<code>dp[i][j]:第i天买入，第j天卖出</code>？<ul>
+<li>无法找到状态转移的关系，第i天买第j天卖和你前面第几天买，第几天卖没有关系。</li>
+</ul>
+</li>
+<li>为了找到max，购买的那一天始终要为目前为止最低的价格。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Leetcode-122-Best-Time-to-Buy-and-Sell-Stock-II"><a href="#Leetcode-122-Best-Time-to-Buy-and-Sell-Stock-II" class="headerlink" title="Leetcode 122. Best Time to Buy and Sell Stock II"></a>Leetcode 122. Best Time to Buy and Sell Stock II</h2><p>思考：<strong>为何和Leetcode 121所定义的dp方程不同，需要定义二维？</strong></p>
+<ul>
+<li>与Leetcode 121的最大不同在于，Leetcode 122允许多次交易，不过一次最多持有一只股票。</li>
+<li><code>minPrice</code>不再可以通过简单的遍历更新来得到：假设第四天持有股票，第四天就不能买入，所以第四天不能作为<code>minPrice</code>，这是因为必须在卖出股票后才能进行下次交易。</li>
+<li>因此第<code>i</code>天的maxProfit取决于<strong>之前的状态是否持有股票</strong>。我们需要定义二维dp: <code>dp[i][2]</code>，表示第<code>i</code>天持有股票和不持有股票时的<code>maxProfit</code></li>
+</ul>
+<p><strong>dp转移方程：</strong></p>
+<p>不持有股票的情况: 今天卖出或之前就卖出了</p>
+<p>$dp[i][0] = Math.max(dp[i-1][1]+prices[i],dp[i-1][0])$</p>
+<p>持有股票的情况：今天买入或者之前就买入了</p>
+<p>$dp[i][1] = Math.max(dp[i-1][0]-prices[i],dp[i-1][1])$</p>
+<p>最后的最优答案必然是最后一天不持有股票。</p>
+<p><strong>Solution</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maxProfit</span><span class="params">(<span class="type">int</span>[] prices)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> prices.length;</span><br><span class="line">        <span class="type">int</span>[][] dp = <span class="keyword">new</span> <span class="title class_">int</span>[n][<span class="number">2</span>];</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">1</span>] = -prices[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="comment">//今天不持有股票 =》 今天卖掉了/之前就卖掉了</span></span><br><span class="line">            dp[i][<span class="number">0</span>] = Math.max(prices[i]+dp[i-<span class="number">1</span>][<span class="number">1</span>],dp[i-<span class="number">1</span>][<span class="number">0</span>]);</span><br><span class="line">            <span class="comment">//今天持有股票 =》 今天买的/之前买的</span></span><br><span class="line">            dp[i][<span class="number">1</span>] = Math.max(dp[i-<span class="number">1</span>][<span class="number">1</span>],dp[i-<span class="number">1</span>][<span class="number">0</span>]-prices[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>][<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/10/08/Complete-Knapsack-Problem/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2023-11-27 18:14:20
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Algorithm/" title="Algorithm">
+                        <b>#</b> Algorithm
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/DP/" title="DP">
+                        #DP
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98"><span class="toc-text">动态规划问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%82%A1%E7%A5%A8%E7%B3%BB%E5%88%97%E9%97%AE%E9%A2%98"><span class="toc-text">股票系列问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-121-Best-Time-to-Buy-and-Sell-Stock"><span class="toc-text">Leetcode 121. Best Time to Buy and Sell Stock</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-122-Best-Time-to-Buy-and-Sell-Stock-II"><span class="toc-text">Leetcode 122. Best Time to Buy and Sell Stock II</span></a></li></ol></li></ol>
+      
     </div>
   </div>
-  
 
   
+<script src="/js/catalog.js"></script>
 
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+  <div id="gitalk-container"></div>
+  <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+  <script>
+    function loadGitalkSuc() {
+      const gitalk = new Gitalk({
+        clientID: '4fd0839f78c35735511f',
+        clientSecret: 'c4d98a543b9bf9970b444154ad05c4c045afea26',
+        repo: 'commentSys',
+        owner: 'leihehehe',
+        admin: ['leihehehe'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+
+      gitalk.render('gitalk-container')
+    }
+  </script>
+  
+    <link rel="stylesheet" href="/plugins/gitalk.css">
+    <script type="text/javascript" src="/plugins/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
   
 
-  
+
+
+      </div>
+    
+  </div>
+
 
         
 <div class="footer">
@@ -447,12 +617,12 @@
       </a>
       <div class="share-content hidden">
         
-          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Categories + '&url=' + https%3A%2F%2Fleihehe.top%2Fcategories%2Findex.html + '" target="_blank" title="Twitter">
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Dynamic%20Programming%20Problem%20Notes + '&url=' + https%3A%2F%2Fleihehe.top%2F2023%2F11%2F16%2FDynamic-Programming-Problem-Notes%2F + '" target="_blank" title="Twitter">
             <i class="iconfont icon-twitter"></i>
           </a>
         
         
-          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/categories/index.html" target="_blank" title="Facebook">
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2023/11/16/Dynamic-Programming-Problem-Notes/" target="_blank" title="Facebook">
             <i class="iconfont icon-facebooksquare"></i>
           </a>
         
