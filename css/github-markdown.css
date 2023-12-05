@@ -197,7 +197,7 @@
   line-height: inherit;
 }
 
-.markdown-body a {
+.post-content .markdown-body a {
   color: var(--color-text-a);
   text-decoration: none;
   border-bottom: 1px solid var(--color-text-a);

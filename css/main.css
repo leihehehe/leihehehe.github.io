@@ -159,6 +159,7 @@ pre .constant {
 }
 
 pre .class,
+pre .class_,
 pre .ruby .class .title,
 pre .css .rules .attribute {
   color: #9c9
@@ -178,6 +179,7 @@ pre .css .hexcolor {
 }
 
 pre .function,
+pre .function_,
 pre .python .decorator,
 pre .python .title,
 pre .ruby .function .title,
@@ -249,6 +251,7 @@ figure .pin-copy {
   right: 1rem;
   cursor: pointer;
 }
+
 
 @font-face {
   font-family: octicons-link;
@@ -449,7 +452,7 @@ figure .pin-copy {
   line-height: inherit;
 }
 
-.markdown-body a {
+.post-content .markdown-body a {
   color: var(--color-text-a);
   text-decoration: none;
   border-bottom: 1px solid var(--color-text-a);
@@ -1761,6 +1764,15 @@ a:hover {
   font-size: 1rem;
   line-height: 1rem;
   white-space: nowrap;
+}
+
+.collapse-button {
+  cursor: pointer;
+  /* Additional styling */
+}
+
+.toc-item.collapsed .toc-child {
+  display: none;
 }
 
 .footer {

@@ -67,3 +67,4 @@ document.addEventListener("scroll", changePos, false);
 document.addEventListener("scroll", isActiveCat, false);
 window.addEventListener("resize", handleResize, false);
 document.querySelector("#btn-catalog").addEventListener("click", openOrHiddenCatalog, false);
+

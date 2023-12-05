@@ -697,3 +697,12 @@ a:hover {
   line-height: 1rem;
   white-space: nowrap;
 }
+
+.collapse-button {
+  cursor: pointer;
+  /* Additional styling */
+}
+
+.toc-item.collapsed .toc-child {
+  display: none;
+}
