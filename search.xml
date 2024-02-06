@@ -1057,6 +1057,18 @@
 
 <h3 id="递推方法"><a href="#递推方法" class="headerlink" title="递推方法"></a>递推方法</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">tribonacci</span><span class="params">(<span class="type">int</span> n)</span> &#123;</span><br><span class="line">        <span class="comment">//dp定义: Tn </span></span><br><span class="line">        <span class="type">int</span>[] dp = <span class="keyword">new</span> <span class="title class_">int</span>[n+<span class="number">1</span>];</span><br><span class="line">        Arrays.fill(dp,-<span class="number">1</span>);</span><br><span class="line">        dp[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span>(n&gt;<span class="number">0</span>)</span><br><span class="line">            dp[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span>(n&gt;<span class="number">1</span>)</span><br><span class="line">            dp[<span class="number">2</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">3</span>;i&lt;=n;i++)&#123;</span><br><span class="line">            dp[i] = dp[i-<span class="number">1</span>]+dp[i-<span class="number">2</span>]+dp[i-<span class="number">3</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h2 id="Leetcode-375-Guess-Number-Higher-or-Lower-II"><a href="#Leetcode-375-Guess-Number-Higher-or-Lower-II" class="headerlink" title="Leetcode 375. Guess Number Higher or Lower II"></a>Leetcode 375. Guess Number Higher or Lower II</h2><p>理解这道题是重点</p>
+<ul>
+<li>猜数字，猜不中就罚款，罚款金额为你猜的那个数字</li>
+<li>在最坏情况下<strong>（全部猜错）</strong>，找到一个最好的策略，在数字范围<code>[1,n]</code>保证赢的情况下，猜的金额是最小的。<ul>
+<li>这个地方很容易搞错，核心是<strong>在最坏情况下最小化花费，而不是找到一个总能赢的花费上限</strong><ul>
+<li><del>错误的做法是遍历所有可能性，找到最大花费，这种做法并没有最小化花费。</del></li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <h2 id="记忆化题目"><a href="#记忆化题目" class="headerlink" title="记忆化题目"></a>记忆化题目</h2><p><a href="https://leetcode.cn/problems/n-th-tribonacci-number/">Leetcode 1137. 第 N 个泰波那契数</a> - 简单</p>
 <p><a href="https://leetcode.cn/problems/guess-number-higher-or-lower-ii/">Leetcode 375. 猜数字大小 II</a> - 中等</p>
 <p><a href="https://leetcode.cn/problems/target-sum/">Leetcode 494. 目标和</a> - 中等</p>
@@ -7771,6 +7783,42 @@ sed -ri &#39;s/.*swap.*/#&amp;/&#39; /etc/fstab
         <tag>Web Security</tag>
         <tag>Write-up</tag>
         <tag>PHP Deserialization</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linked List Problem</title>
+    <url>/2024/02/06/Linked-List-Problem/</url>
+    <content><![CDATA[<h1 id="链表中Dummy-Node的使用场景"><a href="#链表中Dummy-Node的使用场景" class="headerlink" title="链表中Dummy Node的使用场景"></a>链表中Dummy Node的使用场景</h1><ul>
+<li>需要对链表进行<strong>增删改</strong>的时候，通常需要用到dummy node，这是为了方便避开空节点问题</li>
+<li><strong>快慢指针</strong>的问题<ul>
+<li><code>Leetcode 141. 环形链表</code><strong>无需</strong>用到dummy node，因为dummy node主要用于简化对linkedlist头部的操作（如需要对头部节点进行修改），而检测环的问题与头部操作关系不大。</li>
+<li><code>Leetcode 876. 链表的中间节点</code>也<strong>无需</strong>用到dummy node。但有一种特殊情况，也就是在偶数链表中，要求返回的是前一个中间节点，则需要用到dummy node来<strong>将偶数链表转化为奇数链表</strong>。具体可见下面的快慢指针章节。</li>
+</ul>
+</li>
+</ul>
+<h1 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h1><h2 id="循环判断条件"><a href="#循环判断条件" class="headerlink" title="循环判断条件"></a>循环判断条件</h2><p>通常的写法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">while</span>(fast!=<span class="literal">null</span> &amp;&amp; fast.next!=<span class="literal">null</span>)&#123;</span><br><span class="line">  <span class="comment">//fast为空说明头节点为空 或者 走到了一个空节点</span></span><br><span class="line">  <span class="comment">//fast.next为空说明现在fast走到了最后一个节点</span></span><br><span class="line">  <span class="comment">//用&amp;&amp;是因为如果fast或者fast.next任何一个为空，都代表算法应该结束</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="中间节点问题"><a href="#中间节点问题" class="headerlink" title="中间节点问题"></a>中间节点问题</h2><p><code>Leetcode 876. 链表的中间节点</code> 中，因为fast指针速度是slow指针的两倍，因此当fast走完时，slow指针应该恰好走到<strong>中间节点</strong></p>
+<ul>
+<li>因为fast每次走两步，而链表的节点个数会影响他走到最后的位置，因此可能出现以下<strong>两种</strong>情况：<img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/202402062051922.png" alt="fast and slow pointers"></li>
+</ul>
+<h3 id="Dummy-Node什么时候用？"><a href="#Dummy-Node什么时候用？" class="headerlink" title="Dummy Node什么时候用？"></a>Dummy Node什么时候用？</h3><p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/202402062107684.png"></p>
+<p>在<strong>第一种情况</strong>中，如果我们被要求返回<strong>前一个中点（即图中第二个节点）</strong>，则可以使用<strong>虚拟节点</strong>来将该<strong>偶数链表转化为奇数链表</strong>，此时返回的就是图中实际的第二个节点</p>
+<h3 id="简单记忆（增加解题速度）"><a href="#简单记忆（增加解题速度）" class="headerlink" title="简单记忆（增加解题速度）"></a>简单记忆（增加解题速度）</h3><ul>
+<li>奇数个节点的链表，快慢指针得到的就是<strong>正中间</strong>的节点</li>
+<li>偶数个节点的链表，快慢指针得到的是<strong>后面的</strong>中间节点。<ul>
+<li>若需要得到<strong>前面的</strong>中间节点，需要使用<strong>dummy node</strong>。</li>
+</ul>
+</li>
+</ul>
+<p>ps：实在记不住其实简单的想一下画个图也行。</p>
+]]></content>
+      <categories>
+        <category>Algorithm</category>
+      </categories>
+      <tags>
+        <tag>Linked List</tag>
       </tags>
   </entry>
 </search>

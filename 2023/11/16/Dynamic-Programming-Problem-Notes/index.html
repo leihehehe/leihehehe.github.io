@@ -161,7 +161,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2023-12-05 18:50:33
+          2023-12-12 16:27:49
         </span>
         
               <span class="post-categories">
@@ -336,6 +336,18 @@
 
 <h3 id="递推方法"><a href="#递推方法" class="headerlink" title="递推方法"></a>递推方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">tribonacci</span><span class="params">(<span class="type">int</span> n)</span> &#123;</span><br><span class="line">        <span class="comment">//dp定义: Tn </span></span><br><span class="line">        <span class="type">int</span>[] dp = <span class="keyword">new</span> <span class="title class_">int</span>[n+<span class="number">1</span>];</span><br><span class="line">        Arrays.fill(dp,-<span class="number">1</span>);</span><br><span class="line">        dp[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span>(n&gt;<span class="number">0</span>)</span><br><span class="line">            dp[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span>(n&gt;<span class="number">1</span>)</span><br><span class="line">            dp[<span class="number">2</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">3</span>;i&lt;=n;i++)&#123;</span><br><span class="line">            dp[i] = dp[i-<span class="number">1</span>]+dp[i-<span class="number">2</span>]+dp[i-<span class="number">3</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h2 id="Leetcode-375-Guess-Number-Higher-or-Lower-II"><a href="#Leetcode-375-Guess-Number-Higher-or-Lower-II" class="headerlink" title="Leetcode 375. Guess Number Higher or Lower II"></a>Leetcode 375. Guess Number Higher or Lower II</h2><p>理解这道题是重点</p>
+<ul>
+<li>猜数字，猜不中就罚款，罚款金额为你猜的那个数字</li>
+<li>在最坏情况下<strong>（全部猜错）</strong>，找到一个最好的策略，在数字范围<code>[1,n]</code>保证赢的情况下，猜的金额是最小的。<ul>
+<li>这个地方很容易搞错，核心是<strong>在最坏情况下最小化花费，而不是找到一个总能赢的花费上限</strong><ul>
+<li><del>错误的做法是遍历所有可能性，找到最大花费，这种做法并没有最小化花费。</del></li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <h2 id="记忆化题目"><a href="#记忆化题目" class="headerlink" title="记忆化题目"></a>记忆化题目</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/n-th-tribonacci-number/">Leetcode 1137. 第 N 个泰波那契数</a> - 简单</p>
 <p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/guess-number-higher-or-lower-ii/">Leetcode 375. 猜数字大小 II</a> - 中等</p>
 <p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/target-sum/">Leetcode 494. 目标和</a> - 中等</p>
@@ -360,7 +372,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2023-12-05 18:50:33
+              2023-12-12 16:27:49
             </span>
             
                   <span class="post-categories">
@@ -388,6 +400,11 @@
           </div>
           <div class="post-foot-prev">
             
+              <a href="/2024/02/06/Linked-List-Problem/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -400,7 +417,7 @@
     <div class="title">Contents</div>
     <div class="catalog-content">
       
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98"><span class="toc-text">动态规划问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%82%A1%E7%A5%A8%E7%B3%BB%E5%88%97%E9%97%AE%E9%A2%98"><span class="toc-text">股票系列问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-121-Best-Time-to-Buy-and-Sell-Stock"><span class="toc-text">Leetcode 121. Best Time to Buy and Sell Stock</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-122-Best-Time-to-Buy-and-Sell-Stock-II"><span class="toc-text">Leetcode 122. Best Time to Buy and Sell Stock II</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-123-Best-Time-to-Buy-and-Sell-Stock-III"><span class="toc-text">Leetcode 123. Best Time to Buy and Sell Stock III</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-124-Best-Time-to-Buy-and-Sell-Stock-IV"><span class="toc-text">Leetcode 124. Best Time to Buy and Sell Stock IV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-714-Best-Time-to-Buy-and-Sell-Stock-with-Transaction-Fee"><span class="toc-text">Leetcode 714. Best Time to Buy and Sell Stock with Transaction Fee</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-309-Best-Time-to-Buy-and-Sell-Stock-with-Cooldown"><span class="toc-text">Leetcode 309. Best Time to Buy and Sell Stock with Cooldown</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E6%90%9C%E7%B4%A2%E5%9C%BA%E6%99%AF"><span class="toc-text">记忆化搜索场景</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-494-Target-Sum"><span class="toc-text">Leetcode 494. Target Sum</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%92%E5%BD%92%E6%96%B9%E6%B3%95"><span class="toc-text">递归方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B1%E9%80%92%E5%BD%92%E7%BF%BB%E8%AF%91%E7%9A%84%E9%80%92%E6%8E%A8"><span class="toc-text">由递归翻译的递推</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B1%E5%8A%A8%E6%80%81%E8%BD%AC%E7%A7%BB%E6%96%B9%E7%A8%8B%E6%80%9D%E8%80%83%E7%9A%84%E9%80%92%E6%8E%A8"><span class="toc-text">由动态转移方程思考的递推</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-1137-N-th-Tribonacci-Number"><span class="toc-text">Leetcode 1137. N-th Tribonacci Number</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%92%E5%BD%92%E6%96%B9%E6%B3%95-1"><span class="toc-text">递归方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%92%E6%8E%A8%E6%96%B9%E6%B3%95"><span class="toc-text">递推方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E9%A2%98%E7%9B%AE"><span class="toc-text">记忆化题目</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98"><span class="toc-text">动态规划问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%82%A1%E7%A5%A8%E7%B3%BB%E5%88%97%E9%97%AE%E9%A2%98"><span class="toc-text">股票系列问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-121-Best-Time-to-Buy-and-Sell-Stock"><span class="toc-text">Leetcode 121. Best Time to Buy and Sell Stock</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-122-Best-Time-to-Buy-and-Sell-Stock-II"><span class="toc-text">Leetcode 122. Best Time to Buy and Sell Stock II</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-123-Best-Time-to-Buy-and-Sell-Stock-III"><span class="toc-text">Leetcode 123. Best Time to Buy and Sell Stock III</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-124-Best-Time-to-Buy-and-Sell-Stock-IV"><span class="toc-text">Leetcode 124. Best Time to Buy and Sell Stock IV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-714-Best-Time-to-Buy-and-Sell-Stock-with-Transaction-Fee"><span class="toc-text">Leetcode 714. Best Time to Buy and Sell Stock with Transaction Fee</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-309-Best-Time-to-Buy-and-Sell-Stock-with-Cooldown"><span class="toc-text">Leetcode 309. Best Time to Buy and Sell Stock with Cooldown</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E6%90%9C%E7%B4%A2%E5%9C%BA%E6%99%AF"><span class="toc-text">记忆化搜索场景</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-494-Target-Sum"><span class="toc-text">Leetcode 494. Target Sum</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%92%E5%BD%92%E6%96%B9%E6%B3%95"><span class="toc-text">递归方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B1%E9%80%92%E5%BD%92%E7%BF%BB%E8%AF%91%E7%9A%84%E9%80%92%E6%8E%A8"><span class="toc-text">由递归翻译的递推</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B1%E5%8A%A8%E6%80%81%E8%BD%AC%E7%A7%BB%E6%96%B9%E7%A8%8B%E6%80%9D%E8%80%83%E7%9A%84%E9%80%92%E6%8E%A8"><span class="toc-text">由动态转移方程思考的递推</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-1137-N-th-Tribonacci-Number"><span class="toc-text">Leetcode 1137. N-th Tribonacci Number</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%92%E5%BD%92%E6%96%B9%E6%B3%95-1"><span class="toc-text">递归方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%92%E6%8E%A8%E6%96%B9%E6%B3%95"><span class="toc-text">递推方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-375-Guess-Number-Higher-or-Lower-II"><span class="toc-text">Leetcode 375. Guess Number Higher or Lower II</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E9%A2%98%E7%9B%AE"><span class="toc-text">记忆化题目</span></a></li></ol></li></ol>
       
     </div>
   </div>
@@ -504,7 +521,7 @@
     
     <div class="footer-more">
       
-        <a target="_blank" rel="noopener" href="https://github.com/leihehehe">Copyright © 2023 Shulei He</a>
+        <a target="_blank" rel="noopener" href="https://github.com/leihehehe">Copyright © 2024 Shulei He</a>
         
     </div>
   
