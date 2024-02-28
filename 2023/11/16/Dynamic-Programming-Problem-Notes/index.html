@@ -161,7 +161,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-02-28 00:24:38
+          2024-02-28 23:54:25
         </span>
         
               <span class="post-categories">
@@ -230,7 +230,7 @@
 <h2 id="完全背包"><a href="#完全背包" class="headerlink" title="完全背包"></a>完全背包</h2><p>背包容量为capacity，给一堆物品，每个物品的重量为<code>w[i]</code>，问你<strong>恰好</strong>装满整个背包的话能有多少【方案数】（每种物品可以选无数次）</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 本质上是选/不选的问题，且每个物品每一轮都可以被选</span></span><br><span class="line"><span class="comment"># 不选当前物品i / 选当前物品i=》上一轮物品i还是可以作为candidate</span></span><br><span class="line">dfs(i-<span class="number">1</span>,c) + dfs(i,c-w[i])</span><br></pre></td></tr></table></figure>
 
-<h1 id="最长公共子序列"><a href="#最长公共子序列" class="headerlink" title="最长公共子序列"></a>最长公共子序列</h1><p><strong>简称LCS</strong></p>
+<h1 id="最长公共子序列-LCS"><a href="#最长公共子序列-LCS" class="headerlink" title="最长公共子序列(LCS)"></a>最长公共子序列(LCS)</h1><p><strong>简称LCS</strong></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 本质上是选/不选的问题</span></span><br><span class="line"><span class="keyword">if</span> s[i]==s[t]:</span><br><span class="line">  <span class="comment"># i和t都选，所以+1</span></span><br><span class="line">  <span class="comment"># 不用判断dfs(i,j-1)和dfs(i-1,j),即不需要考虑只选一个的情况</span></span><br><span class="line">	res = dfs(i-<span class="number">1</span>,j-<span class="number">1</span>)+<span class="number">1</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">  <span class="comment"># 不用判断dfs(i-1,j-1),即不需要考虑两个都不选的情况，因为已经被包含</span></span><br><span class="line">  <span class="comment"># dfs(i-1,j)，丢掉i，i不包含在lcs里面</span></span><br><span class="line">  <span class="comment"># dfs(i,j-1)，丢掉j，j不包含在lcs里面</span></span><br><span class="line">  res = <span class="built_in">max</span>(dfs(i-<span class="number">1</span>,j),dfs(i,j-<span class="number">1</span>))</span><br></pre></td></tr></table></figure>
 
 <h2 id="类似习题"><a href="#类似习题" class="headerlink" title="类似习题"></a>类似习题</h2><ul>
@@ -242,8 +242,28 @@
 </ul>
 <h1 id="编辑距离"><a href="#编辑距离" class="headerlink" title="编辑距离"></a>编辑距离</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除、插入、替换的操作次数</span></span><br><span class="line"><span class="comment"># 本质上也是选/不选的问题</span></span><br><span class="line"><span class="comment"># 删除和插入实际上是一样的</span></span><br><span class="line"><span class="keyword">if</span> s[i]==s[t]:</span><br><span class="line">  <span class="comment"># i和j都不需要额外操作（无需+1），那么答案依赖于子问题dfs(i-1,j-1)</span></span><br><span class="line">  res = dfs(i-<span class="number">1</span>,j-<span class="number">1</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">  <span class="comment"># dfs(i-1,j): 对i进行操作，比如删除和插入,那么答案依赖于子问题dfs(i-1,j)</span></span><br><span class="line">  <span class="comment"># dfs(i,j-1): 对j进行操作, 比如删除和插入，那么答案依赖于子问题dfs(i,j-1)</span></span><br><span class="line">  <span class="comment"># dfs(i-1,j-1): i和j都选，实际上就是替换操作，将i替换成j，或将j替换成i</span></span><br><span class="line">  <span class="comment"># 以上的操作都会+1</span></span><br><span class="line">  res = <span class="built_in">max</span>(dfs(i-<span class="number">1</span>,j),dfs(i,j-<span class="number">1</span>),dfs(i-<span class="number">1</span>,j-<span class="number">1</span>))+<span class="number">1</span></span><br></pre></td></tr></table></figure>
 
-
-
+<h1 id="最长递增子序列-LIS"><a href="#最长递增子序列-LIS" class="headerlink" title="最长递增子序列(LIS)"></a>最长递增子序列(LIS)</h1><p>选出来的递增子序列必须是<strong>严格递增</strong>的，通常有两种方法</p>
+<ul>
+<li><strong>dp</strong></li>
+<li><strong>贪心+二分</strong><ul>
+<li>在java中我们维护一个数组<code>arr</code>，数组需要保证严格递增，假设<code>j</code>为数组<code>arr</code>目前的最后一个元素，如果<code>nums[i]&gt;arr[j]</code>，则直接加入数组中，相反使用二分法找到第一个大于<code>nums[i]</code>的数，并将其替换。</li>
+<li>这个方法依赖于贪心策略：<code>使得长度为i+1的数组中的最后一个元素最小</code>，这样才有可能构造更长的子序列</li>
+<li>最后答案为<code>j+1</code> =&gt;这个<code>j+1</code>是代表整个数组中的<strong>最长递增子序列</strong>，不代表是<code>nums[i]</code>为最后一个元素的最长递增子序列！</li>
+<li>如果要更新<code>i</code>结尾元素的最长递增子序列，要根据<code>nums[i]</code>所被替换或插入的index来</li>
+</ul>
+</li>
+</ul>
+<p>这类题型可以有很多变形，最常见的就是值递增，或<strong>通过排序后满足某种特定的“有一致性、传递性的条件”</strong>来求最大长度等等</p>
+<h2 id="俄罗斯套娃问题"><a href="#俄罗斯套娃问题" class="headerlink" title="俄罗斯套娃问题"></a>俄罗斯套娃问题</h2><ul>
+<li>假设<code>m</code>为宽度，<code>n</code>为高度，按宽度排序，宽度相同时按高度下降排序，这样做的好处是我们只比较高度<code>n</code>时，能够避免将相同宽度的信封算进去。</li>
+<li>相似问题<ul>
+<li><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/best-team-with-no-conflicts/">1626. Best Team With No Conflicts</a><ul>
+<li>虽然这道题没有很明显的递增，但是我们也是有条件可以看出来递增的：<strong>当一名年龄较小球员的分数严格大于一名年龄较大的球员，则存在矛盾</strong>。 所以，在按年龄排序的情况下，score要递增；在按score排序的情况下，年龄要递增。这就是我们判断他是否“递增”的条件。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <h1 id="股票系列问题"><a href="#股票系列问题" class="headerlink" title="股票系列问题"></a>股票系列问题</h1><h2 id="Leetcode-121-Best-Time-to-Buy-and-Sell-Stock"><a href="#Leetcode-121-Best-Time-to-Buy-and-Sell-Stock" class="headerlink" title="Leetcode 121. Best Time to Buy and Sell Stock"></a>Leetcode 121. Best Time to Buy and Sell Stock</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/">121. Best Time to Buy and Sell Stock</a></p>
 <p>思考如何求<strong>不能同一天买卖</strong>时的<code>maxProfit</code></p>
 <ul>
@@ -340,7 +360,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-02-28 00:24:38
+              2024-02-28 23:54:25
             </span>
             
                   <span class="post-categories">
@@ -385,7 +405,7 @@
     <div class="title">Contents</div>
     <div class="catalog-content">
       
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98"><span class="toc-text">动态规划问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E6%90%9C%E7%B4%A2"><span class="toc-text">记忆化搜索</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E7%89%88"><span class="toc-text">模版</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E7%A7%BB%E4%B8%BA%E9%80%92%E6%8E%A8%E9%A1%BB%E7%9F%A5"><span class="toc-text">转移为递推须知</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98"><span class="toc-text">背包问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-1%E8%83%8C%E5%8C%85"><span class="toc-text">0&#x2F;1背包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E5%85%A8%E8%83%8C%E5%8C%85"><span class="toc-text">完全背包</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%AD%90%E5%BA%8F%E5%88%97"><span class="toc-text">最长公共子序列</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E4%BC%BC%E4%B9%A0%E9%A2%98"><span class="toc-text">类似习题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB"><span class="toc-text">编辑距离</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%82%A1%E7%A5%A8%E7%B3%BB%E5%88%97%E9%97%AE%E9%A2%98"><span class="toc-text">股票系列问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-121-Best-Time-to-Buy-and-Sell-Stock"><span class="toc-text">Leetcode 121. Best Time to Buy and Sell Stock</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-122-Best-Time-to-Buy-and-Sell-Stock-II"><span class="toc-text">Leetcode 122. Best Time to Buy and Sell Stock II</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-123-Best-Time-to-Buy-and-Sell-Stock-III"><span class="toc-text">Leetcode 123. Best Time to Buy and Sell Stock III</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-124-Best-Time-to-Buy-and-Sell-Stock-IV"><span class="toc-text">Leetcode 124. Best Time to Buy and Sell Stock IV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-714-Best-Time-to-Buy-and-Sell-Stock-with-Transaction-Fee"><span class="toc-text">Leetcode 714. Best Time to Buy and Sell Stock with Transaction Fee</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-309-Best-Time-to-Buy-and-Sell-Stock-with-Cooldown"><span class="toc-text">Leetcode 309. Best Time to Buy and Sell Stock with Cooldown</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98"><span class="toc-text">动态规划问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E6%90%9C%E7%B4%A2"><span class="toc-text">记忆化搜索</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E7%89%88"><span class="toc-text">模版</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E7%A7%BB%E4%B8%BA%E9%80%92%E6%8E%A8%E9%A1%BB%E7%9F%A5"><span class="toc-text">转移为递推须知</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98"><span class="toc-text">背包问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-1%E8%83%8C%E5%8C%85"><span class="toc-text">0&#x2F;1背包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E5%85%A8%E8%83%8C%E5%8C%85"><span class="toc-text">完全背包</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%AD%90%E5%BA%8F%E5%88%97-LCS"><span class="toc-text">最长公共子序列(LCS)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E4%BC%BC%E4%B9%A0%E9%A2%98"><span class="toc-text">类似习题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB"><span class="toc-text">编辑距离</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97-LIS"><span class="toc-text">最长递增子序列(LIS)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%84%E7%BD%97%E6%96%AF%E5%A5%97%E5%A8%83%E9%97%AE%E9%A2%98"><span class="toc-text">俄罗斯套娃问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%82%A1%E7%A5%A8%E7%B3%BB%E5%88%97%E9%97%AE%E9%A2%98"><span class="toc-text">股票系列问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-121-Best-Time-to-Buy-and-Sell-Stock"><span class="toc-text">Leetcode 121. Best Time to Buy and Sell Stock</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-122-Best-Time-to-Buy-and-Sell-Stock-II"><span class="toc-text">Leetcode 122. Best Time to Buy and Sell Stock II</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-123-Best-Time-to-Buy-and-Sell-Stock-III"><span class="toc-text">Leetcode 123. Best Time to Buy and Sell Stock III</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-124-Best-Time-to-Buy-and-Sell-Stock-IV"><span class="toc-text">Leetcode 124. Best Time to Buy and Sell Stock IV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-714-Best-Time-to-Buy-and-Sell-Stock-with-Transaction-Fee"><span class="toc-text">Leetcode 714. Best Time to Buy and Sell Stock with Transaction Fee</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leetcode-309-Best-Time-to-Buy-and-Sell-Stock-with-Cooldown"><span class="toc-text">Leetcode 309. Best Time to Buy and Sell Stock with Cooldown</span></a></li></ol></li></ol>
       
     </div>
   </div>
