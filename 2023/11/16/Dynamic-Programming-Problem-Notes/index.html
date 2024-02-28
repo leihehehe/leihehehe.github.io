@@ -161,7 +161,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-02-28 23:54:25
+          2024-02-28 23:57:55
         </span>
         
               <span class="post-categories">
@@ -245,6 +245,10 @@
 <h1 id="最长递增子序列-LIS"><a href="#最长递增子序列-LIS" class="headerlink" title="最长递增子序列(LIS)"></a>最长递增子序列(LIS)</h1><p>选出来的递增子序列必须是<strong>严格递增</strong>的，通常有两种方法</p>
 <ul>
 <li><strong>dp</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>[] dp = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">  <span class="type">int</span> <span class="variable">res</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">  <span class="comment">//去遍历之前的数，找到能够满足条件的元素，然后构成子序列</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>;j&lt;i;j++)&#123;</span><br><span class="line">    <span class="keyword">if</span>(nums[j]&lt;nums[i])&#123;</span><br><span class="line">      res = Math.max(dp[j],res);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  dp[i] = res + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
 <li><strong>贪心+二分</strong><ul>
 <li>在java中我们维护一个数组<code>arr</code>，数组需要保证严格递增，假设<code>j</code>为数组<code>arr</code>目前的最后一个元素，如果<code>nums[i]&gt;arr[j]</code>，则直接加入数组中，相反使用二分法找到第一个大于<code>nums[i]</code>的数，并将其替换。</li>
 <li>这个方法依赖于贪心策略：<code>使得长度为i+1的数组中的最后一个元素最小</code>，这样才有可能构造更长的子序列</li>
@@ -360,7 +364,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-02-28 23:54:25
+              2024-02-28 23:57:55
             </span>
             
                   <span class="post-categories">
