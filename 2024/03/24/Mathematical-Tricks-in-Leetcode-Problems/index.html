@@ -11,7 +11,7 @@
   
   <title>
     
-      Categories 
+      Mathematical Tricks in Leetcode Problems 
       
       
       |
@@ -148,19 +148,183 @@
 
 
   
-  <!-- 分类页 url形式：https://yoursite/categories/ -->
-  <div class="container category-index">
-    <div>
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/">Web Security</a><span class="category-list-count">36</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Java-Deserialization/">Java Deserialization</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/SQL-Injection/">SQL Injection</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/PHP/">PHP</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Apache/">Apache</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Cryptography/">Cryptography</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Java-Memory-Shell/">Java Memory Shell</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Bug-Bounty/">Bug Bounty</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Information-Gathering/">Information Gathering</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Cloud-Security/">Cloud Security</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/CTF/">CTF</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Sqlilabs/">Sqlilabs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/Nginx/">Nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Security/File-Upload/">File Upload</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Development/">Development</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Development/Java/">Java</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Development/Angular/">Angular</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Development/Static-Analysis/">Static Analysis</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Others/">Others</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reverse-Engineering/">Reverse Engineering</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Network-Security/">Network Security</a><span class="category-list-count">1</span></li></ul>
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Mathematical Tricks in Leetcode Problems</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-03-24 22:08:16
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Algorithm/" title="Algorithm">
+                    <b>#</b> Algorithm
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Maths/" title="Maths">
+                    #Maths
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="Integer-Division"><a href="#Integer-Division" class="headerlink" title="Integer Division"></a>Integer Division</h1><h2 id="Rounding-up-in-Integer-Division"><a href="#Rounding-up-in-Integer-Division" class="headerlink" title="Rounding up in Integer Division"></a>Rounding up in Integer Division</h2><p><strong>场景：</strong>Java在执行整数除法的时候默认将结果往下取整，如果我们需要向上取整，判断条件比较麻烦。</p>
+<p><strong>向上取整技巧：</strong></p>
+<p><strong>原式</strong>：<code>a/b</code><br><strong>保证向上取整:</strong>  <code>(a-1) / b + 1</code></p>
+<p>记忆：</p>
+<ul>
+<li>通过减 1 再除，我们实际上是在找到下一个整数，这样加回 1 后就实现了向上取整的效果</li>
+<li>这个<strong>“减 1 再除，最后加 1”</strong>的过程，就是为了确保即使 <em>k</em> 正好是 <em>m</em> 的倍数，你也不会丢失那个额外的单位，从而实现向上取整的效果。</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2024/02/24/Graph-Problems/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-03-24 22:08:16
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Algorithm/" title="Algorithm">
+                        <b>#</b> Algorithm
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Maths/" title="Maths">
+                        #Maths
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Integer-Division"><span class="toc-text">Integer Division</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Rounding-up-in-Integer-Division"><span class="toc-text">Rounding up in Integer Division</span></a></li></ol></li></ol>
+      
     </div>
   </div>
-  
 
   
+<script src="/js/catalog.js"></script>
 
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var expandIconSVG = '<svg t="1701763017908" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1557" width="20" height="11"><path d="M332.16 883.84a40.96 40.96 0 0 0 58.24 0l338.56-343.04a40.96 40.96 0 0 0 0-58.24L390.4 140.16a40.96 40.96 0 0 0-58.24 58.24L640 512l-307.84 314.24a40.96 40.96 0 0 0 0 57.6z" fill="#8a8a8a" p-id="1558"></path></svg>'; // Your collapse icon SVG
+    var collapseIconSVG = '<svg t="1701763045407" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1839" width="20" height="11"><path d="M140.16 332.16a40.96 40.96 0 0 0 0 58.24l343.04 338.56a40.96 40.96 0 0 0 58.24 0l342.4-338.56a40.96 40.96 0 1 0-58.24-58.24L512 640 197.76 332.16a40.96 40.96 0 0 0-57.6 0z" fill="#8a8a8a" p-id="1840"></path></svg>'; // Your expand icon SVG
+
+    var tocItems = document.querySelectorAll('.catalog-content .toc-item');
+    tocItems.forEach(function(item) {
+      if (item.querySelector('.toc-child')) {
+        var button = document.createElement('span');
+        button.innerHTML = item.classList.contains('collapsed') ? expandIconSVG : collapseIconSVG; // Set initial icon
+        button.classList.add('collapse-button');
+        item.insertBefore(button, item.firstChild);
+
+        button.addEventListener('click', function() {
+          item.classList.toggle('collapsed');
+          // Update icon
+          button.innerHTML = item.classList.contains('collapsed') ? expandIconSVG : collapseIconSVG;
+        });
+      }
+    });
+  });
+</script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+  <div id="gitalk-container"></div>
+  <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+  <script>
+    function loadGitalkSuc() {
+      const gitalk = new Gitalk({
+        clientID: '4fd0839f78c35735511f',
+        clientSecret: 'c4d98a543b9bf9970b444154ad05c4c045afea26',
+        repo: 'commentSys',
+        owner: 'leihehehe',
+        admin: ['leihehehe'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+
+      gitalk.render('gitalk-container')
+    }
+  </script>
+  
+    <link rel="stylesheet" href="/plugins/gitalk.css">
+    <script type="text/javascript" src="/plugins/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
   
 
-  
+
+
+      </div>
+    
+  </div>
+
 
         
 <div class="footer">
@@ -447,12 +611,12 @@
       </a>
       <div class="share-content hidden">
         
-          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Categories + '&url=' + https%3A%2F%2Fleihehe.top%2Fcategories%2Findex.html + '" target="_blank" title="Twitter">
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Mathematical%20Tricks%20in%20Leetcode%20Problems + '&url=' + https%3A%2F%2Fleihehe.top%2F2024%2F03%2F24%2FMathematical-Tricks-in-Leetcode-Problems%2F + '" target="_blank" title="Twitter">
             <i class="iconfont icon-twitter"></i>
           </a>
         
         
-          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/categories/index.html" target="_blank" title="Facebook">
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2024/03/24/Mathematical-Tricks-in-Leetcode-Problems/" target="_blank" title="Facebook">
             <i class="iconfont icon-facebooksquare"></i>
           </a>
         
