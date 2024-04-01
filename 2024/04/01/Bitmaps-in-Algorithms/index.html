@@ -161,7 +161,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2023-06-15 16:59:33
+          2024-04-01 20:04:31
         </span>
         
               <span class="post-tags">
@@ -194,8 +194,28 @@
 <li>extracts the i-th bit(counting from right to left)</li>
 </ul>
 </li>
+<li><code>(num&lt;&lt;n)</code> basically produces an <code>num * 2^n</code><ul>
+<li><code>1&lt;&lt;5 = 100000 in binary</code>, <code>1&lt;&lt;2 = 100 in binary</code> </li>
+<li>when <code>num = 1</code>, sometimes it can be used in algorithms to check a target position</li>
 </ul>
-<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><ul>
+</li>
+</ul>
+<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><h2 id="Subset-Enumeration"><a href="#Subset-Enumeration" class="headerlink" title="Subset Enumeration"></a>Subset Enumeration</h2><p>Given that we have a set <code>&#123;1,2,3&#125;</code>, let’s find out all the subsets: <code>&#123;&#125;,&#123;1&#125;,&#123;2&#125;,&#123;3&#125;,&#123;1,2&#125;,&#123;1,3&#125;,&#123;2,3&#125;,&#123;1,2,3&#125;</code>. Therefore, we have <strong>8</strong> subsets(including the empty one). </p>
+<p>A good approach to get all these subsets is using bits. Let’s use one bit to represent a single element. Given <code>&#123;1,2,3&#125;</code>, we have 3 bits, and each bit represent an element.</p>
+<p>For example, <code>000</code> represents <code>&#123;&#125;</code>, <code>001</code> represents <code>&#123;3&#125;</code>, because only the third bit is maked as <code>1(exists)</code>. So actually, we are going to have 3 positions, and each position has two options(<code>0/1</code>), which means we have  <code>2^3 = 8</code> subsets(<code>000,001,010,011,100,101,110,111</code>). </p>
+<p>Then, this can be written as <code>1&lt;&lt;3</code>, which means to take 1 left shifted by 3 bits, resulting in <code>1000</code> in binary. We want to have an <code>111</code> , which is the last subset we would have for the set <code>&#123;1,2,3&#125;</code>. Therefore, we can have a <strong>for loop</strong>, iterate the range<code>[0,1&lt;&lt;3)</code>, integers in this range represent the possible subsets.</p>
+<p>Another <strong>for loop</strong> is used to get positions of the <code>1s</code> from these subsets representations in binary, so that we can get the actual numbers like <code>1,2,3</code>. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>[] set = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> set.length;</span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;i&lt;(<span class="number">1</span>&lt;&lt;n);i++)&#123;</span><br><span class="line">    <span class="comment">//this is for listing all the possible subsets in binary</span></span><br><span class="line">    List&lt;Integer&gt; subset = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>;j&lt;n;j++)&#123;</span><br><span class="line">        <span class="keyword">if</span>((<span class="number">1</span>&lt;&lt;j &amp; i) !=<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="comment">//that means 1&lt;&lt;j is 1, so the jth postion of i is 1.</span></span><br><span class="line">            subset.add(set[j]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(subset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Explaination for <code>(1&lt;&lt;j &amp; 1)!=0</code>:</p>
+<ul>
+<li>if we have <code>10111 &amp; 100</code>, this will give us <code>00100</code>, because the third number in <code>10111</code> is 1.</li>
+<li>if we have <code>10011 &amp; 100</code>, this will give us <code>00000</code>, because the the third number in <code>10111</code> is 0.</li>
+<li>So basically, if the result is not 0, we can ensure that the number at the position  <code>j</code> is <code>1</code>.</li>
+</ul>
+<h2 id="Other-Problems"><a href="#Other-Problems" class="headerlink" title="Other Problems"></a>Other Problems</h2><ul>
 <li>Bitmap indexing</li>
 <li>Bloom filters</li>
 <li>Leetcode 698</li>
@@ -206,7 +226,7 @@
         <div class="prev-or-next">
           <div class="post-foot-next">
             
-              <a href="/2022/12/04/Amazing-URL-Shortener-Technical-Doc/" target="_self">
+              <a href="/2024/03/24/Mathematical-Tricks-in-Leetcode-Problems/" target="_self">
                 <i class="iconfont icon-chevronleft"></i>
                 <span>Prev</span>
               </a>
@@ -215,7 +235,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2023-06-15 16:59:33
+              2024-04-01 20:04:31
             </span>
             
                   <span class="post-tags">
@@ -232,11 +252,6 @@
           </div>
           <div class="post-foot-prev">
             
-              <a href="/2023/04/28/How-Did-I-Improve-My-Angular-Project-s-Loading-Speed/" target="_self">
-                <span>Next</span>
-                <i class="iconfont icon-chevronright"></i>
-              </a>
-            
           </div>
         </div>
       
@@ -249,7 +264,7 @@
     <div class="title">Contents</div>
     <div class="catalog-content">
       
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Scenario"><span class="toc-text">Scenario</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Scenario"><span class="toc-text">Scenario</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Subset-Enumeration"><span class="toc-text">Subset Enumeration</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Other-Problems"><span class="toc-text">Other Problems</span></a></li></ol></li></ol>
       
     </div>
   </div>
@@ -609,12 +624,12 @@
       </a>
       <div class="share-content hidden">
         
-          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Bitmaps%20in%20Algorithms + '&url=' + https%3A%2F%2Fleihehe.top%2F2023%2F03%2F14%2FBitmaps-in-Algorithms%2F + '" target="_blank" title="Twitter">
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Bitmaps%20in%20Algorithms + '&url=' + https%3A%2F%2Fleihehe.top%2F2024%2F04%2F01%2FBitmaps-in-Algorithms%2F + '" target="_blank" title="Twitter">
             <i class="iconfont icon-twitter"></i>
           </a>
         
         
-          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2023/03/14/Bitmaps-in-Algorithms/" target="_blank" title="Facebook">
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://leihehe.top/2024/04/01/Bitmaps-in-Algorithms/" target="_blank" title="Facebook">
             <i class="iconfont icon-facebooksquare"></i>
           </a>
         
