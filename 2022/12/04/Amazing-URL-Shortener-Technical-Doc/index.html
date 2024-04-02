@@ -161,7 +161,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2023-06-15 16:51:19
+          2024-04-01 21:55:04
         </span>
         
               <span class="post-categories">
@@ -270,12 +270,51 @@
 <p>Jenkins runs a piepeline to build and upload images to AWS ECR.</p>
 <p>Using <strong>3</strong> servers(<strong>1 master node and 1 worker node</strong>) to build a Kubernetes cluster. </p>
 <p><img src="https://blog-1300132498.cos.ap-nanjing.myqcloud.com/blog/202212042225127.png" alt="kubernetes deployments"></p>
-<h1 id="Technical-Difficulties-amp-Solutions"><a href="#Technical-Difficulties-amp-Solutions" class="headerlink" title="Technical Difficulties &amp; Solutions"></a>Technical Difficulties &amp; Solutions</h1><h2 id="User-and-Visitors-Querying-Links"><a href="#User-and-Visitors-Querying-Links" class="headerlink" title="User and Visitors Querying Links"></a>User and Visitors Querying Links</h2><p>As we know users prefer to query links in terms of their <code>accountNo</code>, if the links are distributed in different databases and tables, it will be very difficult for users to query the data since the system needs to access all the databases and tables to get the records.</p>
-<p>However, visitors, just need the <strong>short link code</strong> to locate the table, and they have no idea about the <code>groupId</code> and <code>accountNo</code>.</p>
+<h1 id="Technical-Difficulties-amp-Solutions"><a href="#Technical-Difficulties-amp-Solutions" class="headerlink" title="Technical Difficulties &amp; Solutions"></a>Technical Difficulties &amp; Solutions</h1><h2 id="Creating-Short-URLs"><a href="#Creating-Short-URLs" class="headerlink" title="Creating Short URLs"></a>Creating Short URLs</h2><p><strong>There are two options.</strong></p>
+<ol>
+<li><p><strong>Snowflake ID + Base62 Encoding</strong>. For example, first we use <code>SnowFlake</code> to create a unique ID, then pass the resulting ID to a Base 62 encoding function. This will give us a unique link.</p>
+<ul>
+<li><p><strong>Pros</strong>: It ensures that every original url can produce a unique short url.</p>
+</li>
+<li><p><strong>Cons</strong>: </p>
+<ul>
+<li>We have to make sure that all the machines having the same system time configured.</li>
+<li>If the Snowflake generated ID is long, the resulting short path, even after Base62 encoding, may not be sufficiently short.</li>
+</ul>
+</li>
+<li><p>But there is still a possibility of two users generating the same short link when they creating the short link at the same time(within 1ms). </p>
+</li>
+</ul>
+</li>
+<li><p><strong>Snowflake ID + MurmurHash + Base62 Encoding.</strong> Compared to the first option, we use <code>MurmurHash</code> to hash our unique id, to make it shorter enough, then we use Base62 encoding.</p>
+<ul>
+<li><p><strong>Pros:</strong> we can generate shorter links.</p>
+</li>
+<li><p>**Cons: **</p>
+<ul>
+<li>All hash algorithms have the potential for hash conflicts. Although MurmurHash has a low conflict probability, it cannot guarantee complete conflict avoidance.</li>
+<li>You can’t recover the original ID from the short path(but it does not matter in our case)</li>
+</ul>
+</li>
+<li><p>To avoid hash conflicts, we can</p>
+<ul>
+<li><strong>Retry with Variation</strong>: If a collision is detected, modify the input slightly (e.g., by adding a counter or changing a bit in the original ID) and regenerate the hash. Repeat this process until a unique short path is generated.</li>
+<li><strong>Salting</strong>: Introduce a salt—a random value added to the input of the hash function—to ensure that even if the original IDs are similar, the resulting hashes will be different. For example, we can add SnowFlake ID appended to the original url, and hash it again.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Database-Sharding-and-Partitioning"><a href="#Database-Sharding-and-Partitioning" class="headerlink" title="Database Sharding and Partitioning"></a>Database Sharding and Partitioning</h2><p>As we know users prefer to query links in terms of their <code>accountNo</code>, if the links are distributed in different databases and tables, it will be very difficult for users to query the data since the system needs to access all the databases and tables to get the records.</p>
+<p>However, visitors, just need the <strong>short link code</strong> to locate tables so that they can get original urls quickly. But they have no idea about the <code>groupId</code> and <code>accountNo</code>.</p>
 <p>So apparently, we would have two different partition keys to deal with these two cases.</p>
-<p>Therefore, I duplicated the tables so that tables <code>group_link_mapping</code> are used to store data for users, <code>short_link</code> tables are used to store data for visitors.</p>
+<p>Therefore, I duplicated the tables so that tables <code>group_link_mapping</code> are used to store data for <strong>users</strong>, <code>short_link</code> tables are used to store data for <strong>visitors</strong>.</p>
 <h2 id="Distributed-Transaction-Management"><a href="#Distributed-Transaction-Management" class="headerlink" title="Distributed Transaction Management"></a>Distributed Transaction Management</h2><p>New issues have arisen after duplicating the short link tables. Since tables need to be synchronized, there will be inconsistent data if the operation on the user side failed but succeed on the visitor side.</p>
-<p><strong>Solution</strong>: Use <code>RabbitMQ</code> to send a <strong>delayed message</strong> to check if operations on both sides are successful.</p>
+<p><strong>There are two solutions</strong></p>
+<ul>
+<li><strong>Message Queue:</strong> When we are trying to insert data, we send a message to a queue using <code>RabbitMQ</code>. The first table will retrieve the message and perform the insertion operation. If it fails, the second table will not do anything. If it succeeds, it will send another message indicating that the insertion was successful, and then the second table will perform the insertion. If the second table fails or succeeds, it will send a message, so that the first table can check if it needs to be reverted.</li>
+<li><strong>Delayed Message Queue:</strong> Use <code>RabbitMQ</code> to send a <strong>delayed message</strong> to check if operations on both sides are successful.</li>
+</ul>
 <h2 id="Two-Users-Creating-the-Same-Short-Link"><a href="#Two-Users-Creating-the-Same-Short-Link" class="headerlink" title="Two Users Creating the Same Short Link"></a>Two Users Creating the Same Short Link</h2><p>If two users are generating the same short link, <strong>user A</strong> has inserted data to <code>group_link_mapping</code> and <strong>user B</strong> has inserted data into <code>short_link</code>, at this time, both users will fail because they cannot insert data into others tables(data already exists).</p>
 <p><strong>Solution</strong>: Use <code>Redis</code> to add a lock. The value stored in the Redis will be <code>accountNo</code>, if <code>accountNo</code> in the Redis matches the current logged-in <code>accountNo</code>, continue the operations. Otherwise, stop the operations(another user is holding the lock).</p>
 <h2 id="Nginx-Short-Link-Access-and-API-server"><a href="#Nginx-Short-Link-Access-and-API-server" class="headerlink" title="Nginx - Short Link Access and API server"></a>Nginx - Short Link Access and API server</h2><p><strong>Updates</strong>: </p>
@@ -309,7 +348,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2023-06-15 16:51:19
+              2024-04-01 21:55:04
             </span>
             
                   <span class="post-categories">
@@ -366,7 +405,7 @@
     <div class="title">Contents</div>
     <div class="catalog-content">
       
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Technical-Stacks-Used"><span class="toc-text">Technical Stacks Used</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ShardingSphere"><span class="toc-text">ShardingSphere</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Why-use-it"><span class="toc-text">Why use it?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Partition-Keys"><span class="toc-text">Partition Keys</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#How-to-query-the-data-in-this-case"><span class="toc-text">How to query the data in this case?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-Redisson-amp-Lua-Script"><span class="toc-text">Redis, Redisson &amp; Lua Script</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RabbitMQ"><span class="toc-text">RabbitMQ</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink-Kafka-amp-ClickHouse"><span class="toc-text">Flink, Kafka &amp; ClickHouse</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jenkins-amp-Kubernetes-High-Availability"><span class="toc-text">Jenkins &amp; Kubernetes(High Availability)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Technical-Difficulties-amp-Solutions"><span class="toc-text">Technical Difficulties &amp; Solutions</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#User-and-Visitors-Querying-Links"><span class="toc-text">User and Visitors Querying Links</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Distributed-Transaction-Management"><span class="toc-text">Distributed Transaction Management</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Two-Users-Creating-the-Same-Short-Link"><span class="toc-text">Two Users Creating the Same Short Link</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx-Short-Link-Access-and-API-server"><span class="toc-text">Nginx - Short Link Access and API server</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Eureka-Servers"><span class="toc-text">Eureka Servers</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Database-Structure-ER-Diagram"><span class="toc-text">Database Structure (ER Diagram)</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Technical-Stacks-Used"><span class="toc-text">Technical Stacks Used</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ShardingSphere"><span class="toc-text">ShardingSphere</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Why-use-it"><span class="toc-text">Why use it?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Partition-Keys"><span class="toc-text">Partition Keys</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#How-to-query-the-data-in-this-case"><span class="toc-text">How to query the data in this case?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-Redisson-amp-Lua-Script"><span class="toc-text">Redis, Redisson &amp; Lua Script</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RabbitMQ"><span class="toc-text">RabbitMQ</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink-Kafka-amp-ClickHouse"><span class="toc-text">Flink, Kafka &amp; ClickHouse</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jenkins-amp-Kubernetes-High-Availability"><span class="toc-text">Jenkins &amp; Kubernetes(High Availability)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Technical-Difficulties-amp-Solutions"><span class="toc-text">Technical Difficulties &amp; Solutions</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Creating-Short-URLs"><span class="toc-text">Creating Short URLs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Database-Sharding-and-Partitioning"><span class="toc-text">Database Sharding and Partitioning</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Distributed-Transaction-Management"><span class="toc-text">Distributed Transaction Management</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Two-Users-Creating-the-Same-Short-Link"><span class="toc-text">Two Users Creating the Same Short Link</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx-Short-Link-Access-and-API-server"><span class="toc-text">Nginx - Short Link Access and API server</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Eureka-Servers"><span class="toc-text">Eureka Servers</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Database-Structure-ER-Diagram"><span class="toc-text">Database Structure (ER Diagram)</span></a></li></ol>
       
     </div>
   </div>

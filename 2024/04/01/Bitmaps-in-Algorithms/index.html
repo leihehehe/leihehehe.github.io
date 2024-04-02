@@ -161,7 +161,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-04-01 20:04:31
+          2024-04-02 13:28:01
         </span>
         
               <span class="post-tags">
@@ -182,22 +182,34 @@
 <span id="more"></span>
 
 <ul>
-<li>Set the i-th bit to 1(true), and leave other bits unchanged: <code>num|=(1&lt;&lt;i)</code><ul>
+<li><p>Set the i-th bit to 1(true), and leave other bits unchanged: <code>num|=(1&lt;&lt;i)</code></p>
+<ul>
 <li>left shift 1 by i bits, and perform OR operation with <code>num</code>.</li>
 </ul>
 </li>
-<li>Set the i-th bit to 0(false), and leave other bits unchanged: <code>num &amp;= ~(1&lt;&lt;i)</code> or <code>(num ^=1&lt;&lt;i)</code><ul>
+<li><p>Set the i-th bit to 0(false), and leave other bits unchanged: <code>num &amp;= ~(1&lt;&lt;i)</code> or <code>(num ^=1&lt;&lt;i)</code></p>
+<ul>
 <li>take the complement(~) of 1 left shifted by i bits, and perform bitwise AND(&amp;) operation with <code>num</code>.</li>
 </ul>
 </li>
-<li>Get <code>num[i]</code>: <code>(num &gt;&gt; i) &amp; 1</code><ul>
+<li><p>Get <code>num[i]</code>: <code>(num &gt;&gt; i) &amp; 1</code></p>
+<ul>
 <li>extracts the i-th bit(counting from right to left)</li>
 </ul>
 </li>
-<li><code>(num&lt;&lt;n)</code> basically produces an <code>num * 2^n</code><ul>
+<li><p><code>(num&lt;&lt;n)</code> basically produces an <code>num * 2^n</code></p>
+<ul>
 <li><code>1&lt;&lt;5 = 100000 in binary</code>, <code>1&lt;&lt;2 = 100 in binary</code> </li>
 <li>when <code>num = 1</code>, sometimes it can be used in algorithms to check a target position</li>
 </ul>
+</li>
+<li><p>Check if <code>A</code> is a subset of <code>B</code>:</p>
+<ul>
+<li><code>A &amp; B ==A</code></li>
+<li><code>010 &amp; 011 = 010</code></li>
+</ul>
+</li>
+<li><p><code>X &amp; 1</code> makes X remain the same</p>
 </li>
 </ul>
 <h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><h2 id="Subset-Enumeration"><a href="#Subset-Enumeration" class="headerlink" title="Subset Enumeration"></a>Subset Enumeration</h2><p>Given that we have a set <code>&#123;1,2,3&#125;</code>, let’s find out all the subsets: <code>&#123;&#125;,&#123;1&#125;,&#123;2&#125;,&#123;3&#125;,&#123;1,2&#125;,&#123;1,3&#125;,&#123;2,3&#125;,&#123;1,2,3&#125;</code>. Therefore, we have <strong>8</strong> subsets(including the empty one). </p>
@@ -235,7 +247,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-04-01 20:04:31
+              2024-04-02 13:28:01
             </span>
             
                   <span class="post-tags">
