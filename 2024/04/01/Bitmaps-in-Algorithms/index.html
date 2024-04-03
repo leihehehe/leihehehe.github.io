@@ -161,7 +161,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-04-02 13:28:01
+          2024-04-03 14:11:15
         </span>
         
               <span class="post-tags">
@@ -217,10 +217,16 @@
 <p>For example, <code>000</code> represents <code>&#123;&#125;</code>, <code>001</code> represents <code>&#123;3&#125;</code>, because only the third bit is maked as <code>1(exists)</code>. So actually, we are going to have 3 positions, and each position has two options(<code>0/1</code>), which means we have  <code>2^3 = 8</code> subsets(<code>000,001,010,011,100,101,110,111</code>). </p>
 <p>Then, this can be written as <code>1&lt;&lt;3</code>, which means to take 1 left shifted by 3 bits, resulting in <code>1000</code> in binary. We want to have an <code>111</code> , which is the last subset we would have for the set <code>&#123;1,2,3&#125;</code>. Therefore, we can have a <strong>for loop</strong>, iterate the range<code>[0,1&lt;&lt;3)</code>, integers in this range represent the possible subsets.</p>
 <p>Another <strong>for loop</strong> is used to get positions of the <code>1s</code> from these subsets representations in binary, so that we can get the actual numbers like <code>1,2,3</code>. </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>[] set = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> set.length;</span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;i&lt;(<span class="number">1</span>&lt;&lt;n);i++)&#123;</span><br><span class="line">    <span class="comment">//this is for listing all the possible subsets in binary</span></span><br><span class="line">    List&lt;Integer&gt; subset = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>;j&lt;n;j++)&#123;</span><br><span class="line">        <span class="keyword">if</span>((<span class="number">1</span>&lt;&lt;j &amp; i) !=<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="comment">//that means 1&lt;&lt;j is 1, so the jth postion of i is 1.</span></span><br><span class="line">            subset.add(set[j]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(subset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>[] set = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> set.length;</span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;i&lt;(<span class="number">1</span>&lt;&lt;n);i++)&#123;</span><br><span class="line">    <span class="comment">//this is for listing all the possible subsets in binary</span></span><br><span class="line">    List&lt;Integer&gt; subset = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>;j&lt;n;j++)&#123;</span><br><span class="line">      	<span class="keyword">if</span>(((i&gt;&gt;j)&amp;<span class="number">1</span>) == <span class="number">1</span>)&#123;</span><br><span class="line">          subset.add(set[j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//if((1&lt;&lt;j &amp; i) !=0)&#123;</span></span><br><span class="line">            <span class="comment">//that means 1&lt;&lt;j is 1, so the jth postion of i is 1.</span></span><br><span class="line">            <span class="comment">//subset.add(set[j]);</span></span><br><span class="line">        <span class="comment">//&#125;</span></span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(subset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-
+<p>We have <strong>two</strong> options to check if <code>n-th</code> bit of <code>i</code> is <strong>1</strong> </p>
+<ul>
+<li>Explaination for <code>((i&gt;&gt;j)&amp;1)==1</code><ul>
+<li>Shift <code>i</code> right by <code>j</code> bits. Actually it is extracting the <code>j-th</code> bit of i, so you can directly compare with <code>j</code></li>
+<li>If we have <code>i = 1011, j = 2</code>, then <code>i&gt;&gt;j = 11, 11&amp;1 = 11&amp;01 = 01 = 1</code></li>
+</ul>
+</li>
+</ul>
 <p>Explaination for <code>(1&lt;&lt;j &amp; 1)!=0</code>:</p>
 <ul>
 <li>if we have <code>10111 &amp; 100</code>, this will give us <code>00100</code>, because the third number in <code>10111</code> is 1.</li>
@@ -247,7 +253,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-04-02 13:28:01
+              2024-04-03 14:11:15
             </span>
             
                   <span class="post-tags">
