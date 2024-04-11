@@ -161,7 +161,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-04-08 12:08:28
+          2024-04-11 12:35:10
         </span>
         
               <span class="post-categories">
@@ -193,6 +193,7 @@
 <li>Outer loop will be responsible for <code>recording the first element of the group</code> plus <code>update the answer</code>.</li>
 <li>Inner group will be responsible for <code>finding the last element of the group</code>.</li>
 </ul>
+<p>Note that if every group does not intersect with each other, we can use grouped iteration.</p>
 <h1 id="Basic-Template"><a href="#Basic-Template" class="headerlink" title="Basic Template"></a>Basic Template</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line"><span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (i &lt; n)&#123;</span><br><span class="line">  <span class="comment">//implement any check to make sure this start is valid</span></span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  <span class="comment">//record the start position</span></span><br><span class="line">  <span class="type">int</span> <span class="variable">start</span> <span class="operator">=</span> i;</span><br><span class="line">  <span class="comment">//find the last element</span></span><br><span class="line">  <span class="keyword">while</span>(i&lt;n &amp;&amp; [SOME CONDITION])&#123;</span><br><span class="line">    i++;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//update ans</span></span><br><span class="line">  <span class="comment">//....</span></span><br><span class="line">  <span class="comment">//note that i is increamented by 1 so we need to minus 1</span></span><br><span class="line">  i-=<span class="number">1</span>;</span><br><span class="line">  <span class="comment">//start to deal with next group</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="Leetcode-Problems"><a href="#Leetcode-Problems" class="headerlink" title="Leetcode Problems"></a>Leetcode Problems</h1><table>
@@ -262,7 +263,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-04-08 12:08:28
+              2024-04-11 12:35:10
             </span>
             
                   <span class="post-categories">
